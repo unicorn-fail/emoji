@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+PHPUNIT_MAJOR_VERSION=$(vendor/bin/phpunit --version | sed -ne 's/[^0-9]*\(\([0-9]\.\)\{0,4\}[0-9][^.]\).*/\1/p' | cut -d. -f1)
+PHPUNIT_CONFIG=$([[ $PHPUNIT_MAJOR_VERSION -eq 9 ]] && echo "-c phpunit$PHPUNIT_MAJOR_VERSION.xml.dist")
+vendor/bin/phpunit $PHPUNIT_CONFIG $@

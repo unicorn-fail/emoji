@@ -1,0 +1,145 @@
+name: Tests
+
+on:
+    push: ~
+    pull_request: ~
+
+env:
+    COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+    phpcs:
+        name: PHPCS
+        runs-on: ubuntu-latest
+
+        steps:
+            -   uses: actions/checkout@v2
+
+            -   uses: shivammathur/setup-php@v2
+                with:
+                    php-version: 7.2
+                    extensions: curl, mbstring
+                    coverage: none
+                    tools: composer:v2, cs2pr
+
+            -   name: Get Composer Cache Directory
+                id: composer-cache
+                run: |
+                    echo "::set-output name=dir::$(composer config cache-files-dir)"
+            -   uses: actions/cache@v2
+                with:
+                    path: ${{ steps.composer-cache.outputs.dir }}
+                    key: ${{ runner.os }}-php7.2-composer-${{ hashFiles('**/composer.lock') }}
+
+            -   run: composer update -o --no-progress
+
+            -   run: vendor/bin/phpcs -q --report=checkstyle | cs2pr
+
+    phpunit:
+        name: PHPUnit on ${{ matrix.php }} ${{ matrix.composer-flags }}
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                php: [ '7.2', '7.3', '7.4' ]
+                coverage: [ true ]
+                composer-flags: [ '' ]
+                phpunit-flags: [ '' ]
+                include:
+                    -   php: '8.0'
+                        coverage: false
+                        composer-flags: '--ignore-platform-req=php'
+                        phpunit-flags: "-c phpunit9.xml.dist"
+                    -   php: '7.2'
+                        coverage: false
+                        composer-flags: '--prefer-lowest'
+
+        steps:
+            -   uses: actions/checkout@v2
+
+            -   uses: shivammathur/setup-php@v2
+                with:
+                    php-version: ${{ matrix.php }}
+                    extensions: curl, mbstring, zlib
+                    coverage: pcov
+                    tools: composer:v2
+
+            -   name: Get Composer Cache Directory
+                id: composer-cache
+                run: |
+                    echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+            -   uses: actions/cache@v2
+                with:
+                    path: ${{ steps.composer-cache.outputs.dir }}
+                    key: ${{ runner.os }}-php${{ matrix.php }}-composer-${{ hashFiles('**/composer.lock') }}
+
+            -   run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
+
+            -   name: "Use PHPUnit 9.3+ on PHP 8"
+                run: composer require --no-update --dev phpunit/phpunit:^9.3
+                if: "matrix.php == '8.0'"
+
+            -   run: composer update -o --no-progress ${{ matrix.composer-flags }}
+
+            -   run: vendor/bin/phpunit --colors=always --no-coverage ${{ matrix.phpunit-flags }}
+                if: ${{ !matrix.coverage }}
+
+            -   run: vendor/bin/phpunit --colors=always ${{ matrix.phpunit-flags }}
+                if: ${{ matrix.coverage }}
+
+            -   run: php vendor/bin/ocular code-coverage:upload --format=php-clover ./build/coverage.xml
+                if: ${{ matrix.coverage }}
+
+    phpstan:
+        name: PHPStan
+        runs-on: ubuntu-latest
+
+        steps:
+            -   uses: actions/checkout@v2
+
+            -   uses: shivammathur/setup-php@v2
+                with:
+                    php-version: 7.2
+                    extensions: curl, mbstring
+                    coverage: none
+                    tools: composer:v2
+
+            -   name: Get Composer Cache Directory
+                id: composer-cache
+                run: |
+                    echo "::set-output name=dir::$(composer config cache-files-dir)"
+            -   uses: actions/cache@v2
+                with:
+                    path: ${{ steps.composer-cache.outputs.dir }}
+                    key: ${{ runner.os }}-php7.2-composer-${{ hashFiles('**/composer.lock') }}
+
+            -   run: composer update -o --no-progress
+
+            -   run: vendor/bin/phpstan analyse --no-progress
+
+    psalm:
+        name: Psalm
+        runs-on: ubuntu-latest
+
+        steps:
+            -   uses: actions/checkout@v2
+
+            -   uses: shivammathur/setup-php@v2
+                with:
+                    php-version: 7.2
+                    extensions: curl, mbstring
+                    coverage: none
+                    tools: composer:v2
+
+            -   name: Get Composer Cache Directory
+                id: composer-cache
+                run: |
+                    echo "::set-output name=dir::$(composer config cache-files-dir)"
+            -   uses: actions/cache@v2
+                with:
+                    path: ${{ steps.composer-cache.outputs.dir }}
+                    key: ${{ runner.os }}-php7.2-composer-${{ hashFiles('**/composer.lock') }}
+
+            -   run: composer update -o --no-progress
+
+            -   run: vendor/bin/psalm --no-progress --output-format=github --shepherd

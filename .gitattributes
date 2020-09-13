@@ -1,0 +1,16 @@
+/.editorconfig        export-ignore
+/.gitattributes       export-ignore
+/.github              export-ignore
+/.gitignore           export-ignore
+/.scrutinizer.yml     export-ignore
+/build.js             export-ignore
+/build.php            export-ignore
+/package.json         export-ignore
+/package-lock.json    export-ignore
+/patches              export-ignore
+/phpcs.xml.dist       export-ignore
+/phpstan.neon.dist    export-ignore
+/phpunit.xml.dist     export-ignore
+/psalm.xml            export-ignore
+/scripts              export-ignore
+/tests                export-ignore

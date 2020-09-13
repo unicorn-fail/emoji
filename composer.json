@@ -1,0 +1,127 @@
+{
+    "name": "unicorn-fail/emoji",
+    "description": "Comprehensive PHP parser and converter of emoticons, HTML entities, shortcodes and unicodes (emojis).",
+    "type": "library",
+    "license": "BSD-3-Clause",
+    "authors": [
+        {
+            "name": "Mark Carver",
+            "email": "mark.carver@me.com",
+            "homepage": "https://github.com/markcarver",
+            "role": "Lead Developer"
+        }
+    ],
+    "support": {
+        "docs": "https://github.com/unicorn-fail/emoji/blob/latest/README.md",
+        "issues": "https://github.com/unicorn-fail/emoji/issues",
+        "rss": "https://github.com/unicorn-fail/emoji/releases.atom",
+        "source": "https://github.com/unicorn-fail/emoji"
+    },
+    "keywords": [
+        "cldr",
+        "emoji",
+        "emojibase",
+        "data",
+        "dataset",
+        "discord",
+        "gfm",
+        "github",
+        "helper",
+        "iamcal",
+        "joypixels",
+        "json",
+        "loader",
+        "markdown",
+        "php",
+        "php-emoji",
+        "regex",
+        "shortcode",
+        "slack",
+        "unicode"
+    ],
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/markcarver/phpunit-pretty-print.git"
+        }
+    ],
+    "require": {
+        "php": "^7.2.5 || ^8.0",
+        "ext-mbstring": "*",
+        "ext-zlib": "*",
+        "dflydev/dot-access-data": "^2.0",
+        "doctrine/lexer": "^1.2",
+        "symfony/options-resolver": "^5.1",
+        "symfony/polyfill-php80": "^1.15"
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^2.16",
+        "phpstan/phpstan": "^0.12.42",
+        "phpunit/phpunit": "^8.5.8",
+        "scrutinizer/ocular": "^1.5",
+        "sempro/phpunit-pretty-print": "dev-patch-1#d90a03400a038d8bb3b9413cfcce83d1274c09ec",
+        "squizlabs/php_codesniffer": "^3.5",
+        "unleashedtech/php-coding-standard": "^2.5",
+        "vimeo/psalm": "^3.14"
+    },
+    "conflict": {
+        "scrutinizer/ocular": "1.7.*",
+        "vimeo/psalm": "3.15.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "UnicornFail\\Emoji\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "UnicornFail\\Emoji\\Tests\\Unit\\": "tests/unit"
+        }
+    },
+    "archive": {
+        "exclude": [
+            "/.editorconfig",
+            "/.github",
+            "/.gitattributes",
+            "/.gitignore",
+            "/.scrutinizer.yml",
+            "/build.js",
+            "/build.php",
+            "/tests",
+            "/package*.json",
+            "/php*.dist",
+            "/psalm.xml",
+            "/scripts"
+        ]
+    },
+    "scripts": {
+        "emojibase": "npm install && npm run build && php ./scripts/build.php",
+        "phpcs": "phpcs",
+        "phpstan": "phpstan analyse",
+        "phpunit": "./scripts/phpunit --no-coverage --colors=always",
+        "phpunit-coverage": "./scripts/phpunit --colors=always",
+        "psalm": "psalm --show-info=true",
+        "test": [
+            "@phpcs",
+            "@phpstan",
+            "@psalm",
+            "@phpunit"
+        ],
+        "test-coverage": [
+            "@phpcs",
+            "@phpstan",
+            "@psalm",
+            "@phpunit-coverage"
+        ]
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-latest": "1.0-dev"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    }
+}

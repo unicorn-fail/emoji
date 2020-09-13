@@ -1,0 +1,15 @@
+{
+  "private": true,
+  "name": "@unicorn-fail/emoji",
+  "version": "0.0.1",
+  "description": "Build script for converting the NPM modules into appropriate PHP files and copying relevant data.",
+  "scripts": {
+    "build": "node ./scripts/build.js"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "emojibase": "^5.0.0-alpha.1",
+    "emojibase-data": "^6.0.0-alpha.1",
+    "emojibase-regex": "^5.0.0-alpha.0"
+  }
+}

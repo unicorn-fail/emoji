@@ -9,6 +9,7 @@ use Symfony\Component\OptionsResolver\Exception\InvalidOptionsException;
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use UnicornFail\Emoji\Exception\InvalidConfigurationException;
+use UnicornFail\Emoji\Util\Normalize;
 
 class Configuration extends Data implements ConfigurationInterface
 {

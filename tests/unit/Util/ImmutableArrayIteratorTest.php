@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace UnicornFail\Emoji\Tests\Unit;
+namespace UnicornFail\Emoji\Tests\Unit\Util;
 
 use PHPUnit\Framework\TestCase;
-use UnicornFail\Emoji\ImmutableArrayIterator;
+use UnicornFail\Emoji\Util\ImmutableArrayIterator;
 
 class ImmutableArrayIteratorTest extends TestCase
 {
@@ -21,11 +21,13 @@ class ImmutableArrayIteratorTest extends TestCase
 
     public function testGet(): void
     {
-        $array = new TestImmutableArrayIterator([
-            0 => null,
-            'foo' => 'bar',
-            'bar' => null,
-        ]);
+        $array = new TestImmutableArrayIterator(
+            [
+                0     => null,
+                'foo' => 'bar',
+                'bar' => null,
+            ]
+        );
         $this->assertSame('bar', $array['foo']);
         $this->assertSame('foo-bar', $array->method);
         $this->assertTrue(isset($array->method));

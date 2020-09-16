@@ -11,6 +11,7 @@ use UnicornFail\Emoji\Token\HtmlEntity;
 use UnicornFail\Emoji\Token\Shortcode;
 use UnicornFail\Emoji\Token\Text;
 use UnicornFail\Emoji\Token\Unicode;
+use UnicornFail\Emoji\Util\Normalize;
 
 class Parser extends AbstractLexer implements ParserInterface
 {

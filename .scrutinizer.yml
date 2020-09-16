@@ -1,5 +1,8 @@
 filter:
-    excluded_paths: [tests/*]
+    excluded_paths:
+        - datasets/
+        - scripts/
+        - tests/
 build:
     nodes:
         analysis:

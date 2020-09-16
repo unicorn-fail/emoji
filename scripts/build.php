@@ -9,7 +9,7 @@ require_once BASE_DIRECTORY . '/vendor/autoload.php';
 use UnicornFail\Emoji\Dataset;
 use UnicornFail\Emoji\EmojibaseInterface;
 use UnicornFail\Emoji\EmojibaseShortcodeInterface;
-use UnicornFail\Emoji\Normalize;
+use UnicornFail\Emoji\Util\Normalize;
 
 const BUILD_DIRECTORY          = BASE_DIRECTORY . '/build';
 const EMOJIBASE_DATA_DIRECTORY = BASE_DIRECTORY . '/node_modules/emojibase-data';

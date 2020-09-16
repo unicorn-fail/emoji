@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace UnicornFail\Emoji;
 
+use UnicornFail\Emoji\Util\ImmutableArrayIterator;
+use UnicornFail\Emoji\Util\Normalize;
+
 /**
  * @property ?string $annotation
  * @property ?string $emoji
@@ -33,7 +36,7 @@ final class Emoji extends ImmutableArrayIterator implements \Stringable
         'group' => '?int',
         'hexcode' => '!?string',
         'order' => '?int',
-        'shortcodes' => '\UnicornFail\Emoji\Normalize::shortcodes[]',
+        'shortcodes' => 'string[]<\UnicornFail\Emoji\Util\Normalize::shortcodes>',
         'skins' => '\UnicornFail\Emoji\Dataset',
         'subgroup' => '?int',
         'tags' => 'string[]',

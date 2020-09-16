@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace UnicornFail\Emoji;
+namespace UnicornFail\Emoji\Util;
 
 class ImmutableArrayIterator extends \ArrayIterator
 {

@@ -7,6 +7,7 @@ namespace UnicornFail\Emoji;
 use UnicornFail\Emoji\Exception\FileNotFoundException;
 use UnicornFail\Emoji\Exception\MalformedArchiveException;
 use UnicornFail\Emoji\Exception\UnarchiveException;
+use UnicornFail\Emoji\Util\ImmutableArrayIterator;
 
 final class Dataset extends ImmutableArrayIterator
 {

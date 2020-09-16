@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace UnicornFail\Emoji;
 
-use Doctrine\Common\Lexer\AbstractLexer;
 use UnicornFail\Emoji\Token\AbstractToken;
 use UnicornFail\Emoji\Token\Emoticon;
 use UnicornFail\Emoji\Token\HtmlEntity;
@@ -13,18 +12,30 @@ use UnicornFail\Emoji\Token\Text;
 use UnicornFail\Emoji\Token\Unicode;
 use UnicornFail\Emoji\Util\Normalize;
 
-class Parser extends AbstractLexer implements ParserInterface
+class Parser implements ParserInterface
 {
+    private const TYPE_METHODS = [
+        Lexer::T_TEXT => 'parseText',
+        Lexer::T_EMOTICON => 'parseEmoticon',
+        Lexer::T_HTML_ENTITY => 'parseHtmlEntity',
+        Lexer::T_SHORTCODE => 'parseShortcode',
+        Lexer::T_UNICODE => 'parseUnicode',
+    ];
+
     /** @var Configuration|ConfigurationInterface */
     private $configuration;
 
     /** @var Dataset */
     private $dataset;
 
-    public function __construct(ConfigurationInterface $configuration, Dataset $dataset)
+    /** @var Lexer */
+    private $lexer;
+
+    public function __construct(ConfigurationInterface $configuration, Dataset $dataset, ?Lexer $lexer = null)
     {
         $this->configuration = $configuration;
         $this->dataset       = $dataset;
+        $this->lexer         = $lexer ?? new Lexer($configuration);
     }
 
     /**
@@ -32,152 +43,90 @@ class Parser extends AbstractLexer implements ParserInterface
      */
     public function parse(string $input): array
     {
+        $this->lexer->setInput($input);
+        $this->lexer->moveNext();
+
+        return $this->parseTokens();
+    }
+
+    /**
+     * @return AbstractToken[]
+     */
+    protected function parseTokens(): array
+    {
         $tokens = [];
-
-        $this->setInput($input);
-        $this->moveNext();
-
-        // Clone the configuration here. This is necessary so it can be passed to tokens,
-        // which may be rendered at a later time; when the configuration may have changed.
-        $configuration = clone $this->configuration;
-
-        // Organize collection by the various indices.
-        $emojis       = $this->dataset->indexBy('emoji');
-        $emoticons    = $this->dataset->indexBy('emoticon');
-        $htmlEntities = $this->dataset->indexBy('htmlEntity');
-        $shortcodes   = $this->dataset->indexBy('shortcodes');
-        $texts        = $this->dataset->indexBy('text');
-
         while (true) {
-            if (! $this->lookahead) {
+            if (! $this->lexer->lookahead) {
                 break;
             }
 
-            $this->moveNext();
+            $this->lexer->moveNext();
 
-            $token = &$this->token;
-            $type  = $token['type'] ?? self::T_TEXT;
-            $value = $token['value'] ?? '';
+            $currentToken = \array_merge([
+                'type' => Lexer::T_TEXT,
+                'value' => '',
+            ], $this->lexer->token ?? []);
 
-            // Extract the emoji from the value matched. Even if its converting from one token type to the same
-            // token type, let it continue. This can ensure the correct values are used (i.e. user provided lower
-            // case hexcodes or an aliased shortcode).
-            switch ($type) {
-                case self::T_TEXT:
-                    $text = '';
-                    while (true) {
-                        $text .= $value;
-                        if ($this->lookahead === null || $this->lookahead['type'] !== self::T_TEXT) {
-                            break;
-                        }
-
-                        $value = $this->lookahead['value'] ?? '';
-                        $this->moveNext();
-                    }
-
-                    if ($text) {
-                        $tokens[] = new Text($text);
-                    }
-
-                    break;
-
-                case self::T_EMOTICON:
-                    if ($emoji = $emoticons->offsetGet($value)) {
-                        $tokens[] = new Emoticon($configuration, $value, $emoji);
-                    }
-
-                    break;
-
-                case self::T_HTML_ENTITY:
-                    if ($emoji = $htmlEntities->offsetGet($value)) {
-                        $tokens[] = new HtmlEntity($configuration, $value, $emoji);
-                    }
-
-                    break;
-
-                case self::T_SHORTCODE:
-                    if (
-                        ($shortcode = \current(Normalize::shortcodes($value))) &&
-                        ($emoji = $shortcodes->offsetGet($shortcode))
-                    ) {
-                        $tokens[] = new Shortcode($configuration, $value, $emoji);
-                    }
-
-                    break;
-
-                case self::T_UNICODE:
-                    if ($emoji = $emojis->offsetGet($value) ?: $texts->offsetGet($value)) {
-                        $tokens[] = new Unicode($configuration, $value, $emoji);
-                    }
-
-                    break;
+            $method = self::TYPE_METHODS[$currentToken['type']] ?? null;
+            if ($method && ($token = $this->$method($currentToken['value'])) instanceof AbstractToken) {
+                $tokens[] = $token;
             }
         }
 
         return $tokens;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @return string[]
-     */
-    protected function getCatchablePatterns()
+    protected function parseEmoticon(string $value): ?Emoticon
     {
-        $patterns = [
-            self::CODEPOINT_EMOJI_LOOSE_REGEX,
-            self::HTML_ENTITY_REGEX,
-            $this->configuration->get('native') ? self::SHORTCODE_NATIVE_REGEX : self::SHORTCODE_REGEX,
-        ];
-        if ($this->configuration->get('convertEmoticons')) {
-            $patterns[] = self::EMOTICON_REGEX;
-        }
+        $emoji = $this->dataset->indexBy('emoticon')->offsetGet($value);
 
-        // Some regex patterns from the constants include the delimiter and modifiers. Because the
-        // lexer joins these expressions together as an OR group (|), they must be removed.
-        foreach ($patterns as &$pattern) {
-            $pattern = \trim(\rtrim($pattern, 'imsxeADSUXJu'), '/');
-        }
-
-        return $patterns;
+        // Clone the configuration here. This is necessary so it can be passed to tokens,
+        // which may be rendered at a later time; when the configuration may have changed.
+        return $emoji ? new Emoticon(clone $this->configuration, $value, $emoji) : null;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @return string[]
-     */
-    protected function getNonCatchablePatterns()
+    protected function parseHtmlEntity(string $value): ?HtmlEntity
     {
-        return [];
+        $emoji = $this->dataset->indexBy('htmlEntity')->offsetGet($value);
+
+        // Clone the configuration here. This is necessary so it can be passed to tokens,
+        // which may be rendered at a later time; when the configuration may have changed.
+        $configuration = clone $this->configuration;
+
+        return $emoji ? new HtmlEntity($configuration, $value, $emoji) : null;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @return int
-     *
-     * @noinspection PhpParameterByRefIsNotUsedAsReferenceInspection
-     */
-    protected function getType(&$value)
+    protected function parseShortcode(string $value): ?Shortcode
     {
-        if (\preg_match(self::HTML_ENTITY_REGEX, $value)) {
-            return self::T_HTML_ENTITY;
+        $emoji = $this->dataset->indexBy('shortcodes')->offsetGet(\current(Normalize::shortcodes($value)));
+
+        // Clone the configuration here. This is necessary so it can be passed to tokens,
+        // which may be rendered at a later time; when the configuration may have changed.
+        return $emoji ? new Shortcode(clone $this->configuration, $value, $emoji) : null;
+    }
+
+    protected function parseUnicode(string $value): ?Unicode
+    {
+        $emoji = $this->dataset->indexBy('emoji')->offsetGet($value) ?: $this->dataset->indexBy('text')->offsetGet($value);
+
+        // Clone the configuration here. This is necessary so it can be passed to tokens,
+        // which may be rendered at a later time; when the configuration may have changed.
+        return $emoji ? new Unicode(clone $this->configuration, $value, $emoji) : null;
+    }
+
+    protected function parseText(string $value): ?Text
+    {
+        $text = '';
+        while (true) {
+            $text .= $value;
+            if ($this->lexer->lookahead === null || $this->lexer->lookahead['type'] !== Lexer::T_TEXT) {
+                break;
+            }
+
+            $value = $this->lexer->lookahead['value'] ?? '';
+            $this->lexer->moveNext();
         }
 
-        // @phpstan-ignore-next-line
-        if (\preg_match($this->configuration->get('native') ? self::SHORTCODE_NATIVE_REGEX : self::SHORTCODE_REGEX, $value)) {
-            return self::T_SHORTCODE;
-        }
-
-        if (\preg_match(self::EMOTICON_REGEX, $value)) {
-            return self::T_EMOTICON;
-        }
-
-        if (\preg_match(self::CODEPOINT_EMOJI_LOOSE_REGEX, $value)) {
-            return self::T_UNICODE;
-        }
-
-        return self::T_TEXT;
+        return $text ? new Text($text) : null;
     }
 }

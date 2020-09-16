@@ -6,8 +6,8 @@ namespace UnicornFail\Emoji\Token;
 
 use UnicornFail\Emoji\ConfigurationInterface;
 use UnicornFail\Emoji\Emoji;
-use UnicornFail\Emoji\EmojibaseInterface;
-use UnicornFail\Emoji\Parser;
+use UnicornFail\Emoji\Emojibase\DatasetInterface;
+use UnicornFail\Emoji\Lexer;
 
 abstract class AbstractEmojiToken extends AbstractToken
 {
@@ -18,10 +18,10 @@ abstract class AbstractEmojiToken extends AbstractToken
     private $emoji;
 
     /** @var ?int */
-    private $presentationMode = EmojibaseInterface::EMOJI;
+    private $presentationMode = DatasetInterface::EMOJI;
 
     /** @var int */
-    private $stringableType = Parser::T_UNICODE;
+    private $stringableType = Lexer::T_UNICODE;
 
     public function __construct(ConfigurationInterface $configuration, string $value, Emoji $emoji)
     {
@@ -36,15 +36,15 @@ abstract class AbstractEmojiToken extends AbstractToken
     {
         $emoji = $this->getEmoji();
         switch ($this->stringableType) {
-            case Parser::T_EMOTICON:
+            case Lexer::T_EMOTICON:
                 return $emoji->emoticon ?? $this->getValue();
-            case Parser::T_HTML_ENTITY:
+            case Lexer::T_HTML_ENTITY:
                 return $emoji->htmlEntity ?? $this->getValue();
-            case Parser::T_SHORTCODE:
+            case Lexer::T_SHORTCODE:
                 return $emoji->getShortcode($this->excludedShortcodes, true) ?? $this->getValue();
         }
 
-        if (($this->presentationMode ?? $emoji->type) === EmojibaseInterface::TEXT) {
+        if (($this->presentationMode ?? $emoji->type) === DatasetInterface::TEXT) {
             return $emoji->text ?? $this->getValue();
         }
 

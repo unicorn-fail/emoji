@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace UnicornFail\Emoji;
+namespace UnicornFail\Emoji\Emojibase;
 
 /*!
  * IMPORTANT NOTE!
@@ -14,7 +14,7 @@ namespace UnicornFail\Emoji;
  * DO NOT ATTEMPT TO DIRECTLY MODIFY THIS FILE. ALL MANUAL CHANGES MADE TO THIS FILE
  * WILL BE DESTROYED AUTOMATICALLY THE NEXT TIME IT IS REBUILT.
  */
-interface EmojibaseSkinsInterface
+interface SkinsInterface
 {
     public const DARK_SKIN = 5;
 

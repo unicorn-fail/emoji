@@ -8,6 +8,8 @@ use Dflydev\DotAccessData\Data;
 use Symfony\Component\OptionsResolver\Exception\InvalidOptionsException;
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use UnicornFail\Emoji\Emojibase\DatasetInterface;
+use UnicornFail\Emoji\Emojibase\ShortcodeInterface;
 use UnicornFail\Emoji\Exception\InvalidConfigurationException;
 use UnicornFail\Emoji\Util\Normalize;
 
@@ -47,7 +49,7 @@ class Configuration extends Data implements ConfigurationInterface
     protected static function normalizeLocale(string $locale): string
     {
         // Immediately return if locale is an exact match.
-        if (\in_array($locale, EmojibaseInterface::SUPPORTED_LOCALES, true)) {
+        if (\in_array($locale, DatasetInterface::SUPPORTED_LOCALES, true)) {
             return $locale;
         }
 
@@ -64,7 +66,7 @@ class Configuration extends Data implements ConfigurationInterface
         $locale = \strtolower($locale);
         $locale = \preg_replace('/[^a-z]/', '-', $locale) ?? $locale;
         foreach ([$locale, \current(\explode('-', $locale, 2))] as $locale) {
-            if (\in_array($locale, EmojibaseInterface::SUPPORTED_LOCALES, true)) {
+            if (\in_array($locale, DatasetInterface::SUPPORTED_LOCALES, true)) {
                 $normalized[$original] = $locale;
                 break;
             }
@@ -110,16 +112,16 @@ class Configuration extends Data implements ConfigurationInterface
         $resolver->define('native')
             ->allowedTypes('bool')
             ->default(static function (Options $options): bool {
-                return \in_array($options['locale'], EmojibaseInterface::NON_LATIN_LOCALES, true);
+                return \in_array($options['locale'], DatasetInterface::NON_LATIN_LOCALES, true);
             })
             ->normalize(static function (Options $options, bool $value) {
-                return $value && \in_array($options['locale'], EmojibaseInterface::NON_LATIN_LOCALES, true);
+                return $value && \in_array($options['locale'], DatasetInterface::NON_LATIN_LOCALES, true);
             });
 
         $resolver->define('presentation')
             ->allowedTypes('int', 'null')
-            ->allowedValues(...EmojibaseInterface::SUPPORTED_PRESENTATIONS)
-            ->default(EmojibaseInterface::EMOJI);
+            ->allowedValues(...DatasetInterface::SUPPORTED_PRESENTATIONS)
+            ->default(DatasetInterface::EMOJI);
 
         $resolver->define('preset')
             ->allowedTypes('string', 'string[]')
@@ -129,13 +131,13 @@ class Configuration extends Data implements ConfigurationInterface
                  */
                 static function ($value): bool {
                     foreach ((array) $value as $v) {
-                        if (! \in_array($v, EmojibaseShortcodeInterface::SUPPORTED_PRESETS, true)) {
+                        if (! \in_array($v, ShortcodeInterface::SUPPORTED_PRESETS, true)) {
                             throw new InvalidOptionsException(\sprintf(
                                 'The option "preset" with value "%s" is invalid. Accepted values are: %s.',
                                 $v,
                                 \implode(', ', \array_map(static function ($s) {
                                     return \sprintf('"%s"', $s);
-                                }, EmojibaseShortcodeInterface::SUPPORTED_PRESETS))
+                                }, ShortcodeInterface::SUPPORTED_PRESETS))
                             ));
                         }
                     }
@@ -143,7 +145,7 @@ class Configuration extends Data implements ConfigurationInterface
                     return true;
                 }
             )
-            ->default(EmojibaseShortcodeInterface::DEFAULT_PRESETS)
+            ->default(ShortcodeInterface::DEFAULT_PRESETS)
             ->normalize(
                 /**
                  * @param mixed $value
@@ -154,16 +156,16 @@ class Configuration extends Data implements ConfigurationInterface
                     // Presets.
                     $presets = [];
                     foreach ((array) $value as $preset) {
-                        if (isset(EmojibaseShortcodeInterface::PRESET_ALIASES[$preset])) {
-                            $presets[] = EmojibaseShortcodeInterface::PRESET_ALIASES[$preset];
-                        } elseif (isset(EmojibaseShortcodeInterface::PRESETS[$preset])) {
-                            $presets[] = EmojibaseShortcodeInterface::PRESETS[$preset];
+                        if (isset(ShortcodeInterface::PRESET_ALIASES[$preset])) {
+                            $presets[] = ShortcodeInterface::PRESET_ALIASES[$preset];
+                        } elseif (isset(ShortcodeInterface::PRESETS[$preset])) {
+                            $presets[] = ShortcodeInterface::PRESETS[$preset];
                         }
                     }
 
                     // Prepend the native preset if local is requires it and enabled.
                     if ($options['native']) {
-                        \array_unshift($presets, EmojibaseShortcodeInterface::PRESET_CLDR_NATIVE);
+                        \array_unshift($presets, ShortcodeInterface::PRESET_CLDR_NATIVE);
                     }
 
                     return \array_values(\array_unique($presets));
@@ -172,8 +174,8 @@ class Configuration extends Data implements ConfigurationInterface
 
         $resolver->define('stringableType')
             ->allowedTypes('int')
-            ->allowedValues(Parser::T_EMOTICON, Parser::T_HTML_ENTITY, Parser::T_SHORTCODE, Parser::T_UNICODE)
-            ->default(Parser::T_UNICODE);
+            ->allowedValues(Lexer::T_EMOTICON, Lexer::T_HTML_ENTITY, Lexer::T_SHORTCODE, Lexer::T_UNICODE)
+            ->default(Lexer::T_UNICODE);
     }
 
     public function getIterator(): \ArrayObject

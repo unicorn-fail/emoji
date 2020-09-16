@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace UnicornFail\Emoji;
 
+use UnicornFail\Emoji\Emojibase\DatasetInterface;
+use UnicornFail\Emoji\Emojibase\SkinsInterface;
 use UnicornFail\Emoji\Util\ImmutableArrayIterator;
 use UnicornFail\Emoji\Util\Normalize;
 
@@ -92,7 +94,7 @@ final class Emoji extends ImmutableArrayIterator implements \Stringable
         return $exclude ? \array_diff($shortcodes, $exclude) : $shortcodes;
     }
 
-    public function getSkin(int $tone = EmojibaseSkinsInterface::LIGHT_SKIN): ?Emoji
+    public function getSkin(int $tone = SkinsInterface::LIGHT_SKIN): ?Emoji
     {
         return \current(
             $this->skins->filter(
@@ -105,6 +107,6 @@ final class Emoji extends ImmutableArrayIterator implements \Stringable
 
     public function getUnicode(): ?string
     {
-        return $this->type === EmojibaseInterface::EMOJI && ($emoji = $this->emoji) ? $emoji : $this->text;
+        return $this->type === DatasetInterface::EMOJI && ($emoji = $this->emoji) ? $emoji : $this->text;
     }
 }

@@ -7,10 +7,10 @@ namespace UnicornFail\Emoji\Tests\Unit;
 use PHPStan\Testing\TestCase;
 use UnicornFail\Emoji\Converter;
 use UnicornFail\Emoji\Dataset;
-use UnicornFail\Emoji\EmojibaseInterface;
-use UnicornFail\Emoji\EmojibaseShortcodeInterface;
+use UnicornFail\Emoji\Emojibase\DatasetInterface;
+use UnicornFail\Emoji\Emojibase\ShortcodeInterface;
 use UnicornFail\Emoji\Exception\LocalePresetException;
-use UnicornFail\Emoji\Parser;
+use UnicornFail\Emoji\Lexer;
 
 class ConverterTest extends TestCase
 {
@@ -34,10 +34,10 @@ class ConverterTest extends TestCase
     public function providerEncodings(): array
     {
         $data                  = [];
-        $data['T_EMOTICON']    = [Parser::T_EMOTICON, self::ENCODINGS['en']['raw']];
-        $data['T_HTML_ENTITY'] = [Parser::T_HTML_ENTITY, self::ENCODINGS['en']['html']];
-        $data['T_SHORTCODE']   = [Parser::T_SHORTCODE, self::ENCODINGS['en']['shortcode']];
-        $data['T_UNICODE']     = [Parser::T_UNICODE, self::ENCODINGS['en']['unicode']];
+        $data['T_EMOTICON']    = [Lexer::T_EMOTICON, self::ENCODINGS['en']['raw']];
+        $data['T_HTML_ENTITY'] = [Lexer::T_HTML_ENTITY, self::ENCODINGS['en']['html']];
+        $data['T_SHORTCODE']   = [Lexer::T_SHORTCODE, self::ENCODINGS['en']['shortcode']];
+        $data['T_UNICODE']     = [Lexer::T_UNICODE, self::ENCODINGS['en']['unicode']];
 
         return $data;
     }
@@ -48,8 +48,8 @@ class ConverterTest extends TestCase
     public function providerLocalPresets(): array
     {
         $data = [];
-        foreach (EmojibaseInterface::SUPPORTED_LOCALES as $locale) {
-            foreach (EmojibaseShortcodeInterface::PRESETS as $preset) {
+        foreach (DatasetInterface::SUPPORTED_LOCALES as $locale) {
+            foreach (ShortcodeInterface::PRESETS as $preset) {
                 $label = \sprintf('%s:%s', $locale, $preset);
                 if (\file_exists(\sprintf('%s/%s/%s.gz', Dataset::DIRECTORY, $locale, $preset))) {
                     $data[$label] = [$locale, $preset];
@@ -73,9 +73,9 @@ class ConverterTest extends TestCase
     {
         $data              = [];
         $data['-default-'] = [[], ':smiling-face:', '☺️'];
-        $data['AUTO']      = [['presentation' => EmojibaseInterface::AUTO], ':smiling-face:', '☺︎'];
-        $data['EMOJI']     = [['presentation' => EmojibaseInterface::EMOJI], ':smiling-face:', '☺️'];
-        $data['TEXT']      = [['presentation' => EmojibaseInterface::TEXT], ':smiling-face:', '☺︎'];
+        $data['AUTO']      = [['presentation' => DatasetInterface::AUTO], ':smiling-face:', '☺︎'];
+        $data['EMOJI']     = [['presentation' => DatasetInterface::EMOJI], ':smiling-face:', '☺️'];
+        $data['TEXT']      = [['presentation' => DatasetInterface::TEXT], ':smiling-face:', '☺︎'];
 
         return $data;
     }
@@ -86,14 +86,14 @@ class ConverterTest extends TestCase
     public function providerShortcodePresets(): array
     {
         $data = [];
-        foreach (EmojibaseShortcodeInterface::PRESETS as $preset) {
+        foreach (ShortcodeInterface::PRESETS as $preset) {
             $file = \sprintf('%s/../fixtures/%s.md', __DIR__, $preset);
             if (\file_exists($file) && ($contents = \file_get_contents($file))) {
                 $data[$preset] = [$preset, $contents];
             }
         }
 
-        foreach (EmojibaseShortcodeInterface::PRESET_ALIASES as $alias => $preset) {
+        foreach (ShortcodeInterface::PRESET_ALIASES as $alias => $preset) {
             $file = \sprintf('%s/../fixtures/%s.md', __DIR__, $preset);
             if (\file_exists($file) && ($contents = \file_get_contents($file))) {
                 $data[$alias] = [$alias, $contents];
@@ -118,19 +118,19 @@ class ConverterTest extends TestCase
         $converter = new Converter();
         $actual    = null;
         switch ($tokenType) {
-            case Parser::T_EMOTICON:
+            case Lexer::T_EMOTICON:
                 $actual = $converter->convertToEmoticon(self::ENCODINGS['en']['raw']);
                 break;
 
-            case Parser::T_HTML_ENTITY:
+            case Lexer::T_HTML_ENTITY:
                 $actual = $converter->convertToHtml(self::ENCODINGS['en']['raw']);
                 break;
 
-            case Parser::T_SHORTCODE:
+            case Lexer::T_SHORTCODE:
                 $actual = $converter->convertToShortcode(self::ENCODINGS['en']['raw']);
                 break;
 
-            case Parser::T_UNICODE:
+            case Lexer::T_UNICODE:
                 $actual = $converter->convertToUnicode(self::ENCODINGS['en']['raw']);
                 break;
         }
@@ -176,7 +176,7 @@ class ConverterTest extends TestCase
                 'excludeShortcodes' => ['mobile-phone'],
             ]
         );
-        $this->assertEquals(':iphone:', $converter->convert('📱', Parser::T_SHORTCODE));
+        $this->assertEquals(':iphone:', $converter->convert('📱', Lexer::T_SHORTCODE));
     }
 
     /**
@@ -212,7 +212,7 @@ class ConverterTest extends TestCase
     {
         $converter = Converter::create(['preset' => $preset]);
         $expected  = \file_get_contents(__DIR__ . '/../fixtures/unicode.md');
-        $actual    = $converter->convert($contents, Parser::T_UNICODE);
+        $actual    = $converter->convert($contents, Lexer::T_UNICODE);
         $this->assertEquals($expected, $actual);
     }
 
@@ -223,7 +223,7 @@ class ConverterTest extends TestCase
     {
         $converter = Converter::create(['preset' => $preset]);
         $contents  = \file_get_contents(__DIR__ . '/../fixtures/unicode.md');
-        $actual    = $converter->convert($contents, Parser::T_SHORTCODE);
+        $actual    = $converter->convert($contents, Lexer::T_SHORTCODE);
         $this->assertEquals($expected, $actual);
     }
 }

@@ -6,7 +6,7 @@ namespace UnicornFail\Emoji\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
 use UnicornFail\Emoji\Configuration;
-use UnicornFail\Emoji\EmojibaseShortcodeInterface;
+use UnicornFail\Emoji\Emojibase\ShortcodeInterface;
 use UnicornFail\Emoji\Exception\InvalidConfigurationException;
 
 class ConfigurationTest extends TestCase
@@ -154,7 +154,7 @@ class ConfigurationTest extends TestCase
         }
 
         // Valid presets.
-        foreach (EmojibaseShortcodeInterface::SUPPORTED_PRESETS as $value) {
+        foreach (ShortcodeInterface::SUPPORTED_PRESETS as $value) {
             $name   = 'preset';
             $label  = $this->datasetLabel($name, $value);
             $native = \strpos($value, 'native') !== false;
@@ -167,8 +167,8 @@ class ConfigurationTest extends TestCase
 
             $expected = [
                 $name => \array_values(\array_unique(\array_filter([
-                    $native ? EmojibaseShortcodeInterface::PRESET_CLDR_NATIVE : null,
-                    EmojibaseShortcodeInterface::PRESET_ALIASES[$value] ?? $value,
+                    $native ? ShortcodeInterface::PRESET_CLDR_NATIVE : null,
+                    ShortcodeInterface::PRESET_ALIASES[$value] ?? $value,
                 ]))),
             ];
 
@@ -181,7 +181,7 @@ class ConfigurationTest extends TestCase
             $label     = $this->datasetLabel($name, $value);
             $config    = [$name => $value];
             $expected  = [];
-            $exception = $this->createInvalidOptionException($name, $value, EmojibaseShortcodeInterface::SUPPORTED_PRESETS);
+            $exception = $this->createInvalidOptionException($name, $value, ShortcodeInterface::SUPPORTED_PRESETS);
 
             $data[$label] = [$config, $expected, $exception];
         }

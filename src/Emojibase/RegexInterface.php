@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace UnicornFail\Emoji;
+namespace UnicornFail\Emoji\Emojibase;
 
 /*!
  * IMPORTANT NOTE!
@@ -14,7 +14,7 @@ namespace UnicornFail\Emoji;
  * DO NOT ATTEMPT TO DIRECTLY MODIFY THIS FILE. ALL MANUAL CHANGES MADE TO THIS FILE
  * WILL BE DESTROYED AUTOMATICALLY THE NEXT TIME IT IS REBUILT.
  */
-interface EmojibaseRegexInterface
+interface RegexInterface
 {
     public const CODEPOINT_EMOJI_LOOSE_REGEX = '/\x{1F468}\x{200D}\x{2764}\x{FE0F}\x{200D}\x{1F48B}\x{200D}\x{1F46' .
         '8}|\x{1F469}\x{200D}\x{2764}\x{FE0F}\x{200D}\x{1F48B}\x{200D}[\x{1F468}\x{1F469}]|\x{1F3F4}\x{E0067}\x{E0' .
@@ -782,6 +782,8 @@ interface EmojibaseRegexInterface
         '{])|X(?:\-[\(DOP\[\{]|[\(DOP\[\{])|<\/?3|[:=]\{/';
 
     public const HTML_ENTITY_REGEX = '/&#x?[a-zA-Z0-9]*?;/';
+
+    public const SEQUENCE_REMOVAL_PATTERN = '/200D|FE0E|FE0F/g';
 
     public const SHORTCODE_NATIVE_REGEX = '/:([\d+_\x{4E00}-\x{9FFF}-]|[\d+_\x{3000}-\x{30FF}-]|[\d+_\x{1100}-\x{1' .
         '1FF}\x{3130}-\x{318F}\x{A960}-\x{A97F}\x{AC00}-\x{D7FF}-]|[\d+_\x{0E00}-\x{0E7F}-]|[\d+_a-z\x{0400}-\x{05' .

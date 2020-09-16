@@ -7,14 +7,14 @@ const BASE_DIRECTORY = __DIR__ . '/../';
 require_once BASE_DIRECTORY . '/vendor/autoload.php';
 
 use UnicornFail\Emoji\Dataset;
-use UnicornFail\Emoji\EmojibaseInterface;
-use UnicornFail\Emoji\EmojibaseShortcodeInterface;
+use UnicornFail\Emoji\Emojibase\DatasetInterface;
+use UnicornFail\Emoji\Emojibase\ShortcodeInterface;
 use UnicornFail\Emoji\Util\Normalize;
 
 const BUILD_DIRECTORY          = BASE_DIRECTORY . '/build';
 const EMOJIBASE_DATA_DIRECTORY = BASE_DIRECTORY . '/node_modules/emojibase-data';
 
-if (! is_dir(EMOJIBASE_DATA_DIRECTORY) || ! interface_exists(EmojibaseInterface::class)) {
+if (! is_dir(EMOJIBASE_DATA_DIRECTORY) || ! interface_exists(DatasetInterface::class)) {
     throw new \RuntimeException('You must first run `npm install && npm run build` to build the datasets.');
 }
 
@@ -86,8 +86,8 @@ if (is_dir(Dataset::DIRECTORY)) {
 $baseDirectory = realpath(BASE_DIRECTORY);
 
 // Archive datasets.
-foreach (EmojibaseInterface::SUPPORTED_LOCALES as $locale) {
-    foreach (EmojibaseShortcodeInterface::PRESETS as $preset) {
+foreach (DatasetInterface::SUPPORTED_LOCALES as $locale) {
+    foreach (ShortcodeInterface::PRESETS as $preset) {
         // Skip presets that don't exist.
         $file = sprintf('%s/%s/shortcodes/%s.json', EMOJIBASE_DATA_DIRECTORY, $locale, $preset);
         if (! file_exists($file) || ! ($c = file_get_contents($file)) || ! ($shortcodes = json_decode($c, true))) {

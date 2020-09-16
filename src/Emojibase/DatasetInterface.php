@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace UnicornFail\Emoji;
+namespace UnicornFail\Emoji\Emojibase;
 
 /*!
  * IMPORTANT NOTE!
@@ -14,23 +14,11 @@ namespace UnicornFail\Emoji;
  * DO NOT ATTEMPT TO DIRECTLY MODIFY THIS FILE. ALL MANUAL CHANGES MADE TO THIS FILE
  * WILL BE DESTROYED AUTOMATICALLY THE NEXT TIME IT IS REBUILT.
  */
-interface EmojibaseInterface
+interface DatasetInterface
 {
     public const AUTO = null;
 
     public const EMOJI = 1;
-
-    public const EMOJI_VERSIONS = [
-        '1.0',
-        '2.0',
-        '3.0',
-        '4.0',
-        '5.0',
-        '11.0',
-        '12.0',
-        '12.1',
-        '13.0',
-    ];
 
     public const FEMALE = 0;
 
@@ -58,8 +46,6 @@ interface EmojibaseInterface
         'zh',
         'zh-hant',
     ];
-
-    public const SEQUENCE_REMOVAL_PATTERN = '/200D|FE0E|FE0F/g';
 
     public const SUPPORTED_LOCALES = [
         'da',

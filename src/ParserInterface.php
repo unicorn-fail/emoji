@@ -4,20 +4,11 @@ declare(strict_types=1);
 
 namespace UnicornFail\Emoji;
 
+use UnicornFail\Emoji\Emojibase\RegexInterface;
 use UnicornFail\Emoji\Token\AbstractToken;
 
-interface ParserInterface extends EmojibaseRegexInterface
+interface ParserInterface extends RegexInterface
 {
-    public const T_TEXT = 0;
-
-    public const T_EMOTICON = 1;
-
-    public const T_HTML_ENTITY = 2;
-
-    public const T_SHORTCODE = 3;
-
-    public const T_UNICODE = 4;
-
     public const INDICES = ['emoji', 'emoticon', 'htmlEntity', 'shortcodes', 'text'];
 
     /**

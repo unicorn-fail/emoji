@@ -27,8 +27,8 @@ shortcodes to proper unicode characters (emojis):
 
 ```php
 use UnicornFail\Emoji\Converter;
-use UnicornFail\Emoji\EmojibaseInterface;
-use UnicornFail\Emoji\EmojibaseShortcodeInterface;
+use UnicornFail\Emoji\Emojibase\DatasetInterface;
+use UnicornFail\Emoji\Emojibase\ShortcodeInterface;
 
 // Default configuration.
 $configuration = [
@@ -36,8 +36,8 @@ $configuration = [
     'excludeShortcodes' => [],
     'locale'            => 'en',
     'native'            => null, // auto, true or false depending on locale set.
-    'presentation'      => EmojibaseInterface::EMOJI,
-    'preset'            => EmojibaseShortcodeInterface::DEFAULT_PRESETS,
+    'presentation'      => DatasetInterface::EMOJI,
+    'preset'            => ShortcodeInterface::DEFAULT_PRESETS,
 ];
 
 $converter = new Converter($configuration);

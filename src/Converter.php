@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace UnicornFail\Emoji;
 
+use UnicornFail\Emoji\Emojibase\ShortcodeInterface;
 use UnicornFail\Emoji\Exception\LocalePresetException;
 use UnicornFail\Emoji\Token\AbstractEmojiToken;
 
@@ -46,7 +47,7 @@ final class Converter
         $tokens = $this->getParser()->parse($input);
 
         // Ensure tokens are set to the correct stringable type.
-        if ($type && $type !== $stringableType) {
+        if ($type !== null && $type !== $stringableType) {
             foreach (AbstractEmojiToken::filter($tokens) as $token) {
                 $token->setStringableType($type);
             }
@@ -57,28 +58,28 @@ final class Converter
 
     public function convertToEmoticon(string $input): string
     {
-        return $this->convert($input, Parser::T_EMOTICON);
+        return $this->convert($input, Lexer::T_EMOTICON);
     }
 
     public function convertToHtml(string $input): string
     {
-        return $this->convert($input, Parser::T_HTML_ENTITY);
+        return $this->convert($input, Lexer::T_HTML_ENTITY);
     }
 
     public function convertToShortcode(string $input): string
     {
-        return $this->convert($input, Parser::T_SHORTCODE);
+        return $this->convert($input, Lexer::T_SHORTCODE);
     }
 
     public function convertToUnicode(string $input): string
     {
-        return $this->convert($input, Parser::T_UNICODE);
+        return $this->convert($input, Lexer::T_UNICODE);
     }
 
     /**
      * @param string[] $presets
      */
-    protected static function loadLocalePreset(string $locale = 'en', array $presets = EmojibaseShortcodeInterface::DEFAULT_PRESETS): Dataset
+    protected static function loadLocalePreset(string $locale = 'en', array $presets = ShortcodeInterface::DEFAULT_PRESETS): Dataset
     {
         $throwables = [];
         $presets    = \array_filter($presets);

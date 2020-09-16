@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace UnicornFail\Emoji;
 
 use UnicornFail\Emoji\Exception\FileNotFoundException;
+use UnicornFail\Emoji\Exception\MalformedArchiveException;
 use UnicornFail\Emoji\Exception\UnarchiveException;
 
 final class Dataset extends ImmutableArrayIterator
@@ -30,25 +31,25 @@ final class Dataset extends ImmutableArrayIterator
         $dataset = [];
         foreach ($emojis as $emoji) {
             if (\is_array($emoji) && isset($emoji[$index])) {
-                $emoji = Emoji::create($emoji);
+                $emoji = new Emoji($emoji);
             }
 
             if (! $emoji instanceof Emoji) {
                 throw new \RuntimeException(\sprintf('Passed array item must be an instance of %s.', Emoji::class));
             }
 
-            $keys = \array_filter((array) $emoji[$index]);
+            $keys = \array_filter((array) $emoji->$index);
             foreach ($keys as $k) {
                 if (isset($dataset[$k])) {
                     continue;
                 }
 
                 $dataset[$k] = $emoji;
-                foreach ($emoji->getSkins() as $skin) {
-                    $skinKeys = \array_filter((array) $skin[$index]);
+                foreach ($emoji->skins as &$skin) {
+                    $skinKeys = \array_filter((array) $skin->$index);
                     foreach ($skinKeys as $sk) {
                         if (! isset($dataset[$sk])) {
-                            $dataset[$sk] = $skin;
+                            $dataset[$sk] = &$skin;
                         }
                     }
                 }
@@ -66,10 +67,19 @@ final class Dataset extends ImmutableArrayIterator
 
         if (
             ! ($contents = \file_get_contents($filename)) ||
-            ! ($decoded = \gzdecode($contents)) ||
-            ! ($dataset = \unserialize($decoded))
+            ! ($decoded = \gzdecode($contents))
         ) {
             throw new UnarchiveException($filename);
+        }
+
+        try {
+            $dataset = \unserialize($decoded);
+        } catch (\Throwable $throwable) {
+            throw new MalformedArchiveException($filename, $throwable);
+        }
+
+        if (! $dataset instanceof Dataset) {
+            throw new MalformedArchiveException($filename);
         }
 
         return $dataset;
@@ -86,7 +96,9 @@ final class Dataset extends ImmutableArrayIterator
             $this->indexBy($index);
         }
 
-        return \gzencode(\serialize($this), 9);
+        $serialize = \serialize($this);
+
+        return \gzencode($serialize, 9);
     }
 
     public function filter(callable $callback): Dataset

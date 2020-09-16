@@ -120,9 +120,9 @@ class EmojiTest extends TestCase
     {
         $emoji = new Emoji($data);
         $this->assertTrue($emoji instanceof Emoji);
-        foreach ($expectedData as $method => $expected) {
-            switch ($method) {
-                case 'getSkin':
+        foreach ($expectedData as $property => $expected) {
+            switch ($property) {
+                case 'skin':
                     if (isset($data['skins']) && \count($data['skins']) > 0) {
                         $expectedTone      = (int) $expectedData;
                         $expectedToneEmoji = null;
@@ -131,31 +131,31 @@ class EmojiTest extends TestCase
                         }
 
                         $actualToneEmoji = $emoji->getSkin($expectedTone);
-                        $this->assertTrue($actualToneEmoji instanceof Emoji, $method);
-                        $this->assertEquals($expectedToneEmoji->toArray(), $actualToneEmoji->toArray(), $method);
+                        $this->assertTrue($actualToneEmoji instanceof Emoji, $property);
+                        $this->assertEquals($expectedToneEmoji->getArrayCopy(), $actualToneEmoji->getArrayCopy(), $property);
                     } else {
-                        $this->assertSame($expected, $emoji->$method(), $method);
+                        $this->assertSame($expected, $emoji->$property, $property);
                     }
 
                     break;
 
-                case 'getSkins':
-                    $actualSkins = \array_map('iterator_to_array', $emoji->getSkins()->getArrayCopy());
+                case 'skins':
+                    $actualSkins = \array_map('iterator_to_array', $emoji->skins->getArrayCopy());
 
-                    if (isset($expectedData['getSkins']) && \count($expectedData['getSkins']) > 0) {
+                    if (isset($expectedData['skins']) && \count($expectedData['skins']) > 0) {
                         $skinData      = isset($data['skins']) ? (array) $data['skins'] : [];
-                        $expectedSkins = isset($expectedData['getSkins']) ? (array) $expectedData['getSkins'] : [];
+                        $expectedSkins = isset($expectedData['skins']) ? (array) $expectedData['skins'] : [];
                         foreach ($expectedSkins as $expectedSkinData) {
                             $this->assertEmojiData(\array_shift($skinData), $expectedSkinData);
                         }
                     } else {
-                        $this->assertSame($expected, $actualSkins, $method);
+                        $this->assertSame($expected, $actualSkins, $property);
                     }
 
                     break;
 
                 default:
-                    $this->assertSame($expected, $emoji->$method(), $method);
+                    $this->assertSame($expected, $emoji->$property, $property);
             }
         }
     }
@@ -168,163 +168,163 @@ class EmojiTest extends TestCase
         $data['grinning face'] = [
             self::GRINNING_FACE,
             [
-                'getAnnotation' => 'grinning face',
-                'getEmoji'      => '😀',
-                'getEmoticon'   => ':D',
-                'getGender'     => null,
-                'getGroup'      => 0,
-                'getHexcode'    => '1F600',
-                'getHtmlEntity' => '&#x1F600;',
-                'getOrder'      => 1,
-                'getShortcode'  => 'grinning-face',
-                'getShortcodes' => ['grinning-face'],
-                'getSkin'       => null,
-                'getSkins'      => [],
-                'getSubgroup'   => 0,
-                'getTags'       => [
+                'annotation' => 'grinning face',
+                'emoji'      => '😀',
+                'emoticon'   => ':D',
+                'gender'     => null,
+                'group'      => 0,
+                'hexcode'    => '1F600',
+                'htmlEntity' => '&#x1F600;',
+                'order'      => 1,
+                'shortcode'  => 'grinning-face',
+                'shortcodes' => ['grinning-face'],
+                'skin'       => null,
+                'skins'      => [],
+                'subgroup'   => 0,
+                'tags'       => [
                     'face',
                     'grin',
                 ],
-                'getText'       => null,
-                'getTone'       => [],
-                'getType'       => 1,
-                'getUnicode'    => '😀',
-                'getVersion'    => 1.0,
+                'text'       => null,
+                'tone'       => [],
+                'type'       => 1,
+                'unicode'    => '😀',
+                'version'    => 1.0,
             ],
         ];
 
         $data['waving hand'] = [
             self::WAVING_HAND,
             [
-                'getAnnotation' => 'waving hand',
-                'getEmoji'      => '👋',
-                'getEmoticon'   => null,
-                'getGender'     => null,
-                'getGroup'      => 1,
-                'getHexcode'    => '1F44B',
-                'getHtmlEntity' => '&#x1F44B;',
-                'getOrder'      => 163,
-                'getShortcode'  => 'waving-hand',
-                'getShortcodes' => ['waving-hand'],
-                'getSkin'       => 1,
-                'getSkins'      => [
+                'annotation' => 'waving hand',
+                'emoji'      => '👋',
+                'emoticon'   => null,
+                'gender'     => null,
+                'group'      => 1,
+                'hexcode'    => '1F44B',
+                'htmlEntity' => '&#x1F44B;',
+                'order'      => 163,
+                'shortcode'  => 'waving-hand',
+                'shortcodes' => ['waving-hand'],
+                'skin'       => 1,
+                'skins'      => [
                     [
-                        'getAnnotation' => 'waving hand: light skin tone',
-                        'getEmoji'      => '👋🏻',
-                        'getEmoticon'   => null,
-                        'getGender'     => null,
-                        'getGroup'      => 1,
-                        'getHexcode'    => '1F44B-1F3FB',
-                        'getHtmlEntity' => '&#x1F44B;&#x1F3FB;',
-                        'getOrder'      => 164,
-                        'getShortcode'  => 'waving-hand-tone1',
-                        'getShortcodes' => ['waving-hand-tone1'],
-                        'getSkin'       => null,
-                        'getSkins'      => [],
-                        'getSubgroup'   => 15,
-                        'getTags'       => [],
-                        'getText'       => null,
-                        'getTone'       => [1],
-                        'getType'       => 1,
-                        'getUnicode'    => '👋🏻',
-                        'getVersion'    => 1.0,
+                        'annotation' => 'waving hand: light skin tone',
+                        'emoji'      => '👋🏻',
+                        'emoticon'   => null,
+                        'gender'     => null,
+                        'group'      => 1,
+                        'hexcode'    => '1F44B-1F3FB',
+                        'htmlEntity' => '&#x1F44B;&#x1F3FB;',
+                        'order'      => 164,
+                        'shortcode'  => 'waving-hand-tone1',
+                        'shortcodes' => ['waving-hand-tone1'],
+                        'skin'       => null,
+                        'skins'      => [],
+                        'subgroup'   => 15,
+                        'tags'       => [],
+                        'text'       => null,
+                        'tone'       => [1],
+                        'type'       => 1,
+                        'unicode'    => '👋🏻',
+                        'version'    => 1.0,
                     ],
                     [
-                        'getAnnotation' => 'waving hand: medium-light skin tone',
-                        'getEmoji'      => '👋🏼',
-                        'getEmoticon'   => null,
-                        'getGender'     => null,
-                        'getGroup'      => 1,
-                        'getHexcode'    => '1F44B-1F3FC',
-                        'getHtmlEntity' => '&#x1F44B;&#x1F3FC;',
-                        'getOrder'      => 165,
-                        'getShortcode'  => 'waving-hand-tone2',
-                        'getShortcodes' => ['waving-hand-tone2'],
-                        'getSkin'       => null,
-                        'getSkins'      => [],
-                        'getSubgroup'   => 15,
-                        'getTags'       => [],
-                        'getText'       => null,
-                        'getTone'       => [2],
-                        'getType'       => 1,
-                        'getUnicode'    => '👋🏼',
-                        'getVersion'    => 1.0,
+                        'annotation' => 'waving hand: medium-light skin tone',
+                        'emoji'      => '👋🏼',
+                        'emoticon'   => null,
+                        'gender'     => null,
+                        'group'      => 1,
+                        'hexcode'    => '1F44B-1F3FC',
+                        'htmlEntity' => '&#x1F44B;&#x1F3FC;',
+                        'order'      => 165,
+                        'shortcode'  => 'waving-hand-tone2',
+                        'shortcodes' => ['waving-hand-tone2'],
+                        'skin'       => null,
+                        'skins'      => [],
+                        'subgroup'   => 15,
+                        'tags'       => [],
+                        'text'       => null,
+                        'tone'       => [2],
+                        'type'       => 1,
+                        'unicode'    => '👋🏼',
+                        'version'    => 1.0,
                     ],
                     [
-                        'getAnnotation' => 'waving hand: medium skin tone',
-                        'getEmoji'      => '👋🏽',
-                        'getEmoticon'   => null,
-                        'getGender'     => null,
-                        'getGroup'      => 1,
-                        'getHexcode'    => '1F44B-1F3FD',
-                        'getHtmlEntity' => '&#x1F44B;&#x1F3FD;',
-                        'getOrder'      => 166,
-                        'getShortcode'  => 'waving-hand-tone3',
-                        'getShortcodes' => ['waving-hand-tone3'],
-                        'getSkin'       => null,
-                        'getSkins'      => [],
-                        'getSubgroup'   => 15,
-                        'getTags'       => [],
-                        'getText'       => null,
-                        'getTone'       => [3],
-                        'getType'       => 1,
-                        'getUnicode'    => '👋🏽',
-                        'getVersion'    => 1.0,
+                        'annotation' => 'waving hand: medium skin tone',
+                        'emoji'      => '👋🏽',
+                        'emoticon'   => null,
+                        'gender'     => null,
+                        'group'      => 1,
+                        'hexcode'    => '1F44B-1F3FD',
+                        'htmlEntity' => '&#x1F44B;&#x1F3FD;',
+                        'order'      => 166,
+                        'shortcode'  => 'waving-hand-tone3',
+                        'shortcodes' => ['waving-hand-tone3'],
+                        'skin'       => null,
+                        'skins'      => [],
+                        'subgroup'   => 15,
+                        'tags'       => [],
+                        'text'       => null,
+                        'tone'       => [3],
+                        'type'       => 1,
+                        'unicode'    => '👋🏽',
+                        'version'    => 1.0,
                     ],
                     [
-                        'getAnnotation' => 'waving hand: medium-dark skin tone',
-                        'getEmoji'      => '👋🏾',
-                        'getEmoticon'   => null,
-                        'getGender'     => null,
-                        'getGroup'      => 1,
-                        'getHexcode'    => '1F44B-1F3FE',
-                        'getHtmlEntity' => '&#x1F44B;&#x1F3FE;',
-                        'getOrder'      => 167,
-                        'getShortcode'  => 'waving-hand-tone4',
-                        'getShortcodes' => ['waving-hand-tone4'],
-                        'getSkin'       => null,
-                        'getSkins'      => [],
-                        'getSubgroup'   => 15,
-                        'getTags'       => [],
-                        'getText'       => null,
-                        'getTone'       => [4],
-                        'getType'       => 1,
-                        'getUnicode'    => '👋🏾',
-                        'getVersion'    => 1.0,
+                        'annotation' => 'waving hand: medium-dark skin tone',
+                        'emoji'      => '👋🏾',
+                        'emoticon'   => null,
+                        'gender'     => null,
+                        'group'      => 1,
+                        'hexcode'    => '1F44B-1F3FE',
+                        'htmlEntity' => '&#x1F44B;&#x1F3FE;',
+                        'order'      => 167,
+                        'shortcode'  => 'waving-hand-tone4',
+                        'shortcodes' => ['waving-hand-tone4'],
+                        'skin'       => null,
+                        'skins'      => [],
+                        'subgroup'   => 15,
+                        'tags'       => [],
+                        'text'       => null,
+                        'tone'       => [4],
+                        'type'       => 1,
+                        'unicode'    => '👋🏾',
+                        'version'    => 1.0,
                     ],
                     [
-                        'getAnnotation' => 'waving hand: dark skin tone',
-                        'getEmoji'      => '👋🏿',
-                        'getEmoticon'   => null,
-                        'getGender'     => null,
-                        'getGroup'      => 1,
-                        'getHexcode'    => '1F44B-1F3FF',
-                        'getHtmlEntity' => '&#x1F44B;&#x1F3FF;',
-                        'getOrder'      => 168,
-                        'getShortcode'  => 'waving-hand-tone5',
-                        'getShortcodes' => ['waving-hand-tone5'],
-                        'getSkin'       => null,
-                        'getSkins'      => [],
-                        'getSubgroup'   => 15,
-                        'getTags'       => [],
-                        'getText'       => null,
-                        'getTone'       => [5],
-                        'getType'       => 1,
-                        'getUnicode'    => '👋🏿',
-                        'getVersion'    => 1.0,
+                        'annotation' => 'waving hand: dark skin tone',
+                        'emoji'      => '👋🏿',
+                        'emoticon'   => null,
+                        'gender'     => null,
+                        'group'      => 1,
+                        'hexcode'    => '1F44B-1F3FF',
+                        'htmlEntity' => '&#x1F44B;&#x1F3FF;',
+                        'order'      => 168,
+                        'shortcode'  => 'waving-hand-tone5',
+                        'shortcodes' => ['waving-hand-tone5'],
+                        'skin'       => null,
+                        'skins'      => [],
+                        'subgroup'   => 15,
+                        'tags'       => [],
+                        'text'       => null,
+                        'tone'       => [5],
+                        'type'       => 1,
+                        'unicode'    => '👋🏿',
+                        'version'    => 1.0,
                     ],
                 ],
-                'getSubgroup'   => 15,
-                'getTags'       => [
+                'subgroup'   => 15,
+                'tags'       => [
                     'hand',
                     'wave',
                     'waving',
                 ],
-                'getText'       => null,
-                'getTone'       => [],
-                'getType'       => 1,
-                'getUnicode'    => '👋',
-                'getVersion'    => 0.6,
+                'text'       => null,
+                'tone'       => [],
+                'type'       => 1,
+                'unicode'    => '👋',
+                'version'    => 0.6,
             ],
         ];
 
@@ -338,12 +338,17 @@ class EmojiTest extends TestCase
         $ignoreKeys = ['shortcodes', 'skins', 'tone', 'version'];
 
         $emoji = new Emoji(self::GRINNING_FACE);
-        foreach ($emoji as $key => $value) {
-            if (\in_array($key, $ignoreKeys, true)) {
+        foreach ($emoji as $key => $actual) {
+            if (! isset(self::GRINNING_FACE[$key]) || \in_array($key, $ignoreKeys, true)) {
                 continue;
             }
 
-            $this->assertSame(self::GRINNING_FACE[$key], $value, $key);
+            $expected = self::GRINNING_FACE[$key];
+            if ($expected === '') {
+                $expected = null;
+            }
+
+            $this->assertSame($expected, $actual, $key);
         }
 
         $this->assertSame(self::GRINNING_FACE['annotation'], $emoji['annotation']);
@@ -352,30 +357,14 @@ class EmojiTest extends TestCase
         $this->assertTrue(isset($emoji['annotation']));
 
         // ::offsetGet
-        // ::offsetSet
-        $emoji['tone'] = 1;
-        $this->assertSame([1], $emoji['tone']);
-
-        // ::offsetUnset
-        unset($emoji['annotation']);
-        $this->assertNull($emoji->getAnnotation());
-
-        // ::offsetExists
-        $this->assertFalse(isset($emoji['annotation']));
-
-        // Skins ::offsetSet
-        $emoji2         = new Emoji(self::GRINNING_FACE);
-        $emoji['skins'] = [$emoji2];
-        $this->assertSame($emoji2, \current($emoji->getSkins()->getArrayCopy()));
+        $this->assertSame([], $emoji['tone']);
 
         // Ensure getMethods are accessible.
         $emoji = new Emoji(self::GRINNING_FACE);
-        $this->assertSame('&#x' . self::GRINNING_FACE['hexcode'] . ';', $emoji['getHtmlEntity']);
+        $this->assertSame('&#x' . self::GRINNING_FACE['hexcode'] . ';', $emoji->getHtmlEntity);
         $this->assertSame('&#x' . self::GRINNING_FACE['hexcode'] . ';', $emoji['htmlEntity']);
 
-        $emoji['foo'] = 'bar';
-
-        $this->expectExceptionObject(new \RuntimeException('Unknown property: foo'));
+        $this->expectExceptionObject(new \OutOfRangeException('Unknown property: foo'));
         $this->assertNull($emoji['foo']);
     }
 
@@ -391,7 +380,6 @@ class EmojiTest extends TestCase
     {
         $emoji = new Emoji($data);
         $this->assertTrue($emoji instanceof Emoji);
-        $this->assertTrue(Emoji::create($emoji) instanceof Emoji);
     }
 
     /**
@@ -409,11 +397,11 @@ class EmojiTest extends TestCase
     {
         $emoji    = new Emoji(self::GRINNING_FACE);
         $actual   = \hash('sha256', \serialize($emoji));
-        $expected = 'df251ebc9b95afbba481069cea8b6d907fe00775ec3e7f6b9a23eeee4f39fdc5';
+        $expected = '7b0efe3bc5e9d4ae30d07d0aadf2730802cfe05cbafcbf6d6a8643022286a609';
 
         // Apparently serialization spits out something a bit different in PHP 7.4+.
         if (\version_compare(PHP_VERSION, '7.4.0', '>=')) {
-            $expected = '9c08dc267e644302994e0871c79cbe7329854e88a92dfb664da7f088af80b98a';
+            $expected = '204b237132e4c4be29870c40d102acfed0f13f5b089a245f77022adb53bec244';
         }
 
         $this->assertSame($expected, $actual);

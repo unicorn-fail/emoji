@@ -22,7 +22,8 @@ To install it via [Composer] simply run:
 $ composer require unicorn-fail/emoji
 ```
 
-The `CommonMarkConverter` class provides a simple wrapper for converting CommonMark to HTML:
+The `UnicornFail\Emoji\Converter` class provides a simple wrapper for converting emoticons, HTML entities and
+shortcodes to proper unicode characters (emojis):
 
 ```php
 use UnicornFail\Emoji\Converter;

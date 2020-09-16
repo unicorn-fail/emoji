@@ -37,18 +37,18 @@ abstract class AbstractEmojiToken extends AbstractToken
         $emoji = $this->getEmoji();
         switch ($this->stringableType) {
             case Parser::T_EMOTICON:
-                return $emoji->getEmoticon() ?? $this->getValue();
+                return $emoji->emoticon ?? $this->getValue();
             case Parser::T_HTML_ENTITY:
-                return $emoji->getHtmlEntity() ?? $this->getValue();
+                return $emoji->htmlEntity ?? $this->getValue();
             case Parser::T_SHORTCODE:
                 return $emoji->getShortcode($this->excludedShortcodes, true) ?? $this->getValue();
         }
 
-        if (($this->presentationMode ?? $emoji->getType()) === EmojibaseInterface::TEXT) {
-            return $emoji->getText() ?? $this->getValue();
+        if (($this->presentationMode ?? $emoji->type) === EmojibaseInterface::TEXT) {
+            return $emoji->text ?? $this->getValue();
         }
 
-        return $emoji->getEmoji() ?? $this->getValue();
+        return $emoji->emoji ?? $this->getValue();
     }
 
     public function getEmoji(): Emoji

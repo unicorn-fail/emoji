@@ -8,8 +8,12 @@ use Throwable;
 
 class UnarchiveException extends \RuntimeException implements EmojiException
 {
-    public function __construct(string $filename, ?Throwable $previous = null)
+    public function __construct(string $filename, ?string $message = null, ?Throwable $previous = null)
     {
-        parent::__construct(\sprintf('Unable to unarchive %s. Perhaps it is corrupted or was archived using an older API. Try recreating the archive', $filename), 0, $previous);
+        if (! isset($message)) {
+            $message = \sprintf('Empty or corrupted archive: %s.', $filename);
+        }
+
+        parent::__construct($message, 0, $previous);
     }
 }

@@ -7,9 +7,9 @@ const BASE_DIRECTORY = __DIR__ . '/../';
 require_once BASE_DIRECTORY . '/vendor/autoload.php';
 
 use UnicornFail\Emoji\Dataset;
-use UnicornFail\Emoji\Emoji;
 use UnicornFail\Emoji\EmojibaseInterface;
 use UnicornFail\Emoji\EmojibaseShortcodeInterface;
+use UnicornFail\Emoji\Normalize;
 
 const BUILD_DIRECTORY          = BASE_DIRECTORY . '/build';
 const EMOJIBASE_DATA_DIRECTORY = BASE_DIRECTORY . '/node_modules/emojibase-data';
@@ -44,7 +44,7 @@ function create_dataset(string $locale, array $shortcodes): Dataset
         // Process shortcodes.
         $item += ['shortcodes' => []];
         if (isset($shortcodes[$hexcode])) {
-            $item['shortcodes'] = Emoji::normalizeShortcodes($item['shortcodes'], $shortcodes[$hexcode]);
+            $item['shortcodes'] = Normalize::shortcodes($item['shortcodes'], $shortcodes[$hexcode]);
         }
 
         if (! isset($item['skins']) || ! count($item['skins'])) {
@@ -61,10 +61,8 @@ function create_dataset(string $locale, array $shortcodes): Dataset
             // Process shortcodes.
             $skin += ['shortcodes' => []];
             if (isset($shortcodes[$skinHexcode])) {
-                $skin['shortcodes'] = Emoji::normalizeShortcodes($skin['shortcodes'], $shortcodes[$skinHexcode]);
+                $skin['shortcodes'] = Normalize::shortcodes($skin['shortcodes'], $shortcodes[$skinHexcode]);
             }
-
-            $data[$skinHexcode] = $skin;
         }
     }
 
@@ -102,8 +100,8 @@ foreach (EmojibaseInterface::SUPPORTED_LOCALES as $locale) {
         /** @scrutinizer ignore-unhandled */ @mkdir($directory, 0775, true);
 
         echo sprintf("Archiving %s\n", $relative);
-        $archive = create_dataset($locale, $shortcodes)->archive();
-        file_put_contents($destination, $archive);
+        $dataset = create_dataset($locale, $shortcodes);
+        file_put_contents($destination, $dataset->archive());
     }
 }
 

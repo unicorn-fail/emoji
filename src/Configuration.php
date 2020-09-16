@@ -92,7 +92,7 @@ class Configuration extends Data implements ConfigurationInterface
                         return $value;
                     }
 
-                    return Emoji::normalizeShortcodes($value);
+                    return Normalize::shortcodes($value);
                 }
             );
 

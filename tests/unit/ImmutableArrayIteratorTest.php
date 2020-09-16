@@ -27,10 +27,26 @@ class ImmutableArrayIteratorTest extends TestCase
             'bar' => null,
         ]);
         $this->assertSame('bar', $array['foo']);
-        $this->assertNull($array['baz']);
         $this->assertSame('foo-bar', $array->method);
         $this->assertTrue(isset($array->method));
-        $this->assertNull($array->missing);
+
+        $this->expectExceptionObject(new \OutOfRangeException('Unknown property: foo'));
+        $array = new TestImmutableArrayIterator();
+        $this->assertFalse(isset($array['foo']));
+    }
+
+    public function testUnknownArrayProperty(): void
+    {
+        $this->expectExceptionObject(new \OutOfRangeException('Unknown property: bar'));
+        $array = new TestImmutableArrayIterator();
+        $this->assertNull($array['bar']);
+    }
+
+    public function testUnknownObjectProperty(): void
+    {
+        $this->expectExceptionObject(new \OutOfRangeException('Unknown property: baz'));
+        $array = new TestImmutableArrayIterator();
+        $this->assertNull($array->baz);
     }
 
     /**

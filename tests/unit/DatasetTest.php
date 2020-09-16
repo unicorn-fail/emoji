@@ -8,6 +8,7 @@ use PHPStan\Testing\TestCase;
 use UnicornFail\Emoji\Dataset;
 use UnicornFail\Emoji\Emoji;
 use UnicornFail\Emoji\Exception\FileNotFoundException;
+use UnicornFail\Emoji\Exception\MalformedArchiveException;
 use UnicornFail\Emoji\Exception\UnarchiveException;
 
 class DatasetTest extends TestCase
@@ -47,7 +48,25 @@ class DatasetTest extends TestCase
     {
         $temp = $this->createTemporaryFile();
         $this->expectException(UnarchiveException::class);
-        $this->expectExceptionMessage(\sprintf('Unable to unarchive %s. Perhaps it is corrupted or was archived using an older API. Try recreating the archive', $temp));
+        $this->expectExceptionMessage(\sprintf('Empty or corrupted archive: %s.', $temp));
+        Dataset::unarchive($temp);
+    }
+
+    public function testMalformedArchive(): void
+    {
+        $temp = $this->createTemporaryFile();
+        \file_put_contents($temp, \gzencode(\file_get_contents(__FILE__), 9));
+        $this->expectException(MalformedArchiveException::class);
+        $this->expectExceptionMessage(\sprintf('Malformed archive %s. Perhaps it is corrupted or was archived using an older API. Try recreating the archive.', $temp));
+        Dataset::unarchive($temp);
+    }
+
+    public function testMalformedArchive2(): void
+    {
+        $temp = $this->createTemporaryFile();
+        \file_put_contents($temp, \gzencode(\serialize(['foo', 'bar', 'baz']), 9));
+        $this->expectException(MalformedArchiveException::class);
+        $this->expectExceptionMessage(\sprintf('Malformed archive %s. Perhaps it is corrupted or was archived using an older API. Try recreating the archive.', $temp));
         Dataset::unarchive($temp);
     }
 
@@ -98,7 +117,7 @@ class DatasetTest extends TestCase
 
         $emoticons = $dataset->filter(
             static function (Emoji $emoji) {
-                return $emoji->getEmoticon() !== null;
+                return $emoji->emoticon !== null;
             }
         )->indexBy('emoticon');
         $this->assertSame(1, $emoticons->count());

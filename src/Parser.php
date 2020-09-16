@@ -96,7 +96,7 @@ class Parser extends AbstractLexer implements ParserInterface
 
                 case self::T_SHORTCODE:
                     if (
-                        ($shortcode = \current(Emoji::normalizeShortcodes($value))) &&
+                        ($shortcode = \current(Normalize::shortcodes($value))) &&
                         ($emoji = $shortcodes->offsetGet($shortcode))
                     ) {
                         $tokens[] = new Shortcode($configuration, $value, $emoji);

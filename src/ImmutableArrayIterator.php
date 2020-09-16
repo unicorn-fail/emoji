@@ -11,12 +11,7 @@ class ImmutableArrayIterator extends \ArrayIterator
      */
     public function __get(string $key)
     {
-        $method = 'get' . \ucfirst(\substr($key, 0, 3) === 'get' ? \substr($key, 3) : $key);
-        if (! \method_exists($this, $method)) {
-            $method = null;
-        }
-
-        return $method ? $this->$method() : $this->offsetGet($key);
+        return $this->offsetGet($key);
     }
 
     public function __isset(string $key): bool
@@ -46,13 +41,36 @@ class ImmutableArrayIterator extends \ArrayIterator
     }
 
     /**
+     * @param string $index
+     *
+     * @return bool
+     */
+    public function offsetExists($index) // phpcs:ignore
+    {
+        if (! \array_key_exists($index, $this->getArrayCopy())) {
+            throw new \OutOfRangeException(\sprintf('Unknown property: %s', $index));
+        }
+
+        return parent::offsetExists($index);
+    }
+
+    /**
      * @param string $key
      *
      * @return mixed|null
      */
     public function offsetGet($key) // phpcs:ignore
     {
-        return $this->offsetExists($key) ? parent::offsetGet($key) : null;
+        if (\array_key_exists($key, $this->getArrayCopy())) {
+            return parent::offsetExists($key) ? parent::offsetGet($key) : null;
+        }
+
+        $method = 'get' . \ucfirst(\substr($key, 0, 3) === 'get' ? \substr($key, 3) : $key);
+        if (! \method_exists($this, $method)) {
+            throw new \OutOfRangeException(\sprintf('Unknown property: %s', $key));
+        }
+
+        return $this->$method();
     }
 
     /**

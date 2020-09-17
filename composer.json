@@ -1,6 +1,6 @@
 {
     "name": "unicorn-fail/emoji",
-    "description": "Comprehensive PHP parser and converter of emoticons, HTML entities, shortcodes and unicodes (emojis).",
+    "description": "Comprehensive PHP parser of emoticons, HTML entities, shortcodes and unicodes (emojis).",
     "type": "library",
     "license": "BSD-3-Clause",
     "authors": [

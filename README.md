@@ -2,12 +2,12 @@
 
 > [![Latest Version](https://img.shields.io/packagist/v/unicorn-fail/emoji.svg?style=flat-square)](https://packagist.org/packages/unicorn-fail/emoji)
 [![Total Downloads](https://img.shields.io/packagist/dt/unicorn-fail/emoji.svg?style=flat-square)](https://packagist.org/packages/unicorn-fail/emoji)
-[![Packagist PHP Version Support](https://img.shields.io/packagist/php-v/unicorn-fail/emoji)](https://packagist.org/packages/unicorn-fail/emoji)
+[![Packagist PHP Version Support](https://img.shields.io/packagist/php-v/unicorn-fail/emoji?style=flat-square)](https://packagist.org/packages/unicorn-fail/emoji)
 [![Software License](https://img.shields.io/badge/License-BSD--3-blue.svg?style=flat-square)](LICENSE)<br>
 [![Build Status](https://img.shields.io/github/workflow/status/unicorn-fail/emoji/Tests/latest.svg?style=flat-square)](https://github.com/unicorn-fail/emoji/actions?query=branch%3Alatest)
-[![Code Coverage](https://scrutinizer-ci.com/g/unicorn-fail/emoji/badges/coverage.png?b=latest)](https://scrutinizer-ci.com/g/unicorn-fail/emoji/?branch=latest)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/unicorn-fail/emoji/badges/quality-score.png?b=latest)](https://scrutinizer-ci.com/g/unicorn-fail/emoji/?branch=latest)
-[![CII Best Practices Summary](https://img.shields.io/cii/summary/4286)](https://bestpractices.coreinfrastructure.org/en/projects/4286)
+[![Scrutinizer coverage (GitHub/BitBucket)](https://img.shields.io/scrutinizer/coverage/g/unicorn-fail/emoji/latest?style=flat-square)](https://scrutinizer-ci.com/g/unicorn-fail/emoji/?branch=latest)
+[![Scrutinizer code quality (GitHub/Bitbucket)](https://img.shields.io/scrutinizer/quality/g/unicorn-fail/emoji/latest?style=flat-square)](https://scrutinizer-ci.com/g/unicorn-fail/emoji/?branch=latest)
+[![CII Best Practices Summary](https://img.shields.io/cii/summary/4286?style=flat-square)](https://bestpractices.coreinfrastructure.org/en/projects/4286)
 [![Psalm coverage](https://shepherd.dev/github/unicorn-fail/emoji/coverage.svg)](https://shepherd.dev/github/unicorn-fail/emoji)
 >
 > **unicorn-fail/emoji** is a comprehensive PHP parser and converter of emoticons, HTML entities, shortcodes and

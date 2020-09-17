@@ -46,50 +46,35 @@ class Configuration extends Data implements ConfigurationInterface
         return new self($configuration);
     }
 
-    protected static function normalizeLocale(string $locale): string
+    public function configureOptions(OptionsResolver $resolver): void
     {
-        // Immediately return if locale is an exact match.
-        if (\in_array($locale, DatasetInterface::SUPPORTED_LOCALES, true)) {
-            return $locale;
-        }
-
-        // Immediately return if this local has already been normalized.
-        static $normalized = [];
-        if (isset($normalized[$locale])) {
-            return $normalized[$locale];
-        }
-
-        $original              = $locale;
-        $normalized[$original] = '';
-
-        // Otherwise, see if it just needs some TLC.
-        $locale = \strtolower($locale);
-        $locale = \preg_replace('/[^a-z]/', '-', $locale) ?? $locale;
-        foreach ([$locale, \current(\explode('-', $locale, 2))] as $locale) {
-            if (\in_array($locale, DatasetInterface::SUPPORTED_LOCALES, true)) {
-                $normalized[$original] = $locale;
-                break;
-            }
-        }
-
-        return $normalized[$original];
+        $this->defineConvertEmoticons($resolver);
+        $this->defineExcludeShortcodes($resolver);
+        $this->defineLocale($resolver);
+        $this->defineNative($resolver);
+        $this->definePresentation($resolver);
+        $this->definePreset($resolver);
+        $this->defineStringableType($resolver);
     }
 
-    public function configureOptions(OptionsResolver $resolver): void
+    protected function defineConvertEmoticons(OptionsResolver $resolver): void
     {
         $resolver->define('convertEmoticons')
             ->allowedTypes('bool')
             ->default(true);
+    }
 
+    protected function defineExcludeShortcodes(OptionsResolver $resolver): void
+    {
         $resolver->define('excludeShortcodes')
             ->allowedTypes('string', 'string[]')
             ->default([])
             ->normalize(
-                /**
-                 * @param mixed $value
-                 *
-                 * @return string[]
-                 */
+            /**
+             * @param mixed $value
+             *
+             * @return string[]
+             */
                 static function (Options $options, $value): array {
                     if (! $value) {
                         return $value;
@@ -98,17 +83,23 @@ class Configuration extends Data implements ConfigurationInterface
                     return Normalize::shortcodes($value);
                 }
             );
+    }
 
+    protected function defineLocale(OptionsResolver $resolver): void
+    {
         $resolver->define('locale')
             ->allowedTypes('string')
             ->allowedValues(static function (string $value): bool {
-                return ! ! static::normalizeLocale($value);
+                return ! ! Normalize::locale($value);
             })
             ->default('en')
             ->normalize(static function (Options $options, string $value): string {
-                return static::normalizeLocale($value);
+                return Normalize::locale($value);
             });
+    }
 
+    protected function defineNative(OptionsResolver $resolver): void
+    {
         $resolver->define('native')
             ->allowedTypes('bool')
             ->default(static function (Options $options): bool {
@@ -117,12 +108,18 @@ class Configuration extends Data implements ConfigurationInterface
             ->normalize(static function (Options $options, bool $value) {
                 return $value && \in_array($options['locale'], DatasetInterface::NON_LATIN_LOCALES, true);
             });
+    }
 
+    protected function definePresentation(OptionsResolver $resolver): void
+    {
         $resolver->define('presentation')
             ->allowedTypes('int', 'null')
             ->allowedValues(...DatasetInterface::SUPPORTED_PRESENTATIONS)
             ->default(DatasetInterface::EMOJI);
+    }
 
+    protected function definePreset(OptionsResolver $resolver): void
+    {
         $resolver->define('preset')
             ->allowedTypes('string', 'string[]')
             ->allowedValues(
@@ -171,7 +168,10 @@ class Configuration extends Data implements ConfigurationInterface
                     return \array_values(\array_unique($presets));
                 }
             );
+    }
 
+    protected function defineStringableType(OptionsResolver $resolver): void
+    {
         $resolver->define('stringableType')
             ->allowedTypes('int')
             ->allowedValues(Lexer::T_EMOTICON, Lexer::T_HTML_ENTITY, Lexer::T_SHORTCODE, Lexer::T_UNICODE)

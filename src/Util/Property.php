@@ -56,74 +56,17 @@ class Property
     /**
      * @param mixed $value
      *
-     * @return mixed
+     * @return mixed[]
      */
-    protected function castCallback($value)
+    protected function castIterable($value): array
     {
-        $callback = $this->callback;
-        if (\is_callable($callback)) {
-            $value = $callback($value);
-        }
+        $value = (array) $value;
+        $type  = $this->nullable ? \sprintf('?%s', $this->type) : $this->type;
 
-        return $value;
-    }
+        /** @var string[] $types */
+        $types = \array_fill_keys(\array_keys($value), $type);
 
-    /**
-     * @param mixed $value
-     *
-     * @return mixed
-     */
-    protected function castCustomType($value)
-    {
-        $type = $this->customType;
-        if (\is_string($type) && \class_exists($type)) {
-            $value = new $type($value);
-        }
-
-        return $value;
-    }
-
-    /**
-     * @param mixed $value
-     *
-     * @return mixed[]|bool|float|int|object|string|null
-     */
-    protected function castPhpType($value)
-    {
-        switch ($this->type) {
-            case 'array':
-                $value = (array) ($value ?? []);
-                break;
-
-            case 'bool':
-            case 'boolean':
-                $value = (bool) ($value ?? false);
-                break;
-
-            case 'double':
-            case 'float':
-                $value = (float) ($value ?? 0.0);
-                break;
-
-            case 'int':
-            case 'integer':
-                $value = (int) ($value ?? 0);
-                break;
-
-            case 'null':
-                $value = null;
-                break;
-
-            case 'object':
-                $value = (object) ($value ?? new \stdClass());
-                break;
-
-            case 'string':
-                $value = (string) ($value ?? '');
-                break;
-        }
-
-        return $this->emptyNullable && ! $value ? null : $value;
+        return Normalize::properties($value, $types);
     }
 
     /**
@@ -138,26 +81,42 @@ class Property
             return null;
         }
 
-        if ($this->callback) {
-            $value = $this->castCallback($value);
-        }
+        $value = $this->castValueCallback($value);
 
         if ($this->iterable) {
-            $value = (array) $value;
-            $type  = $this->nullable ? \sprintf('?%s', $this->type) : $this->type;
-
-            /** @var string[] $types */
-            $types = \array_fill_keys(\array_keys($value), $type);
-
-            return Normalize::properties($value, $types);
+            return $this->castIterable($value);
         }
 
-        if ($this->customType) {
-            $value = $this->castCustomType($value);
-        } else {
-            $value = $this->castPhpType($value);
+        return $this->castValueType($value);
+    }
+
+    /**
+     * @param mixed $value
+     *
+     * @return mixed
+     */
+    protected function castValueCallback($value)
+    {
+        if (($callback = $this->callback) && \is_callable($callback)) {
+            $value = $callback($value);
         }
 
         return $value;
+    }
+
+    /**
+     * @param mixed $value
+     *
+     * @return mixed
+     */
+    protected function castValueType($value)
+    {
+        if (($type = $this->customType) && \class_exists($type)) {
+            $value = new $type($value);
+        } else {
+            Normalize::setType($value, $this->type);
+        }
+
+        return $this->emptyNullable && ! $value ? null : $value;
     }
 }

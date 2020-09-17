@@ -8,6 +8,7 @@ use UnicornFail\Emoji\Exception\FileNotFoundException;
 use UnicornFail\Emoji\Exception\MalformedArchiveException;
 use UnicornFail\Emoji\Exception\UnarchiveException;
 use UnicornFail\Emoji\Util\ImmutableArrayIterator;
+use UnicornFail\Emoji\Util\Normalize;
 
 final class Dataset extends ImmutableArrayIterator
 {
@@ -21,43 +22,7 @@ final class Dataset extends ImmutableArrayIterator
      */
     public function __construct($emojis = [], string $index = 'hexcode')
     {
-        if ($emojis instanceof Emoji) {
-            $emojis = [$emojis];
-        } elseif ($emojis instanceof \Iterator) {
-            $emojis = \iterator_to_array($emojis);
-        } else {
-            $emojis = (array) $emojis;
-        }
-
-        $dataset = [];
-        foreach ($emojis as $emoji) {
-            if (\is_array($emoji) && isset($emoji[$index])) {
-                $emoji = new Emoji($emoji);
-            }
-
-            if (! $emoji instanceof Emoji) {
-                throw new \RuntimeException(\sprintf('Passed array item must be an instance of %s.', Emoji::class));
-            }
-
-            $keys = \array_filter((array) $emoji->$index);
-            foreach ($keys as $k) {
-                if (isset($dataset[$k])) {
-                    continue;
-                }
-
-                $dataset[$k] = $emoji;
-                foreach ($emoji->skins as &$skin) {
-                    $skinKeys = \array_filter((array) $skin->$index);
-                    foreach ($skinKeys as $sk) {
-                        if (! isset($dataset[$sk])) {
-                            $dataset[$sk] = &$skin;
-                        }
-                    }
-                }
-            }
-        }
-
-        parent::__construct($dataset, \ArrayIterator::ARRAY_AS_PROPS | \ArrayIterator::STD_PROP_LIST);
+        parent::__construct(Normalize::dataset($emojis, $index), \ArrayIterator::ARRAY_AS_PROPS | \ArrayIterator::STD_PROP_LIST);
     }
 
     public static function unarchive(string $filename): self

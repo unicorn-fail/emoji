@@ -1,0 +1,14 @@
+version:
+    '1.0':
+        Getting Started:
+            'Overview': '/1.0/'
+            'Installation': '/1.0/installation/'
+            'Changelog': '/1.0/changelog/'
+        Usage:
+            'Basic Usage': '/1.0/basic-usage/'
+            'Configuration': '/1.0/configuration/'
+            'Security': '/1.0/security/'
+upgrading:
+    Upgrading Guide:
+        Release Notes: '/releases/'
+#        From 1.x to 2.0: '/2.0/upgrading'

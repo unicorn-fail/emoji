@@ -4,18 +4,10 @@ declare(strict_types=1);
 
 namespace UnicornFail\Emoji;
 
-use UnicornFail\Emoji\Emojibase\ShortcodeInterface;
-use UnicornFail\Emoji\Exception\LocalePresetException;
 use UnicornFail\Emoji\Token\AbstractEmojiToken;
 
 final class Converter
 {
-    /** @var Configuration|ConfigurationInterface */
-    private $configuration;
-
-    /** @var Dataset */
-    private $dataset;
-
     /** @var Parser|ParserInterface */
     private $parser;
 
@@ -24,11 +16,7 @@ final class Converter
      */
     public function __construct(?iterable $configuration = null, ?Dataset $dataset = null, ?ParserInterface $parser = null)
     {
-        $this->configuration = Configuration::create($configuration);
-        $locale              = $this->configuration->get('locale');
-        $preset              = $this->configuration->get('preset');
-        $this->dataset       = $dataset ?? self::loadLocalePreset($locale, $preset);
-        $this->parser        = $parser ?? new Parser($this->configuration, $this->dataset);
+        $this->parser = $parser ?? new Parser($configuration, $dataset);
     }
 
     /**
@@ -41,7 +29,7 @@ final class Converter
 
     public function convert(string $input, ?int $type = null): string
     {
-        $stringableType = (int) $this->configuration->get('stringableType');
+        $stringableType = (int) $this->parser->getConfiguration()->get('stringableType');
 
         // Parse.
         $tokens = $this->getParser()->parse($input);
@@ -74,26 +62,6 @@ final class Converter
     public function convertToUnicode(string $input): string
     {
         return $this->convert($input, Lexer::T_UNICODE);
-    }
-
-    /**
-     * @param string[] $presets
-     */
-    protected static function loadLocalePreset(string $locale = 'en', array $presets = ShortcodeInterface::DEFAULT_PRESETS): Dataset
-    {
-        $throwables = [];
-        $presets    = \array_filter($presets);
-        $remaining  = $presets;
-        while (\count($remaining) > 0) {
-            $preset = \array_shift($remaining);
-            try {
-                return Dataset::unarchive(\sprintf('%s/%s/%s.gz', Dataset::DIRECTORY, $locale, $preset));
-            } catch (\Throwable $throwable) {
-                $throwables[$preset] = $throwable;
-            }
-        }
-
-        throw new LocalePresetException($locale, $throwables);
     }
 
     public function getParser(): ParserInterface

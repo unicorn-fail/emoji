@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace UnicornFail\Emoji;
 
+use UnicornFail\Emoji\Emojibase\ShortcodeInterface;
+use UnicornFail\Emoji\Exception\LocalePresetException;
 use UnicornFail\Emoji\Token\AbstractToken;
 use UnicornFail\Emoji\Token\Emoticon;
 use UnicornFail\Emoji\Token\HtmlEntity;
@@ -22,7 +24,7 @@ class Parser implements ParserInterface
         Lexer::T_UNICODE => 'parseUnicode',
     ];
 
-    /** @var Configuration|ConfigurationInterface */
+    /** @var ConfigurationInterface */
     private $configuration;
 
     /** @var Dataset */
@@ -31,11 +33,41 @@ class Parser implements ParserInterface
     /** @var Lexer */
     private $lexer;
 
-    public function __construct(ConfigurationInterface $configuration, Dataset $dataset, ?Lexer $lexer = null)
+    /**
+     * @param mixed[]|\Traversable $configuration
+     */
+    public function __construct(?iterable $configuration = null, ?Dataset $dataset = null, ?Lexer $lexer = null)
     {
-        $this->configuration = $configuration;
-        $this->dataset       = $dataset;
-        $this->lexer         = $lexer ?? new Lexer($configuration);
+        $this->configuration = Configuration::create($configuration);
+        $locale              = $this->configuration->get('locale');
+        $preset              = $this->configuration->get('preset');
+        $this->dataset       = $dataset ?? self::loadLocalePreset($locale, $preset);
+        $this->lexer         = $lexer ?? new Lexer($this->configuration);
+    }
+
+    /**
+     * @param string[] $presets
+     */
+    protected static function loadLocalePreset(string $locale = 'en', array $presets = ShortcodeInterface::DEFAULT_PRESETS): Dataset
+    {
+        $throwables = [];
+        $presets    = \array_filter($presets);
+        $remaining  = $presets;
+        while (\count($remaining) > 0) {
+            $preset = \array_shift($remaining);
+            try {
+                return Dataset::unarchive(\sprintf('%s/%s/%s.gz', Dataset::DIRECTORY, $locale, $preset));
+            } catch (\Throwable $throwable) {
+                $throwables[$preset] = $throwable;
+            }
+        }
+
+        throw new LocalePresetException($locale, $throwables);
+    }
+
+    public function getConfiguration(): ConfigurationInterface
+    {
+        return $this->configuration;
     }
 
     /**

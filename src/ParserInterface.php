@@ -11,6 +11,8 @@ interface ParserInterface extends RegexInterface
 {
     public const INDICES = ['emoji', 'emoticon', 'htmlEntity', 'shortcodes', 'text'];
 
+    public function getConfiguration(): ConfigurationInterface;
+
     /**
      * @return AbstractToken[]
      */

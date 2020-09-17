@@ -122,52 +122,54 @@ class Configuration extends Data implements ConfigurationInterface
     {
         $resolver->define('preset')
             ->allowedTypes('string', 'string[]')
-            ->allowedValues(
-                /**
-                 * @param mixed $value
-                 */
-                static function ($value): bool {
-                    foreach ((array) $value as $v) {
-                        if (! \in_array($v, ShortcodeInterface::SUPPORTED_PRESETS, true)) {
-                            throw new InvalidOptionsException(\sprintf(
-                                'The option "preset" with value "%s" is invalid. Accepted values are: %s.',
-                                $v,
-                                \implode(', ', \array_map(static function ($s) {
-                                    return \sprintf('"%s"', $s);
-                                }, ShortcodeInterface::SUPPORTED_PRESETS))
-                            ));
-                        }
-                    }
-
-                    return true;
-                }
-            )
+            ->allowedValues(\Closure::fromCallable([$this, 'definePresetAllowedValues']))
             ->default(ShortcodeInterface::DEFAULT_PRESETS)
-            ->normalize(
-                /**
-                 * @param mixed $value
-                 *
-                 * @return string[]
-                 */
-                static function (Options $options, $value): array {
-                    // Presets.
-                    $presets = [];
-                    foreach ((array) $value as $preset) {
-                        if (isset(ShortcodeInterface::PRESET_ALIASES[$preset])) {
-                            $presets[] = ShortcodeInterface::PRESET_ALIASES[$preset];
-                        } elseif (isset(ShortcodeInterface::PRESETS[$preset])) {
-                            $presets[] = ShortcodeInterface::PRESETS[$preset];
-                        }
-                    }
+            ->normalize(\Closure::fromCallable([$this, 'definePresetNormalize']));
+    }
 
-                    // Prepend the native preset if local is requires it and enabled.
-                    if ($options['native']) {
-                        \array_unshift($presets, ShortcodeInterface::PRESET_CLDR_NATIVE);
-                    }
+    /**
+     * @param mixed $value
+     */
+    protected function definePresetAllowedValues($value): bool
+    {
+        foreach ((array) $value as $v) {
+            if (! \in_array($v, ShortcodeInterface::SUPPORTED_PRESETS, true)) {
+                throw new InvalidOptionsException(\sprintf(
+                    'The option "preset" with value "%s" is invalid. Accepted values are: %s.',
+                    $v,
+                    \implode(', ', \array_map(static function ($s) {
+                        return \sprintf('"%s"', $s);
+                    }, ShortcodeInterface::SUPPORTED_PRESETS))
+                ));
+            }
+        }
 
-                    return \array_values(\array_unique($presets));
-                }
-            );
+        return true;
+    }
+
+    /**
+     * @param mixed $value
+     *
+     * @return string[]
+     */
+    protected function definePresetNormalize(Options $options, $value): array
+    {
+        // Presets.
+        $presets = [];
+        foreach ((array) $value as $preset) {
+            if (isset(ShortcodeInterface::PRESET_ALIASES[$preset])) {
+                $presets[] = ShortcodeInterface::PRESET_ALIASES[$preset];
+            } elseif (isset(ShortcodeInterface::PRESETS[$preset])) {
+                $presets[] = ShortcodeInterface::PRESETS[$preset];
+            }
+        }
+
+        // Prepend the native preset if local is requires it and enabled.
+        if ($options['native']) {
+            \array_unshift($presets, ShortcodeInterface::PRESET_CLDR_NATIVE);
+        }
+
+        return \array_values(\array_unique($presets));
     }
 
     protected function defineStringableType(OptionsResolver $resolver): void

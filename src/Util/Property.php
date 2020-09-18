@@ -61,7 +61,9 @@ class Property
     protected function castIterable($value): array
     {
         $value = (array) $value;
-        $type  = $this->nullable ? \sprintf('?%s', $this->type) : $this->type;
+        $type  = $this->nullable
+            ? \sprintf('?%s', $this->type)
+            : $this->type;
 
         /** @var string[] $types */
         $types = \array_fill_keys(\array_keys($value), $type);
@@ -124,6 +126,8 @@ class Property
             Normalize::setType($value, $this->type);
         }
 
-        return $this->emptyNullable && ! $value ? null : $value;
+        return $this->emptyNullable && ! $value
+            ? null
+            : $value;
     }
 }

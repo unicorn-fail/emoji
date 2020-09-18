@@ -105,7 +105,9 @@ class Parser implements ParserInterface
             $method = self::TYPE_METHODS[$type] ?? null;
 
             /** @var ?AbstractToken $token */
-            $token = $method ? $this->$method($value) : null;
+            $token = $method
+                ? $this->$method($value)
+                : null;
             if ($token instanceof AbstractToken) {
                 $tokens[] = $token;
             }
@@ -121,7 +123,9 @@ class Parser implements ParserInterface
 
         // Clone the configuration here. This is necessary so it can be passed to tokens,
         // which may be rendered at a later time; when the configuration may have changed.
-        return $emoji ? new Emoticon(clone $this->configuration, $value, $emoji) : null;
+        return $emoji
+            ? new Emoticon(clone $this->configuration, $value, $emoji)
+            : null;
     }
 
     protected function parseHtmlEntity(string $value): ?HtmlEntity
@@ -133,7 +137,9 @@ class Parser implements ParserInterface
         // which may be rendered at a later time; when the configuration may have changed.
         $configuration = clone $this->configuration;
 
-        return $emoji ? new HtmlEntity($configuration, $value, $emoji) : null;
+        return $emoji
+            ? new HtmlEntity($configuration, $value, $emoji)
+            : null;
     }
 
     protected function parseShortcode(string $value): ?Shortcode
@@ -143,7 +149,9 @@ class Parser implements ParserInterface
 
         // Clone the configuration here. This is necessary so it can be passed to tokens,
         // which may be rendered at a later time; when the configuration may have changed.
-        return $emoji ? new Shortcode(clone $this->configuration, $value, $emoji) : null;
+        return $emoji
+            ? new Shortcode(clone $this->configuration, $value, $emoji)
+            : null;
     }
 
     protected function parseUnicode(string $value): ?Unicode
@@ -153,7 +161,9 @@ class Parser implements ParserInterface
 
         // Clone the configuration here. This is necessary so it can be passed to tokens,
         // which may be rendered at a later time; when the configuration may have changed.
-        return $emoji ? new Unicode(clone $this->configuration, $value, $emoji) : null;
+        return $emoji
+            ? new Unicode(clone $this->configuration, $value, $emoji)
+            : null;
     }
 
     protected function parseText(string $value): ?Text
@@ -170,6 +180,8 @@ class Parser implements ParserInterface
             $this->lexer->moveNext();
         }
 
-        return $text ? new Text($text) : null;
+        return $text
+            ? new Text($text)
+            : null;
     }
 }

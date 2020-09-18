@@ -69,7 +69,7 @@ final class Normalize
         /** @var Emoji[] $normalized */
         $normalized = [];
 
-        /** @var mixed|string[]|Emoji $emoji */
+        /** @var iterable|string[]|Emoji[] $emoji */
         foreach ($emojis as &$emoji) {
             if (\is_array($emoji)) {
                 $emoji = new Emoji($emoji);

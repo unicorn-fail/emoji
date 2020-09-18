@@ -62,7 +62,9 @@ class ImmutableArrayIterator extends \ArrayIterator
     public function offsetGet($key) // phpcs:ignore
     {
         if (\array_key_exists($key, $this->getArrayCopy())) {
-            return parent::offsetExists($key) ? parent::offsetGet($key) : null;
+            return parent::offsetExists($key)
+                ? parent::offsetGet($key)
+                : null;
         }
 
         $method = 'get' . \ucfirst(\substr($key, 0, 3) === 'get' ? \substr($key, 3) : $key);

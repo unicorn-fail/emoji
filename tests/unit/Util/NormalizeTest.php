@@ -55,10 +55,16 @@ class NormalizeTest extends TestCase
         $data['?float']  = ['?float', null, null];
         $data['float[]'] = ['float[]', '2.75', [2.75]];
 
-        $data['\UnicornFail\Emoji\Util\Normalize::shortcodes[]'] = [
+        $data['string[]<\UnicornFail\Emoji\Util\Normalize::shortcodes>'] = [
             'string[]<\UnicornFail\Emoji\Util\Normalize::shortcodes>',
             'foo bar',
             ['foo-bar'],
+        ];
+
+        $data['?string[]<\UnicornFail\Emoji\Util\Normalize::shortcodes>'] = [
+            '?string[]<\UnicornFail\Emoji\Util\Normalize::shortcodes>',
+            [null],
+            [],
         ];
 
         $data['\UnicornFail\Emoji\Tests\Unit\Util\TestNormalizeIterable[]'] = [

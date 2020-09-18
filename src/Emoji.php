@@ -65,7 +65,9 @@ final class Emoji extends ImmutableArrayIterator implements \Stringable
     {
         $hexcode = $this->hexcode;
 
-        return $hexcode ? '&#x' . \implode(';&#x', \explode('-', $hexcode)) . ';' : null;
+        return $hexcode
+            ? '&#x' . \implode(';&#x', \explode('-', $hexcode)) . ';'
+            : null;
     }
 
     /**
@@ -92,7 +94,9 @@ final class Emoji extends ImmutableArrayIterator implements \Stringable
         /** @var string[] $shortcodes */
         $shortcodes = (array) $this->offsetGet('shortcodes');
 
-        return $exclude ? \array_diff($shortcodes, $exclude) : $shortcodes;
+        return $exclude
+            ? \array_diff($shortcodes, $exclude)
+            : $shortcodes;
     }
 
     public function getSkin(int $tone = SkinsInterface::LIGHT_SKIN): ?self
@@ -111,6 +115,8 @@ final class Emoji extends ImmutableArrayIterator implements \Stringable
 
     public function getUnicode(): ?string
     {
-        return $this->type === DatasetInterface::EMOJI && ($emoji = $this->emoji) ? $emoji : $this->text;
+        return $this->type === DatasetInterface::EMOJI && ($emoji = $this->emoji)
+            ? $emoji
+            : $this->text;
     }
 }

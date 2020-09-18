@@ -102,7 +102,7 @@
         "phpstan": "phpstan analyse",
         "phpunit": "./scripts/phpunit --no-coverage --colors=always",
         "phpunit-coverage": "./scripts/phpunit --colors=always",
-        "psalm": "psalm --show-info=true",
+        "psalm": "psalm --config=psalm.xml --output-format=phpstorm --show-info=true --stats --threads=4",
         "test": [
             "@phpcs",
             "@phpstan",

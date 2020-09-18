@@ -102,9 +102,7 @@ class DatasetTest extends TestCase
         $this->assertTrue(new Dataset($emoji) instanceof Dataset);
         $this->assertTrue(new Dataset($dataset) instanceof Dataset);
 
-        $this->expectExceptionObject(
-            new \RuntimeException(\sprintf('Passed array item must be an instance of %s.', Emoji::class))
-        );
+        $this->expectWarning();
         $this->assertTrue(new Dataset(1) instanceof Dataset);
     }
 

@@ -39,10 +39,15 @@ class Parser implements ParserInterface
     public function __construct(?iterable $configuration = null, ?Dataset $dataset = null, ?Lexer $lexer = null)
     {
         $this->configuration = Configuration::create($configuration);
-        $locale              = $this->configuration->get('locale');
-        $preset              = $this->configuration->get('preset');
-        $this->dataset       = $dataset ?? self::loadLocalePreset($locale, $preset);
-        $this->lexer         = $lexer ?? new Lexer($this->configuration);
+
+        $locale = $this->configuration->get('locale');
+        \assert(\is_string($locale));
+
+        /** @var string[] $preset */
+        $preset = $this->configuration->get('preset');
+
+        $this->dataset = $dataset ?? self::loadLocalePreset($locale, $preset);
+        $this->lexer   = $lexer ?? new Lexer($this->configuration);
     }
 
     /**
@@ -94,13 +99,14 @@ class Parser implements ParserInterface
 
             $this->lexer->moveNext();
 
-            $currentToken = \array_merge([
-                'type' => Lexer::T_TEXT,
-                'value' => '',
-            ], $this->lexer->token ?? []);
+            $type  = (int) ($this->lexer->token['type'] ?? Lexer::T_TEXT);
+            $value = (string) ($this->lexer->token['value'] ?? '');
 
-            $method = self::TYPE_METHODS[$currentToken['type']] ?? null;
-            if ($method && ($token = $this->$method($currentToken['value'])) instanceof AbstractToken) {
+            $method = self::TYPE_METHODS[$type] ?? null;
+
+            /** @var ?AbstractToken $token */
+            $token = $method ? $this->$method($value) : null;
+            if ($token instanceof AbstractToken) {
                 $tokens[] = $token;
             }
         }
@@ -110,6 +116,7 @@ class Parser implements ParserInterface
 
     protected function parseEmoticon(string $value): ?Emoticon
     {
+        /** @var ?Emoji $emoji */
         $emoji = $this->dataset->indexBy('emoticon')->offsetGet($value);
 
         // Clone the configuration here. This is necessary so it can be passed to tokens,
@@ -119,6 +126,7 @@ class Parser implements ParserInterface
 
     protected function parseHtmlEntity(string $value): ?HtmlEntity
     {
+        /** @var ?Emoji $emoji */
         $emoji = $this->dataset->indexBy('htmlEntity')->offsetGet($value);
 
         // Clone the configuration here. This is necessary so it can be passed to tokens,
@@ -130,6 +138,7 @@ class Parser implements ParserInterface
 
     protected function parseShortcode(string $value): ?Shortcode
     {
+        /** @var ?Emoji $emoji */
         $emoji = $this->dataset->indexBy('shortcodes')->offsetGet(\current(Normalize::shortcodes($value)));
 
         // Clone the configuration here. This is necessary so it can be passed to tokens,
@@ -139,6 +148,7 @@ class Parser implements ParserInterface
 
     protected function parseUnicode(string $value): ?Unicode
     {
+        /** @var ?Emoji $emoji */
         $emoji = $this->dataset->indexBy('emoji')->offsetGet($value) ?: $this->dataset->indexBy('text')->offsetGet($value);
 
         // Clone the configuration here. This is necessary so it can be passed to tokens,
@@ -155,7 +165,8 @@ class Parser implements ParserInterface
                 break;
             }
 
-            $value = $this->lexer->lookahead['value'] ?? '';
+            $value = (string) ($this->lexer->lookahead['value'] ?? '');
+
             $this->lexer->moveNext();
         }
 

@@ -27,9 +27,17 @@ abstract class AbstractEmojiToken extends AbstractToken
     {
         parent::__construct($value);
         $this->emoji = $emoji;
-        $this->setExcludedShortcodes($configuration->get('excludeShortcodes'));
-        $this->setPresentationMode($configuration->get('presentation'));
-        $this->setStringableType($configuration->get('stringableType'));
+
+        /** @var string[] $excludedShortcodes */
+        $excludedShortcodes = $configuration->get('excludeShortcodes');
+        $this->setExcludedShortcodes($excludedShortcodes);
+
+        /** @var ?int $presentation */
+        $presentation = $configuration->get('presentation');
+        $this->setPresentationMode($presentation);
+
+        $stringableType = (int) ($configuration->get('stringableType') ?? Lexer::T_UNICODE);
+        $this->setStringableType($stringableType);
     }
 
     public function __toString(): string

@@ -83,26 +83,30 @@ final class Emoji extends ImmutableArrayIterator implements \Stringable
     }
 
     /**
-     * @param string[]|null $exclude
+     * @param ?string[] $exclude
      *
      * @return string[]
      */
     public function getShortcodes(?array $exclude = null): array
     {
+        /** @var string[] $shortcodes */
         $shortcodes = (array) $this->offsetGet('shortcodes');
 
         return $exclude ? \array_diff($shortcodes, $exclude) : $shortcodes;
     }
 
-    public function getSkin(int $tone = SkinsInterface::LIGHT_SKIN): ?Emoji
+    public function getSkin(int $tone = SkinsInterface::LIGHT_SKIN): ?self
     {
-        return \current(
+        /** @var ?static $skin */
+        $skin = \current(
             $this->skins->filter(
                 static function (Emoji $emoji) use ($tone) {
                     return \in_array($tone, (array) $emoji->tone, true);
                 }
             )->getArrayCopy()
         ) ?: null;
+
+        return $skin;
     }
 
     public function getUnicode(): ?string

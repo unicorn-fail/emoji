@@ -29,10 +29,11 @@ final class Converter
 
     public function convert(string $input, ?int $type = null): string
     {
-        $stringableType = (int) $this->parser->getConfiguration()->get('stringableType');
+        $parser         = $this->getParser();
+        $stringableType = (int) $parser->getConfiguration()->get('stringableType');
 
         // Parse.
-        $tokens = $this->getParser()->parse($input);
+        $tokens = $parser->parse($input);
 
         // Ensure tokens are set to the correct stringable type.
         if ($type !== null && $type !== $stringableType) {

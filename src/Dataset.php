@@ -39,7 +39,8 @@ final class Dataset extends ImmutableArrayIterator
         }
 
         try {
-            $dataset = \unserialize($decoded);
+            /** @var ?Dataset $dataset */
+            $dataset = \unserialize((string) $decoded);
         } catch (\Throwable $throwable) {
             throw new MalformedArchiveException($filename, $throwable);
         }
@@ -67,6 +68,9 @@ final class Dataset extends ImmutableArrayIterator
         return \gzencode($serialize, 9);
     }
 
+    /**
+     * @param callable(Emoji):bool $callback
+     */
     public function filter(callable $callback): Dataset
     {
         return new self(new \CallbackFilterIterator($this, $callback));

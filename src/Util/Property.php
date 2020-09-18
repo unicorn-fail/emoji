@@ -34,19 +34,19 @@ class Property
     public function __construct(string $type)
     {
         \preg_match(self::REGEX, $type, $matches, PREG_UNMATCHED_AS_NULL);
-        $this->callback      = $matches['callback'] ?? null;
-        $this->customType    = $matches['customType'] ?? null;
+        $this->callback      = (string) ($matches['callback'] ?? null);
+        $this->customType    = (string) ($matches['customType'] ?? null);
         $this->emptyNullable = ! ! ($matches['emptyNullable'] ?? false);
         $this->iterable      = ! ! ($matches['iterable'] ?? false);
         $this->nullable      = ! ! ($this->emptyNullable || ($matches['nullable'] ?? false));
-        $this->type          = $matches['type'] ?? 'mixed';
+        $this->type          = (string) ($matches['type'] ?? 'mixed');
         $this->isPhpType     = \in_array($this->type, self::TYPES, true);
     }
 
     /**
      * @param mixed $value
      *
-     * @return bool|float|int|mixed[]|object|string|null
+     * @return mixed
      */
     public static function cast(string $type, $value)
     {
@@ -72,7 +72,7 @@ class Property
     /**
      * @param mixed $value
      *
-     * @return mixed[]|bool|float|int|object|string|null
+     * @return mixed
      */
     public function castValue($value)
     {
@@ -81,6 +81,7 @@ class Property
             return null;
         }
 
+        /** @psalm-var string $value */
         $value = $this->castValueCallback($value);
 
         if ($this->iterable) {
@@ -98,6 +99,7 @@ class Property
     protected function castValueCallback($value)
     {
         if (($callback = $this->callback) && \is_callable($callback)) {
+            /** @psalm-var string $value */
             $value = $callback($value);
         }
 
@@ -112,7 +114,12 @@ class Property
     protected function castValueType($value)
     {
         if (($type = $this->customType) && \class_exists($type)) {
-            $value = new $type($value);
+            try {
+                $ref   = new \ReflectionClass($type);
+                $value = $ref->newInstanceArgs([$value]);
+            } catch (\ReflectionException $e) {
+                // Intentionally left empty.
+            }
         } else {
             Normalize::setType($value, $this->type);
         }

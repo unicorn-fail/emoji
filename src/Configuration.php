@@ -71,15 +71,11 @@ class Configuration extends Data implements ConfigurationInterface
             ->default([])
             ->normalize(
             /**
-             * @param mixed $value
+             * @param string|string[] $value
              *
              * @return string[]
              */
                 static function (Options $options, $value): array {
-                    if (! $value) {
-                        return $value;
-                    }
-
                     return Normalize::shortcodes($value);
                 }
             );
@@ -128,15 +124,16 @@ class Configuration extends Data implements ConfigurationInterface
     }
 
     /**
-     * @param mixed $value
+     * @param mixed $values
      */
-    protected function definePresetAllowedValues($value): bool
+    protected function definePresetAllowedValues($values): bool
     {
-        foreach ((array) $value as $v) {
-            if (! \in_array($v, ShortcodeInterface::SUPPORTED_PRESETS, true)) {
+        foreach ((array) $values as $value) {
+            \assert(\is_string($value));
+            if (! \in_array($value, ShortcodeInterface::SUPPORTED_PRESETS, true)) {
                 throw new InvalidOptionsException(\sprintf(
                     'The option "preset" with value "%s" is invalid. Accepted values are: %s.',
-                    $v,
+                    $value,
                     \implode(', ', \array_map(static function ($s) {
                         return \sprintf('"%s"', $s);
                     }, ShortcodeInterface::SUPPORTED_PRESETS))
@@ -157,6 +154,7 @@ class Configuration extends Data implements ConfigurationInterface
         // Presets.
         $presets = [];
         foreach ((array) $value as $preset) {
+            \assert(\is_string($preset));
             if (isset(ShortcodeInterface::PRESET_ALIASES[$preset])) {
                 $presets[] = ShortcodeInterface::PRESET_ALIASES[$preset];
             } elseif (isset(ShortcodeInterface::PRESETS[$preset])) {

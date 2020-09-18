@@ -15,19 +15,21 @@ abstract class AbstractToken implements \Stringable
     }
 
     /**
-     * @param AbstractToken[] $tokens
+     * @param AbstractToken[]              $tokens
+     * @param callable(AbstractToken):bool $callback
      *
-     * @return array<int, static>
+     * @return static[]
      */
     public static function filter(array $tokens, ?callable $callback = null): array
     {
         if (! $callback) {
+            /** @var callable(AbstractToken):bool $callback */
             $callback = static function (AbstractToken $token): bool {
                 return $token instanceof static;
             };
         }
 
-        /** @var array<int, static> $tokens */
+        /** @var static[] $tokens */
         $tokens = \array_filter($tokens, $callback);
 
         return $tokens;

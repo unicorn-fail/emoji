@@ -12,6 +12,18 @@ use UnicornFail\Emoji\Emojibase\DatasetInterface;
  */
 final class Normalize
 {
+    public const TYPE_METHODS = [
+        'array' => 'toArray',
+        'bool' => 'toBoolean',
+        'boolean' => 'toBoolean',
+        'double' => 'toFloat',
+        'float' => 'toFloat',
+        'int' => 'toInteger',
+        'integer' => 'toInteger',
+        'object' => 'toObject',
+        'string' => 'toString',
+    ];
+
     public const TYPES = ['array', 'bool', 'boolean', 'double', 'float', 'int', 'integer', 'null', 'object', 'string'];
 
     /**
@@ -23,6 +35,7 @@ final class Normalize
     public static function dataset($emojis = [], string $index = 'hexcode', array &$dataset = []): array
     {
         foreach (static::emojis($emojis) as $emoji) {
+            /** @var string[] $keys */
             $keys = \array_filter((array) $emoji->$index);
             foreach ($keys as $k) {
                 if (isset($dataset[$k])) {
@@ -53,17 +66,20 @@ final class Normalize
             $emojis = (array) $emojis;
         }
 
+        /** @var Emoji[] $normalized */
+        $normalized = [];
+
+        /** @var mixed|string[]|Emoji $emoji */
         foreach ($emojis as &$emoji) {
             if (\is_array($emoji)) {
                 $emoji = new Emoji($emoji);
             }
 
-            if (! $emoji instanceof Emoji) {
-                throw new \RuntimeException(\sprintf('Passed array item must be an instance of %s.', Emoji::class));
-            }
+            \assert($emoji instanceof Emoji);
+            $normalized[] = $emoji;
         }
 
-        return (array) $emojis;
+        return $normalized;
     }
 
     public static function locale(string $locale): string
@@ -74,6 +90,7 @@ final class Normalize
         }
 
         // Immediately return if this local has already been normalized.
+        /** @var string[] $normalized */
         static $normalized = [];
         if (isset($normalized[$locale])) {
             return $normalized[$locale];
@@ -104,9 +121,12 @@ final class Normalize
     public static function properties(array $properties, array $types): array
     {
         $properties += \array_fill_keys(\array_keys($types), null);
+
+        /** @psalm-var string $value */
         foreach ($properties as $key => $value) {
-            $type             = $types[$key] ?? '?string';
-            $properties[$key] = Property::cast($type, $value);
+            /** @psalm-var string $value */
+            $value            = Property::cast($types[$key] ?? '?string', $value);
+            $properties[$key] = $value;
         }
 
         return $properties;
@@ -117,27 +137,17 @@ final class Normalize
      */
     public static function setType(&$value, string $type): bool
     {
-        static $methods = [
-            'array' => 'toArray',
-            'bool' => 'toBoolean',
-            'boolean' => 'toBoolean',
-            'double' => 'toFloat',
-            'float' => 'toFloat',
-            'int' => 'toInteger',
-            'integer' => 'toInteger',
-            'object' => 'toObject',
-            'string' => 'toString',
-        ];
-
         // Immediately return if not a valid type.
-        if (! isset($methods[$type])) {
+        if (! isset(self::TYPE_METHODS[$type])) {
             $value = null;
 
             return false;
         }
 
-        $method = $methods[$type];
-        $value  = static::$method($value);
+        $method = self::TYPE_METHODS[$type];
+
+        /** @psalm-var string $value */
+        $value = static::$method($value);
 
         return true;
     }
@@ -150,19 +160,15 @@ final class Normalize
     public static function shortcodes($shortcode): array
     {
         $normalized = [];
+
+        /** @var string|string[] $shortcodes */
         foreach (\func_get_args() as $shortcodes) {
-            $normalized = \array_values(\array_unique(\array_merge(
-                $normalized,
-                \array_map(
-                    static function ($shortcode) {
-                        return \preg_replace('/[^a-z0-9-]/', '-', \strtolower(\trim($shortcode, ':(){}[]')));
-                    },
-                    (array) $shortcodes
-                )
-            )));
+            $normalized = \array_merge($normalized, \array_map(static function ($shortcode) {
+                        return \preg_replace('/[^a-z0-9-]/', '-', \strtolower(\trim((string) $shortcode, ':(){}[]')));
+            }, (array) $shortcodes));
         }
 
-        return \array_unique(\array_filter($normalized));
+        return \array_values(\array_unique(\array_filter($normalized)));
     }
 
     /**

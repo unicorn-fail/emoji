@@ -75,7 +75,10 @@ final class Normalize
                 $emoji = new Emoji($emoji);
             }
 
-            \assert($emoji instanceof Emoji);
+            if (! $emoji instanceof Emoji) {
+                throw new \RuntimeException(\sprintf('Passed array item must be an instance of %s.', Emoji::class));
+            }
+
             $normalized[] = $emoji;
         }
 

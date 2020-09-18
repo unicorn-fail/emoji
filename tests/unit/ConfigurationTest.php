@@ -144,7 +144,7 @@ class ConfigurationTest extends TestCase
         ];
         foreach ($excludeShortcodes as $excludeShortcode) {
             [$raw, $expected] = $excludeShortcode;
-            $name             = 'excludeShortcodes';
+            $name             = 'exclude.shortcodes';
             $label            = $this->datasetLabel($name, $raw);
 
             $data[$label] = [
@@ -194,12 +194,13 @@ class ConfigurationTest extends TestCase
         $configuration = new Configuration();
         $this->assertSame($configuration, Configuration::create($configuration));
 
-        $data          = ['excludeShortcodes' => ['foo-bar']];
+        $data          = ['exclude.shortcodes' => ['foo-bar']];
         $configuration = new Configuration(new \ArrayObject($data));
         $actual        = $configuration->export();
 
-        $this->assertArrayHasKey('excludeShortcodes', $actual);
-        $this->assertEmpty(\array_diff($data['excludeShortcodes'], $actual['excludeShortcodes']));
+        $this->assertArrayHasKey('exclude', $actual);
+        $this->assertArrayHasKey('shortcodes', $actual['exclude']);
+        $this->assertEmpty(\array_diff($data['exclude.shortcodes'], $actual['exclude']['shortcodes']));
     }
 
     /**

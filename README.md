@@ -33,7 +33,9 @@ use UnicornFail\Emoji\Emojibase\ShortcodeInterface;
 // Default configuration.
 $configuration = [
     'convertEmoticons'  => true,
-    'excludeShortcodes' => [],
+    'exclude'           => [
+        'shortcodes' => [],
+    ],
     'locale'            => 'en',
     'native'            => null, // auto, true or false depending on locale set.
     'presentation'      => DatasetInterface::EMOJI,

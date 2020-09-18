@@ -29,7 +29,7 @@ abstract class AbstractEmojiToken extends AbstractToken
         $this->emoji = $emoji;
 
         /** @var string[] $excludedShortcodes */
-        $excludedShortcodes = $configuration->get('excludeShortcodes');
+        $excludedShortcodes = $configuration->get('exclude.shortcodes');
         $this->setExcludedShortcodes($excludedShortcodes);
 
         /** @var ?int $presentation */

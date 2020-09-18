@@ -173,7 +173,7 @@ class ConverterTest extends TestCase
     {
         $converter = Converter::create(
             [
-                'excludeShortcodes' => ['mobile-phone'],
+                'exclude.shortcodes' => ['mobile-phone'],
             ]
         );
         $this->assertEquals(':iphone:', $converter->convert('📱', Lexer::T_SHORTCODE));

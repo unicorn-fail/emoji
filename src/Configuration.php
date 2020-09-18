@@ -20,18 +20,21 @@ class Configuration extends Data implements ConfigurationInterface
      */
     public function __construct(?iterable $configuration = null)
     {
-        $resolver = new OptionsResolver();
-        $this->configureOptions($resolver);
+        parent::__construct([]);
 
-        $options = $configuration !== null ? (new \ArrayObject($configuration))->getArrayCopy() : [];
+        /** @var string[] $data */
+        $data = $configuration !== null ? (new \ArrayObject($configuration))->getArrayCopy() : [];
+        foreach ($data as $key => $value) {
+            $this->set((string) $key, $value);
+        }
 
         try {
-            $data = $resolver->resolve($options);
+            $resolver = new OptionsResolver();
+            $this->configureOptions($resolver);
+            $this->data = $resolver->resolve($this->data);
         } catch (\Throwable $throwable) {
             throw new InvalidConfigurationException($throwable->getMessage(), (int) $throwable->getCode(), $throwable->getPrevious());
         }
-
-        parent::__construct($data);
     }
 
     /**
@@ -49,7 +52,7 @@ class Configuration extends Data implements ConfigurationInterface
     public function configureOptions(OptionsResolver $resolver): void
     {
         $this->defineConvertEmoticons($resolver);
-        $this->defineExcludeShortcodes($resolver);
+        $this->defineExclude($resolver);
         $this->defineLocale($resolver);
         $this->defineNative($resolver);
         $this->definePresentation($resolver);
@@ -64,21 +67,23 @@ class Configuration extends Data implements ConfigurationInterface
             ->default(true);
     }
 
-    protected function defineExcludeShortcodes(OptionsResolver $resolver): void
+    protected function defineExclude(OptionsResolver $resolver): void
     {
-        $resolver->define('excludeShortcodes')
-            ->allowedTypes('string', 'string[]')
-            ->default([])
-            ->normalize(
-            /**
-             * @param string|string[] $value
-             *
-             * @return string[]
-             */
-                static function (Options $options, $value): array {
-                    return Normalize::shortcodes($value);
-                }
-            );
+        $resolver->setDefault('exclude', static function (OptionsResolver $resolver): void {
+            $resolver->define('shortcodes')
+                ->allowedTypes('string', 'string[]')
+                ->default([])
+                ->normalize(
+                /**
+                 * @param string|string[] $value
+                 *
+                 * @return string[]
+                 */
+                    static function (Options $options, $value): array {
+                        return Normalize::shortcodes($value);
+                    }
+                );
+        });
     }
 
     protected function defineLocale(OptionsResolver $resolver): void

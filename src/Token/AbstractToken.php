@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace UnicornFail\Emoji\Token;
 
-abstract class AbstractToken implements \Stringable
+abstract class AbstractToken implements TokenInterface
 {
     /** @var string */
     private $value;
@@ -15,16 +15,16 @@ abstract class AbstractToken implements \Stringable
     }
 
     /**
-     * @param AbstractToken[]              $tokens
-     * @param callable(AbstractToken):bool $callback
+     * @param TokenInterface[]              $tokens
+     * @param callable(TokenInterface):bool $callback
      *
      * @return static[]
      */
     public static function filter(array $tokens, ?callable $callback = null): array
     {
         if (! $callback) {
-            /** @var callable(AbstractToken):bool $callback */
-            $callback = static function (AbstractToken $token): bool {
+            /** @var callable(TokenInterface):bool $callback */
+            $callback = static function (TokenInterface $token): bool {
                 return $token instanceof static;
             };
         }

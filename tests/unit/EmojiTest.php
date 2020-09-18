@@ -397,11 +397,11 @@ class EmojiTest extends TestCase
     {
         $emoji    = new Emoji(self::GRINNING_FACE);
         $actual   = \hash('sha256', \serialize($emoji));
-        $expected = '7b0efe3bc5e9d4ae30d07d0aadf2730802cfe05cbafcbf6d6a8643022286a609';
+        $expected = '6390f5490086baed7ac4ffb76cf4f06647da58ad7dce460a1fb8c672a6af8a91';
 
         // Apparently serialization spits out something a bit different in PHP 7.4+.
         if (\version_compare(PHP_VERSION, '7.4.0', '>=')) {
-            $expected = '204b237132e4c4be29870c40d102acfed0f13f5b089a245f77022adb53bec244';
+            $expected = '56ba0c30f33f29f6c39197ef09fe531f9127efb795de3473e9b1fb840c1f3a1d';
         }
 
         $this->assertSame($expected, $actual);

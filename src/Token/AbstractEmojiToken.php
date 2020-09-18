@@ -9,7 +9,7 @@ use UnicornFail\Emoji\Emoji;
 use UnicornFail\Emoji\Emojibase\DatasetInterface;
 use UnicornFail\Emoji\Lexer;
 
-abstract class AbstractEmojiToken extends AbstractToken
+abstract class AbstractEmojiToken extends AbstractToken implements EmojiTokenInterface
 {
     /** @var string[]  */
     private $excludedShortcodes = [];
@@ -23,7 +23,7 @@ abstract class AbstractEmojiToken extends AbstractToken
     /** @var int */
     private $stringableType = Lexer::T_UNICODE;
 
-    public function __construct(ConfigurationInterface $configuration, string $value, Emoji $emoji)
+    public function __construct(string $value, ConfigurationInterface $configuration, Emoji $emoji)
     {
         parent::__construct($value);
         $this->emoji = $emoji;
@@ -65,26 +65,20 @@ abstract class AbstractEmojiToken extends AbstractToken
     }
 
     /**
-     * @param string[] $excludedShortcodes
+     * {@inheritDoc}
      */
-    public function setExcludedShortcodes(array $excludedShortcodes = []): self
+    public function setExcludedShortcodes(array $excludedShortcodes = []): void
     {
         $this->excludedShortcodes = $excludedShortcodes;
-
-        return $this;
     }
 
-    public function setPresentationMode(?int $presentationMode = null): self
+    public function setPresentationMode(?int $presentationMode = null): void
     {
         $this->presentationMode = $presentationMode;
-
-        return $this;
     }
 
-    public function setStringableType(int $stringableType): self
+    public function setStringableType(int $stringableType): void
     {
         $this->stringableType = $stringableType;
-
-        return $this;
     }
 }

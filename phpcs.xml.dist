@@ -16,6 +16,15 @@
     <file>tests/unit</file>
 
     <rule ref="SlevomatCodingStandard.ControlStructures.RequireMultiLineTernaryOperator"/>
+    <rule ref="SlevomatCodingStandard.Commenting.InlineDocCommentDeclaration">
+        <properties>
+            <property name="allowAboveNonAssignment" value="true" />
+        </properties>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.PHP.RequireExplicitAssertion">
+        <severity>0</severity>
+    </rule>
 
     <!-- Include full Unleashed Coding Standard -->
     <rule ref="Unleashed"/>

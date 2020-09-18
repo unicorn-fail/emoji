@@ -10,18 +10,25 @@ use UnicornFail\Emoji\Exception\UnarchiveException;
 use UnicornFail\Emoji\Util\ImmutableArrayIterator;
 use UnicornFail\Emoji\Util\Normalize;
 
+/**
+ * @method Emoji[] getArrayCopy()
+ */
 final class Dataset extends ImmutableArrayIterator
 {
     public const DIRECTORY = __DIR__ . '/../datasets';
 
-    /** @var array<string, Dataset> */
-    protected $indices = [];
+    /** @var string */
+    private $index;
+
+    /** @var Dataset[] */
+    private $indices = [];
 
     /**
      * @param mixed $emojis
      */
     public function __construct($emojis = [], string $index = 'hexcode')
     {
+        $this->index = $index;
         parent::__construct(Normalize::dataset($emojis, $index), \ArrayIterator::ARRAY_AS_PROPS | \ArrayIterator::STD_PROP_LIST);
     }
 
@@ -83,5 +90,21 @@ final class Dataset extends ImmutableArrayIterator
         }
 
         return $this->indices[$index];
+    }
+
+    /**
+     * @param string $key
+     */
+    public function offsetGet($key): ?Emoji // phpcs:ignore
+    {
+        // Normalize shortcodes to match index.
+        if (\strpos($this->index, 'shortcode') !== false) {
+            $key = \current(Normalize::shortcodes($key));
+        }
+
+        /** @var ?Emoji $emoji */
+        $emoji = parent::offsetGet($key);
+
+        return $emoji;
     }
 }

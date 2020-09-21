@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace UnicornFail\Emoji\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
-use UnicornFail\Emoji\Configuration;
+use UnicornFail\Emoji\Configuration\Configuration;
 use UnicornFail\Emoji\Emojibase\ShortcodeInterface;
 use UnicornFail\Emoji\Exception\InvalidConfigurationException;
 

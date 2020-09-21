@@ -4,19 +4,37 @@ declare(strict_types=1);
 
 namespace UnicornFail\Emoji;
 
-use UnicornFail\Emoji\Token\AbstractEmojiToken;
+use UnicornFail\Emoji\Environment\EmojiEnvironmentInterface;
+use UnicornFail\Emoji\Environment\Environment;
+use UnicornFail\Emoji\Node\Inline\AbstractEmoji;
+use UnicornFail\Emoji\Output\RenderedContentInterface;
+use UnicornFail\Emoji\Parser\Lexer;
+use UnicornFail\Emoji\Parser\Parser;
+use UnicornFail\Emoji\Renderer\Renderer;
 
 final class Converter
 {
-    /** @var Parser|ParserInterface */
+    /** @var EmojiEnvironmentInterface */
+    private $environment;
+
+    /** @var ?Parser */
     private $parser;
+
+    /** @var ?Renderer */
+    private $renderer;
 
     /**
      * @param mixed[]|\Traversable $configuration
      */
-    public function __construct(?iterable $configuration = null, ?Dataset $dataset = null, ?ParserInterface $parser = null)
+    public function __construct(?iterable $configuration = null, ?EmojiEnvironmentInterface $environment = null)
     {
-        $this->parser = $parser ?? new Parser($configuration, $dataset);
+        if ($environment === null) {
+            $environment = Environment::create($configuration);
+        } elseif ($configuration !== null) {
+            $environment->getConfiguration()->import((new \ArrayObject($configuration))->getArrayCopy());
+        }
+
+        $this->environment = $environment;
     }
 
     /**
@@ -27,46 +45,95 @@ final class Converter
         return new self($configuration);
     }
 
-    public function convert(string $input, ?int $type = null): string
+    /**
+     * Converts CommonMark to HTML.
+     *
+     * @see Converter::convertToHtml
+     *
+     * @throws \RuntimeException
+     */
+    public function __invoke(string $commonMark): RenderedContentInterface
     {
-        $parser         = $this->getParser();
-        $stringableType = (int) $parser->getConfiguration()->get('stringableType');
+        return $this->convert($commonMark);
+    }
+
+    protected function convert(string $input, ?string $type = null): RenderedContentInterface
+    {
+        $stringableType = (string) $this->environment->getConfiguration()->get('stringableType');
 
         // Parse.
-        $tokens = $parser->parse($input);
+        $document = $this->getParser()->parse($input);
 
         // Ensure tokens are set to the correct stringable type.
         if ($type !== null && $type !== $stringableType) {
-            foreach (AbstractEmojiToken::filter($tokens) as $token) {
-                $token->setStringableType($type);
+            $walker = $document->walker();
+            while ($event = $walker->next()) {
+                if (! $event->isEntering()) {
+                    continue;
+                }
+
+                $emoji = $event->getNode();
+                if (! ($emoji instanceof AbstractEmoji)) {
+                    continue;
+                }
+
+                $emoji->setStringableType($type);
             }
         }
 
-        return \implode($tokens);
+        return $this->getRenderer()->renderDocument($document);
     }
 
-    public function convertToEmoticon(string $input): string
+    public function convertToEmoticon(string $input): RenderedContentInterface
     {
-        return $this->convert($input, Lexer::T_EMOTICON);
+        return $this->convert($input, Lexer::EMOTICON);
     }
 
-    public function convertToHtml(string $input): string
+    public function convertToHtml(string $input): RenderedContentInterface
     {
-        return $this->convert($input, Lexer::T_HTML_ENTITY);
+        return $this->convert($input, Lexer::HTML_ENTITY);
     }
 
-    public function convertToShortcode(string $input): string
+    public function convertToShortcode(string $input): RenderedContentInterface
     {
-        return $this->convert($input, Lexer::T_SHORTCODE);
+        return $this->convert($input, Lexer::SHORTCODE);
     }
 
-    public function convertToUnicode(string $input): string
+    public function convertToUnicode(string $input): RenderedContentInterface
     {
-        return $this->convert($input, Lexer::T_UNICODE);
+        return $this->convert($input, Lexer::UNICODE);
     }
 
-    public function getParser(): ParserInterface
+    public function getEnvironment(): EmojiEnvironmentInterface
     {
+        return $this->environment;
+    }
+
+    public function getParser(): Parser
+    {
+        if ($this->parser === null) {
+            $this->parser = new Parser($this->environment);
+        }
+
         return $this->parser;
+    }
+
+    public function getRenderer(): Renderer
+    {
+        if ($this->renderer === null) {
+            $this->renderer = new Renderer($this->environment);
+        }
+
+        return $this->renderer;
+    }
+
+    public function setParser(Parser $parser): void
+    {
+        $this->parser = $parser;
+    }
+
+    public function setRenderer(Renderer $renderer): void
+    {
+        $this->renderer = $renderer;
     }
 }

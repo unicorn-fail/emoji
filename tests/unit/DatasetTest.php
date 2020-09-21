@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace UnicornFail\Emoji\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
-use UnicornFail\Emoji\Dataset;
-use UnicornFail\Emoji\Emoji;
+use UnicornFail\Emoji\Dataset\Dataset;
+use UnicornFail\Emoji\Dataset\Emoji;
 use UnicornFail\Emoji\Exception\FileNotFoundException;
 use UnicornFail\Emoji\Exception\MalformedArchiveException;
 use UnicornFail\Emoji\Exception\UnarchiveException;

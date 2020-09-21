@@ -53,6 +53,7 @@
         "ext-zlib": "*",
         "dflydev/dot-access-data": "^2.0",
         "doctrine/lexer": "^1.2",
+        "psr/event-dispatcher": "^1.0",
         "symfony/options-resolver": "^5.1",
         "symfony/polyfill-php80": "^1.15"
     },
@@ -98,6 +99,7 @@
     },
     "scripts": {
         "emojibase": "npm install && npm run build && php ./scripts/build.php",
+        "fix": "phpcbf",
         "phpcs": "phpcs",
         "phpstan": "phpstan analyse",
         "phpunit": "./scripts/phpunit --no-coverage --colors=always",

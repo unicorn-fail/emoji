@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace UnicornFail\Emoji\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
-use UnicornFail\Emoji\Emoji;
+use UnicornFail\Emoji\Dataset\Emoji;
 
 class EmojiTest extends TestCase
 {
@@ -397,11 +397,11 @@ class EmojiTest extends TestCase
     {
         $emoji    = new Emoji(self::GRINNING_FACE);
         $actual   = \hash('sha256', \serialize($emoji));
-        $expected = '6390f5490086baed7ac4ffb76cf4f06647da58ad7dce460a1fb8c672a6af8a91';
+        $expected = '30ba85364f455b2d5563621d4c1d59c12ad70ccba10377c2b0ff4610d3036da6';
 
         // Apparently serialization spits out something a bit different in PHP 7.4+.
         if (\version_compare(PHP_VERSION, '7.4.0', '>=')) {
-            $expected = '56ba0c30f33f29f6c39197ef09fe531f9127efb795de3473e9b1fb840c1f3a1d';
+            $expected = 'e81c806062ce86a27bc0706d09caf41041421779985054a144aca3747d67e6ea';
         }
 
         $this->assertSame($expected, $actual);

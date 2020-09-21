@@ -6,11 +6,11 @@ namespace UnicornFail\Emoji\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
 use UnicornFail\Emoji\Converter;
-use UnicornFail\Emoji\Dataset;
+use UnicornFail\Emoji\Dataset\Dataset;
 use UnicornFail\Emoji\Emojibase\DatasetInterface;
 use UnicornFail\Emoji\Emojibase\ShortcodeInterface;
 use UnicornFail\Emoji\Exception\LocalePresetException;
-use UnicornFail\Emoji\Lexer;
+use UnicornFail\Emoji\Parser\Lexer;
 
 class ConverterTest extends TestCase
 {
@@ -103,35 +103,28 @@ class ConverterTest extends TestCase
         return $data;
     }
 
-    public function testConvert(): void
-    {
-        $converter = new Converter();
-        $actual    = $converter->convert(self::ENCODINGS['en']['raw']);
-        $this->assertEquals(self::ENCODINGS['en']['unicode'], $actual);
-    }
-
     /**
      * @dataProvider providerEncodings
      */
-    public function testConvertToEncoding(int $tokenType, string $expected): void
+    public function testConvert(int $tokenType, string $expected): void
     {
         $converter = new Converter();
         $actual    = null;
         switch ($tokenType) {
             case Lexer::T_EMOTICON:
-                $actual = $converter->convertToEmoticon(self::ENCODINGS['en']['raw']);
+                $actual = (string) $converter->convertToEmoticon(self::ENCODINGS['en']['raw']);
                 break;
 
             case Lexer::T_HTML_ENTITY:
-                $actual = $converter->convertToHtml(self::ENCODINGS['en']['raw']);
+                $actual = (string) $converter->convertToHtml(self::ENCODINGS['en']['raw']);
                 break;
 
             case Lexer::T_SHORTCODE:
-                $actual = $converter->convertToShortcode(self::ENCODINGS['en']['raw']);
+                $actual = (string) $converter->convertToShortcode(self::ENCODINGS['en']['raw']);
                 break;
 
             case Lexer::T_UNICODE:
-                $actual = $converter->convertToUnicode(self::ENCODINGS['en']['raw']);
+                $actual = (string) $converter->convertToUnicode(self::ENCODINGS['en']['raw']);
                 break;
         }
 
@@ -164,6 +157,7 @@ class ConverterTest extends TestCase
         ];
         $converter     = new Converter($configuration);
         $this->assertTrue($converter instanceof Converter);
+        $this->assertTrue($converter->getEnvironment()->getDataset() instanceof Dataset);
 
         // The variable must be manually emptied after each assertion in order to avoid memory leaks between tests.
         $converter = null;
@@ -176,7 +170,7 @@ class ConverterTest extends TestCase
                 'exclude.shortcodes' => ['mobile-phone'],
             ]
         );
-        $this->assertEquals(':iphone:', $converter->convert('📱', Lexer::T_SHORTCODE));
+        $this->assertEquals(':iphone:', (string) $converter->convertToShortcode('📱'));
     }
 
     /**
@@ -187,7 +181,7 @@ class ConverterTest extends TestCase
     public function testPresentation(array $configuration, string $raw, string $expected): void
     {
         $converter = Converter::create($configuration);
-        $actual    = $converter->convertToUnicode($raw);
+        $actual    = (string) $converter->convertToUnicode($raw);
         $this->assertSame($expected, $actual);
     }
 
@@ -195,13 +189,13 @@ class ConverterTest extends TestCase
     {
         $converter = new Converter();
 
-        $unicode = $converter->convert('We <3 :unicorn: :D!');
+        $unicode = (string) $converter->convertToUnicode('We <3 :unicorn: :D!');
         $this->assertSame('We ❤️ 🦄 😀!', $unicode);
 
-        $html = $converter->convertToHtml('We <3 :unicorn: :D!');
+        $html = (string) $converter->convertToHtml('We <3 :unicorn: :D!');
         $this->assertSame('We &#x2764; &#x1F984; &#x1F600;!', $html);
 
-        $shortcode = $converter->convertToShortcode('We <3 :unicorn: :D!');
+        $shortcode = (string) $converter->convertToShortcode('We <3 :unicorn: :D!');
         $this->assertSame('We :red-heart: :unicorn-face: :grinning-face:!', $shortcode);
     }
 
@@ -212,7 +206,7 @@ class ConverterTest extends TestCase
     {
         $converter = Converter::create(['preset' => $preset]);
         $expected  = \file_get_contents(__DIR__ . '/../fixtures/unicode.md');
-        $actual    = $converter->convert($contents, Lexer::T_UNICODE);
+        $actual    = (string) $converter->convertToUnicode($contents);
         $this->assertEquals($expected, $actual);
     }
 
@@ -223,7 +217,7 @@ class ConverterTest extends TestCase
     {
         $converter = Converter::create(['preset' => $preset]);
         $contents  = \file_get_contents(__DIR__ . '/../fixtures/unicode.md');
-        $actual    = $converter->convert($contents, Lexer::T_SHORTCODE);
+        $actual    = (string) $converter->convertToShortcode($contents);
         $this->assertEquals($expected, $actual);
     }
 }

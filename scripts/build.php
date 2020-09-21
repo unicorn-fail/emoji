@@ -6,7 +6,7 @@ declare(strict_types=1);
 const BASE_DIRECTORY = __DIR__ . '/../';
 require_once BASE_DIRECTORY . '/vendor/autoload.php';
 
-use UnicornFail\Emoji\Dataset;
+use UnicornFail\Emoji\Dataset\Dataset;
 use UnicornFail\Emoji\Emojibase\DatasetInterface;
 use UnicornFail\Emoji\Emojibase\ShortcodeInterface;
 use UnicornFail\Emoji\Util\Normalize;
@@ -95,7 +95,7 @@ foreach (DatasetInterface::SUPPORTED_LOCALES as $locale) {
         }
 
         $destination = sprintf('%s/%s/%s.gz', Dataset::DIRECTORY, $locale, $preset);
-        $relative    = str_replace($baseDirectory . '/src/..', '.', $destination);
+        $relative    = str_replace($baseDirectory . '/src/Dataset/../..', '.', $destination);
         $directory   = dirname($destination);
         /** @scrutinizer ignore-unhandled */ @mkdir($directory, 0775, true);
 

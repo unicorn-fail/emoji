@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace UnicornFail\Emoji\Util;
 
-use UnicornFail\Emoji\Emoji;
+use UnicornFail\Emoji\Dataset\Emoji;
 use UnicornFail\Emoji\Emojibase\DatasetInterface;
 
 /**
@@ -113,6 +113,22 @@ final class Normalize
         }
 
         return $normalized[$original];
+    }
+
+    /**
+     * @param string[] $patterns
+     *
+     * @return string[]
+     */
+    public static function patterns(array $patterns): array
+    {
+        // Some regex patterns may include the delimiter and modifiers. Because a lexer
+        // joins these expressions together as an OR group (|), they must be removed.
+        foreach ($patterns as &$pattern) {
+            $pattern = \trim(\rtrim($pattern, 'imsxeADSUXJu'), '/');
+        }
+
+        return $patterns;
     }
 
     /**

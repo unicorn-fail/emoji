@@ -20,7 +20,7 @@ final class Dataset extends ImmutableArrayIterator implements DatasetInterface
     private $indices = [];
 
     /**
-     * @param mixed $emojis
+     * @param mixed|mixed[] $emojis
      */
     public function __construct($emojis = [], string $index = 'hexcode')
     {
@@ -76,7 +76,10 @@ final class Dataset extends ImmutableArrayIterator implements DatasetInterface
      */
     public function filter(callable $callback): Dataset
     {
-        return new self(new \CallbackFilterIterator($this, $callback));
+        /** @var \Iterator $this */
+        $iterator = new \CallbackFilterIterator($this, $callback);
+
+        return new self($iterator);
     }
 
     public function indexBy(string $index = 'hexcode'): Dataset
@@ -96,6 +99,10 @@ final class Dataset extends ImmutableArrayIterator implements DatasetInterface
         // Normalize shortcodes to match index.
         if (\strpos($this->index, 'shortcode') !== false) {
             $key = \current(Normalize::shortcodes($key));
+        }
+
+        if (! $key) {
+            return null;
         }
 
         /** @var ?Emoji $emoji */

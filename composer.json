@@ -44,17 +44,16 @@
     "repositories": [
         {
             "type": "vcs",
-            "url": "https://github.com/markcarver/phpunit-pretty-print.git"
+            "url": "https://github.com/unicorn-fail/configuration.git"
         }
     ],
     "require": {
         "php": "^7.2.5 || ^8.0",
         "ext-mbstring": "*",
         "ext-zlib": "*",
-        "dflydev/dot-access-data": "^2.0",
         "doctrine/lexer": "^1.2",
+        "league/configuration": "dev-latest",
         "psr/event-dispatcher": "^1.0",
-        "symfony/options-resolver": "^5.1",
         "symfony/polyfill-php80": "^1.15"
     },
     "require-dev": {
@@ -62,7 +61,7 @@
         "phpstan/phpstan": "^0.12.42",
         "phpunit/phpunit": "^8.5.8",
         "scrutinizer/ocular": "^1.5",
-        "sempro/phpunit-pretty-print": "dev-patch-1#d90a03400a038d8bb3b9413cfcce83d1274c09ec",
+        "sempro/phpunit-pretty-print": "^1.4",
         "squizlabs/php_codesniffer": "^3.5",
         "unleashedtech/php-coding-standard": "^2.5",
         "vimeo/psalm": "^3.14"

@@ -34,7 +34,7 @@ final class Normalize
      */
     public static function dataset($emojis = [], string $index = 'hexcode', array &$dataset = []): array
     {
-        foreach (static::emojis($emojis) as $emoji) {
+        foreach (self::emojis($emojis) as $emoji) {
             /** @var string[] $keys */
             $keys = \array_filter((array) $emoji->$index);
             foreach ($keys as $k) {
@@ -44,7 +44,7 @@ final class Normalize
 
                 $dataset[$k] = $emoji;
 
-                static::dataset($emoji->skins, $index, $dataset);
+                self::dataset($emoji->skins, $index, $dataset);
             }
         }
 
@@ -166,13 +166,13 @@ final class Normalize
         $method = self::TYPE_METHODS[$type];
 
         /** @psalm-var string $value */
-        $value = static::$method($value);
+        $value = self::$method($value);
 
         return true;
     }
 
     /**
-     * @param string|string[] $shortcode
+     * @param string|array<array-key, string> $shortcode
      *
      * @return string[]
      */
@@ -183,7 +183,7 @@ final class Normalize
         /** @var string|string[] $shortcodes */
         foreach (\func_get_args() as $shortcodes) {
             $normalized = \array_merge($normalized, \array_map(static function ($shortcode) {
-                        return \preg_replace('/[^a-z0-9-]/', '-', \strtolower(\trim((string) $shortcode, ':(){}[]')));
+                return \preg_replace('/[^a-z0-9-]/', '-', \strtolower(\trim((string) $shortcode, ':(){}[]')));
             }, (array) $shortcodes));
         }
 

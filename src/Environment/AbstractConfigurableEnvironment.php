@@ -4,20 +4,30 @@ declare(strict_types=1);
 
 namespace UnicornFail\Emoji\Environment;
 
-use UnicornFail\Emoji\Configuration\Configuration;
-use UnicornFail\Emoji\Configuration\ConfigurationAwareInterface;
-use UnicornFail\Emoji\Traits\ConfigurableEnvironmentTrait;
+use League\Configuration\ConfigurationAwareInterface;
+use League\Configuration\ConfigurationBuilderInterface;
+use League\Configuration\ConfigurationInterface;
 
-class AbstractConfigurableEnvironment extends AbstractEnvironment implements ConfigurableEnvironmentInterface
+abstract class AbstractConfigurableEnvironment extends AbstractEnvironment implements ConfigurableEnvironmentInterface
 {
-    use ConfigurableEnvironmentTrait;
+    /** @var ConfigurationBuilderInterface */
+    private $config;
 
     /**
-     * @param mixed[]|\Traversable $configuration
+     * @param array<string, mixed> $config
      */
-    public function __construct(?iterable $configuration = null)
+    public function __construct(array $config = [])
     {
-        $this->configuration = Configuration::create($configuration);
+        $this->config = static::createDefaultConfiguration();
+        $this->config->merge($config);
+    }
+
+    /**
+     * @return ConfigurationBuilderInterface
+     */
+    public function getConfiguration(): ConfigurationInterface
+    {
+        return $this->config;
     }
 
     protected function injectEnvironmentAndConfigurationIfNeeded(object $object): void
@@ -28,4 +38,6 @@ class AbstractConfigurableEnvironment extends AbstractEnvironment implements Con
             $object->setConfiguration($this->getConfiguration());
         }
     }
+
+    abstract public static function createDefaultConfiguration(): ConfigurationBuilderInterface;
 }

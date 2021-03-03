@@ -13,11 +13,8 @@ declare(strict_types=1);
 
 namespace UnicornFail\Emoji\Environment;
 
-use UnicornFail\Emoji\Configuration\ConfigurationInterface;
+use League\Configuration\ConfigurationProviderInterface;
 
-interface ConfigurableEnvironmentInterface extends EnvironmentInterface
+interface ConfigurableEnvironmentInterface extends EnvironmentInterface, ConfigurationProviderInterface
 {
-    public function getConfiguration(): ConfigurationInterface;
-
-    public function setConfiguration(ConfigurationInterface $configuration): void;
 }

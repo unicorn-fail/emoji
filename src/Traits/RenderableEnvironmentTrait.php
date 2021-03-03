@@ -50,7 +50,7 @@ trait RenderableEnvironmentTrait
             return $this->renderersByClass[$nodeClass];
         }
 
-        while (\class_exists($parent = $parent ?? $nodeClass) && $parent = \get_parent_class($parent)) {
+        while (\class_exists($parent = (string) ($parent ?? $nodeClass)) && ($parent = \get_parent_class($parent))) {
             if (! isset($this->renderersByClass[$parent])) {
                 continue;
             }

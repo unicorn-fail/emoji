@@ -92,14 +92,14 @@ class Input implements InputInterface
             throw new UnexpectedEncodingException('Failed to split content by line');
         }
 
-        $this->lines = $lines;
-
         // Remove any newline which appears at the very end of the string.
         // We've already split the document by newlines, so we can simply drop
         // any empty element which appears on the end.
-        if (\end($this->lines) === '') {
-            \array_pop($this->lines);
+        if (\end($lines) === '') {
+            \array_pop($lines);
         }
+
+        $this->lines = $lines;
 
         $this->lineCount = \count($this->lines);
     }

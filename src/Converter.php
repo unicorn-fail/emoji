@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace UnicornFail\Emoji;
 
+use League\Configuration\ConfigurationBuilderInterface;
 use UnicornFail\Emoji\Environment\EmojiEnvironmentInterface;
 use UnicornFail\Emoji\Environment\Environment;
 use UnicornFail\Emoji\Node\Inline\AbstractEmoji;
@@ -24,23 +25,25 @@ final class Converter
     private $renderer;
 
     /**
-     * @param mixed[]|\Traversable $configuration
+     * @param array<string, mixed> $configuration
      */
-    public function __construct(?iterable $configuration = null, ?EmojiEnvironmentInterface $environment = null)
+    public function __construct(array $configuration = [], ?EmojiEnvironmentInterface $environment = null)
     {
         if ($environment === null) {
             $environment = Environment::create($configuration);
-        } elseif ($configuration !== null) {
-            $environment->getConfiguration()->import((new \ArrayObject($configuration))->getArrayCopy());
+        } elseif ($configuration) {
+            /** @var ConfigurationBuilderInterface $config */
+            $config = $environment->getConfiguration();
+            $config->merge($configuration);
         }
 
         $this->environment = $environment;
     }
 
     /**
-     * @param mixed[]|\Traversable $configuration
+     * @param array<string, mixed> $configuration
      */
-    public static function create(?iterable $configuration = null): self
+    public static function create(array $configuration = []): self
     {
         return new self($configuration);
     }

@@ -101,7 +101,7 @@ $ composer test-coverage
 
 ## 👥 Credits & Acknowledgements
 
-- [Mark Carver][@_markcarver]
+- [Mark Halliwell][@markehalliwell]
 - [Ben Sinclair] ([elvanto/litemoji])
 - [Miles Johnson] ([milesj/emojibase])
 - [All Contributors]
@@ -116,10 +116,10 @@ wouldn't exist without either of their works!
 
 ## 🏛️ Governance
 
-This project is primarily maintained by [Mark Carver][@_markcarver].
+This project is primarily maintained by [Mark Halliwell][@markehalliwell].
 
 [Composer]: https://getcomposer.org/
-[@_markcarver]: https://www.twitter.com/_markcarver
+[@markehalliwell]: https://www.twitter.com/markehalliwell
 [All Contributors]: https://github.com/thephpleague/commonmark/contributors
 [Ben Sinclair]: https://github.com/bensinclair
 [elvanto/litemoji]: https://github.com/elvanto/litemoji

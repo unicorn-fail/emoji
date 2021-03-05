@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace UnicornFail\Emoji\Util;
 
 use UnicornFail\Emoji\Dataset\Emoji;
-use UnicornFail\Emoji\Emojibase\DatasetInterface;
 
 /**
  * {@internal}
@@ -32,31 +31,7 @@ final class Normalize
      *
      * @return Emoji[]
      */
-    public static function dataset($emojis = [], string $index = 'hexcode', array &$dataset = []): array
-    {
-        foreach (self::emojis($emojis) as $emoji) {
-            /** @var string[] $keys */
-            $keys = \array_filter((array) $emoji->$index);
-            foreach ($keys as $k) {
-                if (isset($dataset[$k])) {
-                    continue;
-                }
-
-                $dataset[$k] = $emoji;
-
-                self::dataset($emoji->skins, $index, $dataset);
-            }
-        }
-
-        return $dataset;
-    }
-
-    /**
-     * @param mixed $emojis
-     *
-     * @return Emoji[]
-     */
-    public static function emojis($emojis = []): array
+    public static function emojis($emojis = [], string $index = 'hexcode', array &$dataset = []): array
     {
         if ($emojis instanceof Emoji) {
             $emojis = [$emojis];
@@ -82,53 +57,21 @@ final class Normalize
             $normalized[] = $emoji;
         }
 
-        return $normalized;
-    }
+        foreach ($normalized as $emoji) {
+            /** @var string[] $keys */
+            $keys = \array_filter((array) $emoji->$index);
+            foreach ($keys as $k) {
+                if (isset($dataset[$k])) {
+                    continue;
+                }
 
-    public static function locale(string $locale): string
-    {
-        // Immediately return if locale is an exact match.
-        if (\in_array($locale, DatasetInterface::SUPPORTED_LOCALES, true)) {
-            return $locale;
-        }
+                $dataset[$k] = $emoji;
 
-        // Immediately return if this local has already been normalized.
-        /** @var string[] $normalized */
-        static $normalized = [];
-        if (isset($normalized[$locale])) {
-            return $normalized[$locale];
-        }
-
-        $original              = $locale;
-        $normalized[$original] = '';
-
-        // Otherwise, see if it just needs some TLC.
-        $locale = \strtolower($locale);
-        $locale = \preg_replace('/[^a-z]/', '-', $locale) ?? $locale;
-        foreach ([$locale, \current(\explode('-', $locale, 2))] as $locale) {
-            if (\in_array($locale, DatasetInterface::SUPPORTED_LOCALES, true)) {
-                $normalized[$original] = $locale;
-                break;
+                self::emojis($emoji->skins, $index, $dataset);
             }
         }
 
-        return $normalized[$original];
-    }
-
-    /**
-     * @param string[] $patterns
-     *
-     * @return string[]
-     */
-    public static function patterns(array $patterns): array
-    {
-        // Some regex patterns may include the delimiter and modifiers. Because a lexer
-        // joins these expressions together as an OR group (|), they must be removed.
-        foreach ($patterns as &$pattern) {
-            $pattern = \trim(\rtrim($pattern, 'imsxeADSUXJu'), '/');
-        }
-
-        return $patterns;
+        return $dataset;
     }
 
     /**

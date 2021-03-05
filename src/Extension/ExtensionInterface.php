@@ -16,9 +16,9 @@ declare(strict_types=1);
 
 namespace UnicornFail\Emoji\Extension;
 
-use UnicornFail\Emoji\Environment\EnvironmentInterface;
+use UnicornFail\Emoji\Environment\EnvironmentBuilderInterface;
 
 interface ExtensionInterface
 {
-    public function register(EnvironmentInterface $environment): void;
+    public function register(EnvironmentBuilderInterface $environment): void;
 }

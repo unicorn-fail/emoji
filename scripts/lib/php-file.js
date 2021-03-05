@@ -42,11 +42,16 @@ const createValue = (indentLevel, value, currentLineLength = 0) => {
         return value ? 'true' : 'false'
     }
     if (value instanceof RegExp) {
+        // Add the unicode modifier if unicode codepoints are found, but it wasn't set.
+        if (/\\u[0-9A-F]{4,5}/.test(value.source) && !value.unicode) {
+            value = new RegExp(value.source, value.flags + 'u')
+        }
+
         // PHP uses a different unicode codepoint syntax, adjust to match.
         value = value.toString()
             // Unicode codepoint.
-            .replace(/\\u{([0-9A-F]{5})}/g, '\\x{$1}')
-            // Unicode hex
+            .replace(/\\u{([0-9A-F]{5})}([\\]?[\-])?/g, '\\x{$1}')
+            // Unicode hex.
             .replace(/\\u([0-9A-F]{4})/g, '\\x{$1}')
     }
 

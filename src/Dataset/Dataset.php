@@ -4,15 +4,17 @@ declare(strict_types=1);
 
 namespace UnicornFail\Emoji\Dataset;
 
-use UnicornFail\Emoji\Exception\FileNotFoundException;
-use UnicornFail\Emoji\Exception\MalformedArchiveException;
-use UnicornFail\Emoji\Exception\UnarchiveException;
-use UnicornFail\Emoji\Parser\Parser;
 use UnicornFail\Emoji\Util\ImmutableArrayIterator;
 use UnicornFail\Emoji\Util\Normalize;
 
-final class Dataset extends ImmutableArrayIterator implements DatasetInterface
+/**
+ * @method Emoji|null current()
+ * @method Emoji[] getArrayCopy()
+ */
+final class Dataset extends ImmutableArrayIterator implements \ArrayAccess, \Countable, \SeekableIterator, \Serializable
 {
+    public const DIRECTORY = __DIR__ . '/../../datasets';
+
     /** @var string */
     private $index;
 
@@ -20,55 +22,13 @@ final class Dataset extends ImmutableArrayIterator implements DatasetInterface
     private $indices = [];
 
     /**
-     * @param mixed|mixed[] $emojis
+     * @param mixed $emojis
      */
     public function __construct($emojis = [], string $index = 'hexcode')
     {
         $this->index = $index;
-        parent::__construct(Normalize::dataset($emojis, $index), \ArrayIterator::ARRAY_AS_PROPS | \ArrayIterator::STD_PROP_LIST);
-    }
-
-    public static function unarchive(string $filename): self
-    {
-        if (! \file_exists($filename)) {
-            throw new FileNotFoundException($filename);
-        }
-
-        if (
-            ! ($contents = \file_get_contents($filename)) ||
-            ! ($decoded = \gzdecode($contents))
-        ) {
-            throw new UnarchiveException($filename);
-        }
-
-        try {
-            /** @var ?Dataset $dataset */
-            $dataset = \unserialize((string) $decoded);
-        } catch (\Throwable $throwable) {
-            throw new MalformedArchiveException($filename, $throwable);
-        }
-
-        if (! $dataset instanceof Dataset) {
-            throw new MalformedArchiveException($filename);
-        }
-
-        return $dataset;
-    }
-
-    /**
-     * @param string[] $indices
-     *
-     * @return false|string
-     */
-    public function archive(array $indices = Parser::INDICES)
-    {
-        foreach ($indices as $index) {
-            $this->indexBy($index);
-        }
-
-        $serialize = \serialize($this);
-
-        return \gzencode($serialize, 9);
+        $normalized  = Normalize::emojis($emojis, $index);
+        parent::__construct($normalized, \ArrayIterator::ARRAY_AS_PROPS | \ArrayIterator::STD_PROP_LIST);
     }
 
     /**
@@ -76,10 +36,11 @@ final class Dataset extends ImmutableArrayIterator implements DatasetInterface
      */
     public function filter(callable $callback): Dataset
     {
-        /** @var \Iterator $this */
-        $iterator = new \CallbackFilterIterator($this, $callback);
+        /** @var \Iterator $iterator */
+        $iterator = $this;
+        $filter   = new \CallbackFilterIterator($iterator, $callback);
 
-        return new self($iterator);
+        return new self($filter);
     }
 
     public function indexBy(string $index = 'hexcode'): Dataset
@@ -98,11 +59,7 @@ final class Dataset extends ImmutableArrayIterator implements DatasetInterface
     {
         // Normalize shortcodes to match index.
         if (\strpos($this->index, 'shortcode') !== false) {
-            $key = \current(Normalize::shortcodes($key));
-        }
-
-        if (! $key) {
-            return null;
+            $key = (string) \current(Normalize::shortcodes($key));
         }
 
         /** @var ?Emoji $emoji */

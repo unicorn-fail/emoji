@@ -16,29 +16,79 @@ declare(strict_types=1);
 
 namespace UnicornFail\Emoji\Environment;
 
-use Dflydev\DotAccessData\Data;
 use League\Configuration\Configuration;
-use League\Configuration\ConfigurationBuilderInterface;
-use League\Configuration\Exception\InvalidConfigurationException;
+use League\Configuration\ConfigurationAwareInterface;
+use League\Configuration\ConfigurationInterface;
 use Nette\Schema\Expect;
-use UnicornFail\Emoji\Dataset\Dataset;
-use UnicornFail\Emoji\Dataset\DatasetInterface;
-use UnicornFail\Emoji\Emojibase\DatasetInterface as EmojibaseDatasetInterface;
-use UnicornFail\Emoji\Emojibase\ShortcodeInterface;
-use UnicornFail\Emoji\Exception\LocalePresetException;
-use UnicornFail\Emoji\Extension\CoreExtension;
-use UnicornFail\Emoji\Parser\Lexer;
-use UnicornFail\Emoji\Parser\Parser;
-use UnicornFail\Emoji\Parser\ParserInterface;
-use UnicornFail\Emoji\Util\Normalize;
+use Nette\Schema\Schema;
+use Psr\EventDispatcher\EventDispatcherInterface;
+use Psr\EventDispatcher\StoppableEventInterface;
+use UnicornFail\Emoji\Dataset\RuntimeDataset;
+use UnicornFail\Emoji\EmojiConverterInterface;
+use UnicornFail\Emoji\Emojibase\EmojibaseDatasetInterface;
+use UnicornFail\Emoji\Emojibase\EmojibaseShortcodeInterface;
+use UnicornFail\Emoji\Event\ListenerData;
+use UnicornFail\Emoji\Extension\ConfigurableExtensionInterface;
+use UnicornFail\Emoji\Extension\ConfigureConversionTypesInterface;
+use UnicornFail\Emoji\Extension\EmojiCoreExtension;
+use UnicornFail\Emoji\Extension\ExtensionInterface;
+use UnicornFail\Emoji\Renderer\NodeRendererInterface;
+use UnicornFail\Emoji\Util\PrioritizedList;
 
-final class Environment extends AbstractConfigurableEnvironment implements EmojiEnvironmentInterface
+final class Environment implements EnvironmentBuilderInterface
 {
-    /** @var ?DatasetInterface */
+    /** @var Configuration */
+    private $config;
+
+    /** @var ?RuntimeDataset */
     private $dataset;
 
-    /** @var ?ParserInterface */
-    private $parser;
+    /** @var ?EventDispatcherInterface */
+    private $eventDispatcher;
+
+    /**
+     * @var ExtensionInterface[]
+     *
+     * @psalm-readonly-allow-private-mutation
+     */
+    private $extensions = [];
+
+    /**
+     * @var bool
+     *
+     * @psalm-readonly-allow-private-mutation
+     */
+    private $initialized = false;
+
+    /**
+     * @var ?PrioritizedList<ListenerData>
+     *
+     * @psalm-readonly-allow-private-mutation
+     */
+    private $listenerData;
+
+    /**
+     * @var array<string, PrioritizedList<NodeRendererInterface>>
+     *
+     * @psalm-readonly-allow-private-mutation
+     */
+    private $renderersByClass = [];
+
+    /**
+     * @var ExtensionInterface[]
+     *
+     * @psalm-readonly-allow-private-mutation
+     */
+    private $uninitializedExtensions = [];
+
+    /**
+     * @param array<string, mixed> $config
+     */
+    public function __construct(array $config = [])
+    {
+        $this->config = new Configuration();
+        $this->config->merge($config);
+    }
 
     /**
      * @param array<string, mixed> $configuration
@@ -54,203 +104,322 @@ final class Environment extends AbstractConfigurableEnvironment implements Emoji
         return $environment;
     }
 
-    public static function createDefaultConfiguration(): ConfigurationBuilderInterface
+    /**
+     * @param string|string[] $value
+     *
+     * @return string[]
+     */
+    public static function normalizeConvert($value): array
     {
-        $config = new Configuration();
+        if (\is_array($value)) {
+            return $value;
+        }
 
-        // @todo Figure out a better way to provide context to the normalizing (before) callbacks.
-        $refConfig     = new \ReflectionObject($config);
-        $refUserConfig = $refConfig->getProperty('userConfig');
-        $refUserConfig->setAccessible(true);
+        return \array_fill_keys(EmojiConverterInterface::TYPES, $value);
+    }
 
-        /** @var Data $userConfig */
-        $userConfig = $refUserConfig->getValue($config);
+    /**
+     * @return ExtensionInterface[]
+     */
+    protected static function defaultExtensions(): iterable
+    {
+        return [new EmojiCoreExtension()];
+    }
 
-        $config->addSchema(
-            'convertEmoticons',
-            Expect::bool(true)
-        );
+    public static function normalizeLocale(string $locale): string
+    {
+        /** @var string[] $normalized */
+        static $normalized = [];
 
-        $config->addSchema(
-            'exclude',
-            Expect::structure([
-                'shortcodes' => Expect::arrayOf('string')
-                    ->default([])
-                    ->before(
-                    /**
-                     * @param string|string[] $value
-                     *
-                     * @return string[]
-                     */
-                        static function ($value): array {
-                            return Normalize::shortcodes($value);
-                        }
-                    ),
-            ])
-        );
+        // Immediately return if locale is an exact match.
+        if (\in_array($locale, EmojibaseDatasetInterface::SUPPORTED_LOCALES, true)) {
+            $normalized[$locale] = $locale;
+        }
 
-        $config->addSchema(
-            'locale',
-            Expect::anyOf(...EmojibaseDatasetInterface::SUPPORTED_LOCALES)
-                ->default('en')
-                ->before(
-                    static function (string $value): string {
-                        return Normalize::locale($value);
-                    }
-                )
-        );
+        // Immediately return if this local has already been normalized.
+        if (isset($normalized[$locale])) {
+            return $normalized[$locale];
+        }
 
-        $config->addSchema(
-            'native',
-            Expect::bool()
-                ->before(
-                    static function (?bool $value = null) use ($userConfig): bool {
-                        /** @var string $locale */
-                        $locale = $userConfig->has('locale')
-                            ? $userConfig->get('locale')
-                            : 'en';
+        $original              = $locale;
+        $normalized[$original] = 'en';
 
-                        $default = \in_array($locale, EmojibaseDatasetInterface::NON_LATIN_LOCALES, true);
+        // Otherwise, see if it just needs some TLC.
+        $locale = \strtolower($locale);
+        $locale = \preg_replace('/[^a-z]/', '-', $locale) ?? $locale;
+        foreach ([$locale, \current(\explode('-', $locale, 2))] as $locale) {
+            if (\in_array($locale, EmojibaseDatasetInterface::SUPPORTED_LOCALES, true)) {
+                $normalized[$original] = $locale;
+                break;
+            }
+        }
 
-                        if ($value === null) {
-                            return $default;
-                        }
+        return $normalized[$original];
+    }
 
-                        $native = $value && $default;
+    /**
+     * @param string|string[] $presets
+     *
+     * @return string[]
+     */
+    public static function normalizePresets($presets): ?array
+    {
+        // Map preset aliases to their correct value.
+        return \array_unique(\array_filter(\array_map(static function (string $preset): string {
+            if (isset(EmojibaseShortcodeInterface::PRESET_ALIASES[$preset])) {
+                return EmojibaseShortcodeInterface::PRESET_ALIASES[$preset];
+            }
 
-                        $userConfig->set('native', $native);
+            return $preset;
+        }, \array_values((array) $presets))));
+    }
 
-                        return $native;
-                    }
-                )
-        );
+    public function addEventListener(string $eventClass, callable $listener, int $priority = 0): EnvironmentBuilderInterface
+    {
+        $this->assertUninitialized('Failed to add event listener.');
 
-        $config->addSchema(
-            'presentation',
-            Expect::anyOf(...EmojibaseDatasetInterface::SUPPORTED_PRESENTATIONS)
-                ->default(EmojibaseDatasetInterface::EMOJI)
-        );
+        if ($this->listenerData === null) {
+            /** @var PrioritizedList<ListenerData> $listenerData */
+            $listenerData       = new PrioritizedList();
+            $this->listenerData = $listenerData;
+        }
 
-        $config->addSchema(
-            'preset',
-            Expect::arrayOf('string')
-                ->default(ShortcodeInterface::DEFAULT_PRESETS)
-                ->mergeDefaults(false)
-                ->before(
-                /**
-                 * @param string|string[] $value
-                 *
-                 * @return string[]
-                 */
-                    static function ($value): array {
-                        // Presets.
-                        $presets = [];
-                        foreach ((array) $value as $preset) {
-                            if (isset(ShortcodeInterface::PRESET_ALIASES[$preset])) {
-                                $presets[] = ShortcodeInterface::PRESET_ALIASES[$preset];
-                            } elseif (isset(ShortcodeInterface::PRESETS[$preset])) {
-                                $presets[] = ShortcodeInterface::PRESETS[$preset];
-                            } else {
-                                throw InvalidConfigurationException::forConfigOption(
-                                    'preset',
-                                    $preset,
-                                    \sprintf(
-                                        'Accepted values are: %s.',
-                                        \implode(
-                                            ', ',
-                                            \array_map(
-                                                static function ($s) {
-                                                    return \sprintf('"%s"', $s);
-                                                },
-                                                ShortcodeInterface::SUPPORTED_PRESETS
-                                            )
-                                        )
-                                    )
-                                );
-                            }
-                        }
+        $this->listenerData->add(new ListenerData($eventClass, $listener), $priority);
 
-                        return \array_values(\array_unique($presets));
-                    }
-                )
-        );
+        $object = \is_array($listener)
+            ? $listener[0]
+            : $listener;
 
-        $config->addSchema(
-            'stringableType',
-            Expect::anyOf(Lexer::EMOTICON, Lexer::HTML_ENTITY, Lexer::SHORTCODE, Lexer::UNICODE)
-                ->default(Lexer::UNICODE)
-        );
+        if ($object instanceof EnvironmentAwareInterface) {
+            $object->setEnvironment($this);
+        }
 
-        return $config;
+        if ($object instanceof ConfigurationAwareInterface) {
+            $object->setConfiguration($this->getConfiguration());
+        }
+
+        return $this;
+    }
+
+    public function addExtension(ExtensionInterface $extension): EnvironmentBuilderInterface
+    {
+        $this->assertUninitialized('Failed to add extension.');
+
+        $this->extensions[]              = $extension;
+        $this->uninitializedExtensions[] = $extension;
+
+        if ($extension instanceof ConfigurableExtensionInterface) {
+            $extension->configureSchema($this->config, $this->config->data());
+        }
+
+        return $this;
+    }
+
+    public function addRenderer(string $nodeClass, NodeRendererInterface $renderer, int $priority = 0): EnvironmentBuilderInterface
+    {
+        $this->assertUninitialized('Failed to add renderer.');
+
+        if (! isset($this->renderersByClass[$nodeClass])) {
+            /** @var PrioritizedList<NodeRendererInterface> $renderers */
+            $renderers = new PrioritizedList();
+
+            $this->renderersByClass[$nodeClass] = $renderers;
+        }
+
+        $this->renderersByClass[$nodeClass]->add($renderer, $priority);
+
+        if ($renderer instanceof ConfigurationAwareInterface) {
+            $renderer->setConfiguration($this->getConfiguration());
+        }
+
+        return $this;
+    }
+
+    /**
+     * @throws \RuntimeException
+     */
+    protected function assertUninitialized(string $message): void
+    {
+        if ($this->initialized) {
+            throw new \RuntimeException(\sprintf('%s The Environment has already been initialized.', $message));
+        }
     }
 
     /**
      * {@inheritDoc}
      */
-    protected static function defaultExtensions(): iterable
+    public function dispatch(object $event)
     {
-        return [new CoreExtension()];
+        $this->initialize();
+
+        if ($this->eventDispatcher !== null) {
+            return $this->eventDispatcher->dispatch($event);
+        }
+
+        foreach ($this->getListenersForEvent($event) as $listener) {
+            if ($event instanceof StoppableEventInterface && $event->isPropagationStopped()) {
+                return $event;
+            }
+
+            $listener($event);
+        }
+
+        return $event;
+    }
+
+    public function getConfiguration(): ConfigurationInterface
+    {
+        $this->initializeConfiguration();
+
+        return $this->config->reader();
+    }
+
+    public function getRuntimeDataset(string $index = 'hexcode'): RuntimeDataset
+    {
+        $this->initialize();
+
+        if ($this->dataset === null) {
+            $this->dataset = new RuntimeDataset($this->getConfiguration());
+        }
+
+        return $this->dataset->indexBy($index);
     }
 
     /**
-     * @param string[] $presets
+     * {@inheritDoc}
+     *
+     * @return ExtensionInterface[]
      */
-    protected static function loadLocalePreset(
-        string $locale = 'en',
-        array $presets = ShortcodeInterface::DEFAULT_PRESETS
-    ): DatasetInterface {
-        $throwables = [];
-        $presets    = \array_filter($presets);
-        $remaining  = $presets;
-        while (\count($remaining) > 0) {
-            $preset = \array_shift($remaining);
-            try {
-                return Dataset::unarchive(\sprintf('%s/%s/%s.gz', DatasetInterface::DIRECTORY, $locale, $preset));
-            } catch (\Throwable $throwable) {
-                $throwables[$preset] = $throwable;
+    public function getExtensions(): iterable
+    {
+        return $this->extensions;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return iterable<callable>
+     */
+    public function getListenersForEvent(object $event): iterable
+    {
+        if ($this->listenerData === null) {
+            /** @var PrioritizedList<ListenerData> $listenerData */
+            $listenerData       = new PrioritizedList();
+            $this->listenerData = $listenerData;
+        }
+
+        /** @var ListenerData $listenerData */
+        foreach ($this->listenerData as $listenerData) {
+            if (! \is_a($event, $listenerData->getEvent())) {
+                continue;
+            }
+
+            yield function (object $event) use ($listenerData): void {
+                $this->initialize();
+
+                \call_user_func($listenerData->getListener(), $event);
+            };
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getRenderersForClass(string $nodeClass): iterable
+    {
+        $this->initialize();
+
+        // If renderers are defined for this specific class, return them immediately
+        if (isset($this->renderersByClass[$nodeClass])) {
+            return $this->renderersByClass[$nodeClass];
+        }
+
+        while (\class_exists($parent = (string) ($parent ?? $nodeClass)) && ($parent = \get_parent_class($parent))) {
+            if (! isset($this->renderersByClass[$parent])) {
+                continue;
+            }
+
+            // "Cache" this result to avoid future loops
+            return $this->renderersByClass[$nodeClass] = $this->renderersByClass[$parent];
+        }
+
+        return [];
+    }
+
+    protected function initialize(): void
+    {
+        if ($this->initialized) {
+            return;
+        }
+
+        $this->initializeConfiguration();
+
+        $this->initializeExtensions();
+
+        $this->initialized = true;
+    }
+
+    protected function initializeConfiguration(): void
+    {
+        $this->config->addSchema('allow_unsafe_links', Expect::bool(true));
+
+        $default = EmojiConverterInterface::UNICODE;
+
+        /** @var string[] $conversionTypes */
+        $conversionTypes = (array) EmojiConverterInterface::TYPES;
+
+        foreach ($this->extensions as $extension) {
+            if ($extension instanceof ConfigureConversionTypesInterface) {
+                $extension->configureConversionTypes($default, $conversionTypes, $this->config->data());
             }
         }
 
-        throw new LocalePresetException($locale, $throwables);
+        $conversionTypes = \array_unique($conversionTypes);
+
+        $structuredConversionTypes = Expect::structure(\array_combine(
+            EmojiConverterInterface::TYPES,
+            \array_map(static function (string $conversionType) use ($conversionTypes, $default): Schema {
+                return Expect::anyOf(false, ...$conversionTypes)->default($default)->nullable();
+            }, EmojiConverterInterface::TYPES)
+        ))->castTo('array');
+
+        $this->config->addSchema('convert', Expect::anyOf($structuredConversionTypes, ...$conversionTypes)
+            ->default(\array_fill_keys(EmojiConverterInterface::TYPES, $default))
+            ->before('\UnicornFail\Emoji\Environment\Environment::normalizeConvert'));
+
+        $this->config->addSchema('exclude', Expect::structure([
+            'shortcodes' => Expect::arrayOf('string')
+                ->default([])
+                ->before('\UnicornFail\Emoji\Util\Normalize::shortcodes'),
+        ])->castTo('array'));
+
+        $this->config->addSchema('locale', Expect::anyOf(...EmojibaseDatasetInterface::SUPPORTED_LOCALES)
+            ->default('en')
+            ->before('\UnicornFail\Emoji\Environment\Environment::normalizeLocale'));
+
+        $this->config->addSchema('native', Expect::bool()->nullable());
+
+        $this->config->addSchema('presentation', Expect::anyOf(...EmojibaseDatasetInterface::SUPPORTED_PRESENTATIONS)
+            ->default(EmojibaseDatasetInterface::EMOJI));
+
+        $this->config->addSchema('preset', Expect::anyOf(Expect::listOf(Expect::anyOf(...EmojibaseShortcodeInterface::SUPPORTED_PRESETS)), ...EmojibaseShortcodeInterface::SUPPORTED_PRESETS)
+            ->default(EmojibaseShortcodeInterface::DEFAULT_PRESETS)
+            ->before('\UnicornFail\Emoji\Environment\Environment::normalizePresets'));
     }
 
-    public function getDataset(): DatasetInterface
+    protected function initializeExtensions(): void
     {
-        if ($this->dataset === null) {
-            $config = $this->getConfiguration();
-            $locale = $config->get('locale');
-            \assert(\is_string($locale));
-
-            /** @var string[] $presets */
-            $presets = $config->get('preset');
-
-            // Prepend the native preset if local is requires it and enabled.
-            if ($config->get('native')) {
-                \array_unshift($presets, ShortcodeInterface::PRESET_CLDR_NATIVE);
+        // Ask all extensions to register their components.
+        while (\count($this->uninitializedExtensions) > 0) {
+            foreach ($this->uninitializedExtensions as $i => $extension) {
+                $extension->register($this);
+                unset($this->uninitializedExtensions[$i]);
             }
-
-            $this->dataset = self::loadLocalePreset($locale, $presets);
         }
-
-        return $this->dataset;
     }
 
-    public function getParser(): ParserInterface
+    public function setEventDispatcher(EventDispatcherInterface $dispatcher): void
     {
-        if ($this->parser === null) {
-            $this->parser = new Parser($this);
-        }
-
-        return $this->parser;
-    }
-
-    public function setDataset(DatasetInterface $dataset): void
-    {
-        $this->dataset = $dataset;
-    }
-
-    public function setParser(ParserInterface $parser): void
-    {
-        $this->parser = $parser;
+        $this->eventDispatcher = $dispatcher;
     }
 }

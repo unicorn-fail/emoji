@@ -20,5 +20,5 @@ interface NodeRendererInterface
     /**
      * @return \Stringable|string|null
      */
-    public function render(Node $node, ChildNodeRendererInterface $childRenderer);
+    public function render(Node $node);
 }

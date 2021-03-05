@@ -16,8 +16,6 @@ declare(strict_types=1);
 
 namespace UnicornFail\Emoji\Node;
 
-use UnicornFail\Emoji\Node\Block\AbstractBlock;
-
 final class NodeWalker
 {
     /**
@@ -61,7 +59,7 @@ final class NodeWalker
             return null;
         }
 
-        if ($entering && ($current instanceof AbstractBlock || $current->hasChildren())) {
+        if ($entering && $current->hasChildren()) {
             if ($current->firstChild()) {
                 $this->current  = $current->firstChild();
                 $this->entering = true;

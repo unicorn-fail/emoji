@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace UnicornFail\Emoji\Output;
 
-use UnicornFail\Emoji\Node\Block\Document;
+use UnicornFail\Emoji\Node\Document;
 
 class RenderedContent implements RenderedContentInterface
 {

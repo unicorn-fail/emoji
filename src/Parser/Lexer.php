@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace UnicornFail\Emoji\Parser;
 
 use Doctrine\Common\Lexer\AbstractLexer;
-use UnicornFail\Emoji\Emojibase\RegexInterface;
-use UnicornFail\Emoji\Environment\EmojiEnvironmentInterface;
+use UnicornFail\Emoji\Emojibase\EmojibaseRegexInterface;
+use UnicornFail\Emoji\Environment\EnvironmentInterface;
 
-class Lexer extends AbstractLexer implements RegexInterface
+class Lexer extends AbstractLexer implements EmojibaseRegexInterface
 {
     public const T_TEXT = 0;
 
@@ -20,24 +20,10 @@ class Lexer extends AbstractLexer implements RegexInterface
 
     public const T_UNICODE = 4;
 
-    public const TEXT        = 'text';
-    public const EMOTICON    = 'emoticon';
-    public const HTML_ENTITY = 'html_entity';
-    public const SHORTCODE   = 'shortcode';
-    public const UNICODE     = 'unicode';
-
-    public const TYPES = [
-        self::T_TEXT => self::TEXT,
-        self::T_EMOTICON => self::EMOTICON,
-        self::T_HTML_ENTITY => self::HTML_ENTITY,
-        self::T_SHORTCODE => self::SHORTCODE,
-        self::T_UNICODE => self::UNICODE,
-    ];
-
-    /** @var EmojiEnvironmentInterface */
+    /** @var EnvironmentInterface */
     private $environment;
 
-    public function __construct(EmojiEnvironmentInterface $environment)
+    public function __construct(EnvironmentInterface $environment)
     {
         $this->environment = $environment;
     }
@@ -49,15 +35,38 @@ class Lexer extends AbstractLexer implements RegexInterface
      */
     protected function getCatchablePatterns()
     {
-        $patterns = [
-            self::CODEPOINT_EMOJI_LOOSE_REGEX,
-            self::HTML_ENTITY_REGEX,
-            $this->environment->getConfiguration()->get('native') ? self::SHORTCODE_NATIVE_REGEX : self::SHORTCODE_REGEX,
-        ];
-        if ($this->environment->getConfiguration()->get('convertEmoticons')) {
+        $config = $this->environment->getConfiguration();
+
+        $patterns = [];
+
+        if ($config->get('convert.unicode')) {
+            $patterns[] = self::CODEPOINT_EMOJI_LOOSE_REGEX;
+        }
+
+        if ($config->get('convert.html_entity')) {
+            $patterns[] = self::HTML_ENTITY_REGEX;
+        }
+
+        if ($config->get('convert.shortcode')) {
+            $patterns[] = $this->environment->getRuntimeDataset()->isNative()
+                ? self::SHORTCODE_NATIVE_REGEX
+                : self::SHORTCODE_REGEX;
+        }
+
+        if ($config->get('convert.emoticon')) {
             $patterns[] = self::EMOTICON_REGEX;
         }
 
+        return static::cleanPatterns($patterns);
+    }
+
+    /**
+     * @param string[] $patterns
+     *
+     * @return string[]
+     */
+    protected static function cleanPatterns(array $patterns): array
+    {
         // Some regex patterns from the constants include the delimiter and modifiers. Because the
         // lexer joins these expressions together as an OR group (|), they must be removed.
         foreach ($patterns as &$pattern) {
@@ -86,12 +95,7 @@ class Lexer extends AbstractLexer implements RegexInterface
      */
     protected function getType(&$value)
     {
-        if (\preg_match(self::HTML_ENTITY_REGEX, $value)) {
-            return self::T_HTML_ENTITY;
-        }
-
-        // @phpstan-ignore-next-line
-        if (\preg_match($this->environment->getConfiguration()->get('native') ? self::SHORTCODE_NATIVE_REGEX : self::SHORTCODE_REGEX, $value)) {
+        if (\preg_match($this->environment->getRuntimeDataset()->isNative() ? self::SHORTCODE_NATIVE_REGEX : self::SHORTCODE_REGEX, $value)) {
             return self::T_SHORTCODE;
         }
 
@@ -101,6 +105,10 @@ class Lexer extends AbstractLexer implements RegexInterface
 
         if (\preg_match(self::CODEPOINT_EMOJI_LOOSE_REGEX, $value)) {
             return self::T_UNICODE;
+        }
+
+        if (\preg_match(self::HTML_ENTITY_REGEX, $value)) {
+            return self::T_HTML_ENTITY;
         }
 
         return self::T_TEXT;

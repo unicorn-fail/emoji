@@ -13,6 +13,28 @@ declare(strict_types=1);
 
 namespace UnicornFail\Emoji\Environment;
 
-interface EnvironmentInterface extends ExtensibleEnvironmentInterface, ListeningEnvironmentInterface, RenderableEnvironmentInterface
+use League\Configuration\ConfigurationProviderInterface;
+use Psr\EventDispatcher\EventDispatcherInterface;
+use Psr\EventDispatcher\ListenerProviderInterface;
+use UnicornFail\Emoji\Dataset\RuntimeDataset;
+use UnicornFail\Emoji\Extension\ExtensionInterface;
+use UnicornFail\Emoji\Renderer\NodeRendererInterface;
+
+interface EnvironmentInterface extends ConfigurationProviderInterface, EventDispatcherInterface, ListenerProviderInterface
 {
+    /**
+     * @return ExtensionInterface[]
+     */
+    public function getExtensions(): iterable;
+
+    /**
+     * @psalm-param class-string|string $nodeClass
+     *
+     * @return iterable<NodeRendererInterface>
+     */
+    public function getRenderersForClass(string $nodeClass): iterable;
+
+    public function getRuntimeDataset(string $index = 'hexcode'): RuntimeDataset;
+
+    public function setEventDispatcher(EventDispatcherInterface $dispatcher): void;
 }

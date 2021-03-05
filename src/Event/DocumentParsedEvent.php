@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace UnicornFail\Emoji\Event;
 
-use UnicornFail\Emoji\Node\Block\Document;
+use UnicornFail\Emoji\Node\Document;
 
 /**
  * Event dispatched when the document has been fully parsed

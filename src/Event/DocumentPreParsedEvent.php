@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace UnicornFail\Emoji\Event;
 
 use UnicornFail\Emoji\Input\InputInterface;
-use UnicornFail\Emoji\Node\Block\Document;
+use UnicornFail\Emoji\Node\Document;
 
 /**
  * Event dispatched when the document is about to be parsed
@@ -47,8 +47,8 @@ final class DocumentPreParsedEvent extends AbstractEvent
         return $this->input;
     }
 
-    public function replaceInput(InputInterface $markdownInput): void
+    public function replaceInput(InputInterface $input): void
     {
-        $this->input = $markdownInput;
+        $this->input = $input;
     }
 }

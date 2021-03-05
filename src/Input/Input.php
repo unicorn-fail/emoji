@@ -87,10 +87,7 @@ class Input implements InputInterface
             return;
         }
 
-        $lines = \preg_split('/\r\n|\n|\r/', $this->content);
-        if ($lines === false) {
-            throw new UnexpectedEncodingException('Failed to split content by line');
-        }
+        $lines = \preg_split('/\r\n|\n|\r/', $this->content) ?: [$this->content];
 
         // Remove any newline which appears at the very end of the string.
         // We've already split the document by newlines, so we can simply drop

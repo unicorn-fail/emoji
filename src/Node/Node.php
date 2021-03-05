@@ -16,8 +16,24 @@ declare(strict_types=1);
 
 namespace UnicornFail\Emoji\Node;
 
+use Dflydev\DotAccessData\Data;
+
 abstract class Node
 {
+    /**
+     * @var Data
+     *
+     * @psalm-readonly
+     */
+    public $attributes;
+
+    /**
+     * @var Data
+     *
+     * @psalm-readonly
+     */
+    public $data;
+
     /**
      * @var int
      *
@@ -59,6 +75,28 @@ abstract class Node
      * @psalm-readonly-allow-private-mutation
      */
     protected $lastChild;
+
+    public function __construct()
+    {
+        $this->attributes = new Data();
+        $this->data       = new Data();
+    }
+
+    public function addClass(string ...$classes): void
+    {
+        $class = '';
+        if ($this->attributes->has('class')) {
+            $class = (string) $this->attributes->get('class');
+        }
+
+        foreach ($classes as $value) {
+            $class .= ' ' . $value;
+        }
+
+        if ($class) {
+            $this->attributes->set('class', $class);
+        }
+    }
 
     public function previous(): ?Node
     {

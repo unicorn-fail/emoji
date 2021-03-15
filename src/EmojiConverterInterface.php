@@ -13,8 +13,7 @@ declare(strict_types=1);
 
 namespace UnicornFail\Emoji;
 
-use UnicornFail\Emoji\Output\RenderedContentInterface;
-use UnicornFail\Emoji\Parser\Lexer;
+use UnicornFail\Emoji\Lexer\EmojiLexer;
 
 /**
  * Interface for a service which converts emojis.
@@ -22,16 +21,16 @@ use UnicornFail\Emoji\Parser\Lexer;
 interface EmojiConverterInterface
 {
     public const EMOTICON    = 'emoticon';
-    public const HTML_ENTITY = 'html_entity';
+    public const HTML_ENTITY = 'htmlEntity';
     public const SHORTCODE   = 'shortcode';
     public const UNICODE     = 'unicode';
 
     public const TYPES = [
-        Lexer::T_EMOTICON => self::EMOTICON,
-        Lexer::T_HTML_ENTITY => self::HTML_ENTITY,
-        Lexer::T_SHORTCODE => self::SHORTCODE,
-        Lexer::T_UNICODE => self::UNICODE,
+        EmojiLexer::T_EMOTICON    => self::EMOTICON,
+        EmojiLexer::T_HTML_ENTITY => self::HTML_ENTITY,
+        EmojiLexer::T_SHORTCODE   => self::SHORTCODE,
+        EmojiLexer::T_UNICODE     => self::UNICODE,
     ];
 
-    public function convert(string $input): RenderedContentInterface;
+    public function convert(string $input): string;
 }

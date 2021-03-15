@@ -11,10 +11,8 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace UnicornFail\Emoji\Tests\Unit\Environment;
+namespace UnicornFail\Emoji\Tests\Unit\Node;
 
-use UnicornFail\Emoji\Node\Node;
-
-class FakeNode1 extends Node
+class Node3 extends Node2
 {
 }

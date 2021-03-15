@@ -16,6 +16,53 @@ declare(strict_types=1);
 
 namespace UnicornFail\Emoji\Node;
 
-class Document extends Node
+class Document
 {
+    /** @var array<array-key, Node> */
+    protected $nodes = [];
+
+    public function appendNode(Node $node): void
+    {
+        $node->setDocument($this);
+
+        $this->nodes[] = $node;
+    }
+
+    /**
+     * @return Node[]
+     */
+    public function &getNodes(): array
+    {
+        return $this->nodes;
+    }
+
+    public function prependNode(Node $node): void
+    {
+        $node->setDocument($this);
+
+        \array_unshift($this->nodes, $node);
+
+        $this->nodes = \array_values($this->nodes);
+    }
+
+    public function replaceNode(Node $oldNode, ?Node $newNode = null): void
+    {
+        $index = \array_search($oldNode, $this->nodes, true);
+
+        if ($index === false) {
+            return;
+        }
+
+        $replacement = [];
+
+        if ($newNode !== null) {
+            $oldNode->setDocument();
+            $newNode->setDocument($this);
+            $replacement[] = $newNode;
+        }
+
+        \array_splice($this->nodes, (int) $index, 1, $replacement);
+
+        $this->nodes = \array_values($this->nodes);
+    }
 }

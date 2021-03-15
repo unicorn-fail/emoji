@@ -18,284 +18,119 @@ namespace UnicornFail\Emoji\Node;
 
 use Dflydev\DotAccessData\Data;
 
-abstract class Node
+abstract class Node extends Data implements \Stringable
 {
     /**
-     * @var Data
-     *
-     * @psalm-readonly
-     */
-    public $attributes;
-
-    /**
-     * @var Data
-     *
-     * @psalm-readonly
-     */
-    public $data;
-
-    /**
-     * @var int
+     * @var Document|null
      *
      * @psalm-readonly-allow-private-mutation
      */
-    protected $depth = 0;
+    protected $document;
+
+    /** @var string */
+    protected $content = '';
 
     /**
-     * @var Node|null
-     *
-     * @psalm-readonly-allow-private-mutation
+     * @param array<string, mixed> $data
      */
-    protected $parent;
-
-    /**
-     * @var Node|null
-     *
-     * @psalm-readonly-allow-private-mutation
-     */
-    protected $previous;
-
-    /**
-     * @var Node|null
-     *
-     * @psalm-readonly-allow-private-mutation
-     */
-    protected $next;
-
-    /**
-     * @var Node|null
-     *
-     * @psalm-readonly-allow-private-mutation
-     */
-    protected $firstChild;
-
-    /**
-     * @var Node|null
-     *
-     * @psalm-readonly-allow-private-mutation
-     */
-    protected $lastChild;
-
-    public function __construct()
+    public function __construct(string $content = '', array $data = [])
     {
-        $this->attributes = new Data();
-        $this->data       = new Data();
+        parent::__construct(['attributes' => new Data()]);
+        $this->content = $content;
+
+        $this->import($data);
+    }
+
+    public function __clone()
+    {
+        $this->document = null;
+    }
+
+    public function __toString(): string
+    {
+        return $this->getContent();
     }
 
     public function addClass(string ...$classes): void
     {
-        $class = '';
-        if ($this->attributes->has('class')) {
-            $class = (string) $this->attributes->get('class');
-        }
+        $class = (string) $this->getAttribute('class', '');
 
         foreach ($classes as $value) {
-            $class .= ' ' . $value;
+            if ($class !== '') {
+                $class .= ' ';
+            }
+
+            $class .= $value;
         }
 
         if ($class) {
-            $this->attributes->set('class', $class);
-        }
-    }
-
-    public function previous(): ?Node
-    {
-        return $this->previous;
-    }
-
-    public function next(): ?Node
-    {
-        return $this->next;
-    }
-
-    public function parent(): ?Node
-    {
-        return $this->parent;
-    }
-
-    protected function setParent(?Node $node = null): void
-    {
-        $this->parent = $node;
-        $this->depth  = $node === null
-            ? 0
-            : $node->depth + 1;
-    }
-
-    /**
-     * Inserts the $sibling node after $this
-     */
-    public function insertAfter(Node $sibling): void
-    {
-        $sibling->detach();
-        $sibling->next = $this->next;
-
-        if ($sibling->next) {
-            $sibling->next->previous = $sibling;
-        }
-
-        $sibling->previous = $this;
-        $this->next        = $sibling;
-        $sibling->setParent($this->parent);
-
-        if (! $sibling->next && $sibling->parent) {
-            $sibling->parent->lastChild = $sibling;
+            $this->setAttribute('class', $class);
         }
     }
 
     /**
-     * Inserts the $sibling node before $this
+     * @param mixed $default
+     *
+     * @return mixed
      */
-    public function insertBefore(Node $sibling): void
+    public function getAttribute(string $name, $default = null)
     {
-        $sibling->detach();
-        $sibling->previous = $this->previous;
+        return $this->getAttributes()->get($name, $default);
+    }
 
-        if ($sibling->previous) {
-            $sibling->previous->next = $sibling;
-        }
+    public function getAttributes(): Data
+    {
+        /** @var Data $attributes */
+        $attributes = $this->get('attributes');
 
-        $sibling->next  = $this;
-        $this->previous = $sibling;
-        $sibling->setParent($this->parent);
+        return $attributes;
+    }
 
-        if (! $sibling->previous && $sibling->parent) {
-            $sibling->parent->firstChild = $sibling;
-        }
+    public function getContent(): string
+    {
+        return $this->content;
+    }
+
+    public function getDocument(): ?Document
+    {
+        return $this->document;
+    }
+
+    public function hasAttribute(string $name): bool
+    {
+        return $this->getAttributes()->has($name);
+    }
+
+    /**
+     * @param mixed $value
+     */
+    public function setAttribute(string $name, $value): void
+    {
+        $this->getAttributes()->set($name, $value);
+    }
+
+    /**
+     * @param array<string, mixed> $attributes
+     */
+    public function setAttributes(array $attributes = []): void
+    {
+        $this->set('attributes', new Data($attributes));
+    }
+
+    public function setContent(string $contents): void
+    {
+        $this->content = $contents;
+    }
+
+    public function setDocument(?Document $document = null): void
+    {
+        $this->document = $document;
     }
 
     public function replaceWith(Node $replacement): void
     {
-        $replacement->detach();
-        $this->insertAfter($replacement);
-        $this->detach();
-    }
-
-    public function detach(): void
-    {
-        if ($this->previous) {
-            $this->previous->next = $this->next;
-        } elseif ($this->parent) {
-            $this->parent->firstChild = $this->next;
-        }
-
-        if ($this->next) {
-            $this->next->previous = $this->previous;
-        } elseif ($this->parent) {
-            $this->parent->lastChild = $this->previous;
-        }
-
-        $this->parent   = null;
-        $this->next     = null;
-        $this->previous = null;
-        $this->depth    = 0;
-    }
-
-    public function hasChildren(): bool
-    {
-        return $this->firstChild !== null;
-    }
-
-    public function firstChild(): ?Node
-    {
-        return $this->firstChild;
-    }
-
-    public function lastChild(): ?Node
-    {
-        return $this->lastChild;
-    }
-
-    /**
-     * @return Node[]
-     */
-    public function children(): iterable
-    {
-        $children = [];
-        for ($current = $this->firstChild; $current !== null; $current = $current->next) {
-            $children[] = $current;
-        }
-
-        return $children;
-    }
-
-    public function appendChild(Node $child): void
-    {
-        if ($this->lastChild) {
-            $this->lastChild->insertAfter($child);
-        } else {
-            $child->detach();
-            $child->setParent($this);
-            $this->lastChild = $this->firstChild = $child;
-        }
-    }
-
-    /**
-     * Adds $child as the very first child of $this
-     */
-    public function prependChild(Node $child): void
-    {
-        if ($this->firstChild) {
-            $this->firstChild->insertBefore($child);
-        } else {
-            $child->detach();
-            $child->setParent($this);
-            $this->lastChild = $this->firstChild = $child;
-        }
-    }
-
-    /**
-     * Detaches all child nodes of given node
-     */
-    public function detachChildren(): void
-    {
-        foreach ($this->children() as $children) {
-            $children->setParent(null);
-        }
-
-        $this->firstChild = $this->lastChild = null;
-    }
-
-    /**
-     * Replace all children of given node with collection of another
-     *
-     * @param iterable<Node> $children
-     */
-    public function replaceChildren(iterable $children): void
-    {
-        $this->detachChildren();
-        foreach ($children as $item) {
-            $this->appendChild($item);
-        }
-    }
-
-    public function getDepth(): int
-    {
-        return $this->depth;
-    }
-
-    public function walker(): NodeWalker
-    {
-        return new NodeWalker($this);
-    }
-
-    /**
-     * Clone the current node and its children
-     *
-     * WARNING: This is a recursive function and should not be called on deeply-nested node trees!
-     */
-    public function __clone()
-    {
-        // Cloned nodes are detached from their parents, siblings, and children
-        $this->parent   = null;
-        $this->previous = null;
-        $this->next     = null;
-        // But save a copy of the children since we'll need that in a moment
-        $children = $this->children();
-        $this->detachChildren();
-
-        // The original children get cloned and re-added
-        foreach ($children as $child) {
-            $this->appendChild(clone $child);
+        if ($this->document) {
+            $this->document->replaceNode($this, $replacement);
         }
     }
 }

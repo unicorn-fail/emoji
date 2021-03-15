@@ -50,7 +50,7 @@ const createValue = (indentLevel, value, currentLineLength = 0) => {
         // PHP uses a different unicode codepoint syntax, adjust to match.
         value = value.toString()
             // Unicode codepoint.
-            .replace(/\\u{([0-9A-F]{5})}([\\]?[\-])?/g, '\\x{$1}')
+            .replace(/\\u{([0-9A-F]{5})}/g, '\\x{$1}')
             // Unicode hex.
             .replace(/\\u([0-9A-F]{4})/g, '\\x{$1}')
     }

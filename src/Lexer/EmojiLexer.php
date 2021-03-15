@@ -2,13 +2,14 @@
 
 declare(strict_types=1);
 
-namespace UnicornFail\Emoji\Parser;
+namespace UnicornFail\Emoji\Lexer;
 
 use Doctrine\Common\Lexer\AbstractLexer;
 use UnicornFail\Emoji\Emojibase\EmojibaseRegexInterface;
 use UnicornFail\Emoji\Environment\EnvironmentInterface;
+use UnicornFail\Emoji\Exception\UnexpectedEncodingException;
 
-class Lexer extends AbstractLexer implements EmojibaseRegexInterface
+class EmojiLexer extends AbstractLexer implements EmojibaseRegexInterface
 {
     public const T_TEXT = 0;
 
@@ -19,6 +20,14 @@ class Lexer extends AbstractLexer implements EmojibaseRegexInterface
     public const T_SHORTCODE = 3;
 
     public const T_UNICODE = 4;
+
+    public const TYPES = [
+        self::T_TEXT,
+        self::T_EMOTICON,
+        self::T_HTML_ENTITY,
+        self::T_SHORTCODE,
+        self::T_UNICODE,
+    ];
 
     /** @var EnvironmentInterface */
     private $environment;
@@ -43,7 +52,7 @@ class Lexer extends AbstractLexer implements EmojibaseRegexInterface
             $patterns[] = self::CODEPOINT_EMOJI_LOOSE_REGEX;
         }
 
-        if ($config->get('convert.html_entity')) {
+        if ($config->get('convert.htmlEntity')) {
             $patterns[] = self::HTML_ENTITY_REGEX;
         }
 
@@ -112,5 +121,17 @@ class Lexer extends AbstractLexer implements EmojibaseRegexInterface
         }
 
         return self::T_TEXT;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setInput($input): void
+    {
+        if (! \mb_check_encoding($input, 'UTF-8')) {
+            throw new UnexpectedEncodingException('Unexpected encoding - UTF-8 or ASCII was expected');
+        }
+
+        parent::setInput($input);
     }
 }

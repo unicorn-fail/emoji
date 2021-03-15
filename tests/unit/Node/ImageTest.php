@@ -18,9 +18,9 @@ namespace UnicornFail\Emoji\Tests\Unit\Node;
 
 use PHPUnit\Framework\TestCase;
 use UnicornFail\Emoji\Dataset\Emoji as DatasetEmoji;
+use UnicornFail\Emoji\Lexer\EmojiLexer;
 use UnicornFail\Emoji\Node\Emoji;
 use UnicornFail\Emoji\Node\Image;
-use UnicornFail\Emoji\Parser\Lexer;
 use UnicornFail\Emoji\Tests\Unit\Dataset\EmojiTest;
 
 class ImageTest extends TestCase
@@ -32,7 +32,7 @@ class ImageTest extends TestCase
     {
         $datasetEmoji = new DatasetEmoji(EmojiTest::GRINNING_FACE);
         $value        = (string) $datasetEmoji->shortcode;
-        $emoji        = new Emoji(Lexer::T_SHORTCODE, $value, $datasetEmoji);
+        $emoji        = new Emoji(EmojiLexer::T_SHORTCODE, $value, $datasetEmoji);
         $url          = 'https://www.example.com/foo';
 
         $element = $this->getMockBuilder(Image::class)
@@ -51,7 +51,7 @@ class ImageTest extends TestCase
     {
         $datasetEmoji = new DatasetEmoji(EmojiTest::GRINNING_FACE);
         $value        = (string) $datasetEmoji->shortcode;
-        $emoji        = new Emoji(Lexer::T_SHORTCODE, $value, $datasetEmoji);
+        $emoji        = new Emoji(EmojiLexer::T_SHORTCODE, $value, $datasetEmoji);
         $url1         = 'https://www.example.com/foo';
         $url2         = 'https://www.example.com/bar';
 

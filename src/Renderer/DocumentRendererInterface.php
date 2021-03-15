@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace UnicornFail\Emoji\Renderer;
 
 use UnicornFail\Emoji\Node\Document;
-use UnicornFail\Emoji\Output\RenderedContentInterface;
 
 /**
  * Renders a parsed Document AST to rendered content (string).
@@ -24,5 +23,5 @@ interface DocumentRendererInterface
     /**
      * Renders the given Document node.
      */
-    public function renderDocument(Document $document): RenderedContentInterface;
+    public function renderDocument(Document $document): string;
 }

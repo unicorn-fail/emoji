@@ -16,6 +16,6 @@ declare(strict_types=1);
 
 namespace UnicornFail\Emoji\Node;
 
-class Text extends AbstractStringContainer
+class Text extends Node
 {
 }

@@ -6,6 +6,7 @@ namespace UnicornFail\Emoji\Node;
 
 use UnicornFail\Emoji\Dataset\Dataset;
 use UnicornFail\Emoji\Dataset\Emoji as DatasetEmoji;
+use UnicornFail\Emoji\EmojiConverter;
 use UnicornFail\Emoji\Emojibase\EmojibaseSkinsInterface;
 
 /**
@@ -33,7 +34,7 @@ use UnicornFail\Emoji\Emojibase\EmojibaseSkinsInterface;
  * @method string|\Stringable render()
  * @method void setRenderer(callable $renderer)
  */
-final class Emoji extends AbstractStringContainer
+final class Emoji extends Node
 {
     /** @var DatasetEmoji */
     private $datasetEmoji;
@@ -89,6 +90,9 @@ final class Emoji extends AbstractStringContainer
             return null;
         }
 
-        return new self($this->parsedType, $this->parsedValue, $skin);
+        $property = (string) (EmojiConverter::TYPES[$this->parsedType] ?? EmojiConverter::UNICODE);
+        $value    = (string) ($skin->$property ?? $this->parsedValue);
+
+        return new self($this->parsedType, $value, $skin);
     }
 }

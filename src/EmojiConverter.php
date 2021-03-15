@@ -6,7 +6,6 @@ namespace UnicornFail\Emoji;
 
 use UnicornFail\Emoji\Environment\Environment;
 use UnicornFail\Emoji\Environment\EnvironmentInterface;
-use UnicornFail\Emoji\Output\RenderedContentInterface;
 use UnicornFail\Emoji\Parser\EmojiParser;
 use UnicornFail\Emoji\Parser\EmojiParserInterface;
 use UnicornFail\Emoji\Renderer\DocumentRenderer;
@@ -45,12 +44,12 @@ class EmojiConverter implements EmojiConverterInterface
      *
      * @throws \RuntimeException
      */
-    public function __invoke(string $input): RenderedContentInterface
+    public function __invoke(string $input): string
     {
         return $this->convert($input);
     }
 
-    public function convert(string $input): RenderedContentInterface
+    public function convert(string $input): string
     {
         $document = $this->parser->parse($input);
 

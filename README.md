@@ -71,7 +71,7 @@ echo  $converter->convert('We <3 :unicorn: :D!');
 // Convert all applicable values to shortcodes.
 $converter = EmojiConverter::create(['convert' => EmojiConverter::SHORTCODE]);
 echo  $converter->convert('We <3 :unicorn: :D!');
-// We :red-heart: :unicorn-face: :grinning-face:!
+// We :heart: :unicorn: :grinning:!
 ```
 
 Please note that only UTF-8 and ASCII encodings are supported.  If your content uses a different encoding please

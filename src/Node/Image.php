@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace UnicornFail\Emoji\Node;
 
-class Image extends AbstractStringContainer implements EmojiContainerInterface
+class Image extends Node implements EmojiContainerInterface
 {
     /** @var Emoji */
     private $emoji;
@@ -15,14 +15,14 @@ class Image extends AbstractStringContainer implements EmojiContainerInterface
 
         $this->emoji = $emoji;
 
-        $this->attributes->set('src', $url);
+        $this->setAttribute('src', $url);
 
         if ($alt !== null) {
-            $this->attributes->set('alt', $alt);
+            $this->setAttribute('alt', $alt);
         }
 
         if ($title !== null) {
-            $this->attributes->set('title', $title);
+            $this->setAttribute('title', $title);
         }
     }
 
@@ -33,11 +33,11 @@ class Image extends AbstractStringContainer implements EmojiContainerInterface
 
     public function getUrl(): string
     {
-        return (string) $this->attributes->get('src');
+        return (string) $this->getAttribute('src', '');
     }
 
     public function setUrl(string $url): void
     {
-        $this->attributes->set('src', $url);
+        $this->setAttribute('src', $url);
     }
 }

@@ -9,8 +9,8 @@ use League\Configuration\ConfigurationInterface;
 use UnicornFail\Emoji\EmojiConverterInterface;
 use UnicornFail\Emoji\Emojibase\EmojibaseDatasetInterface;
 use UnicornFail\Emoji\Event\DocumentParsedEvent;
+use UnicornFail\Emoji\Lexer\EmojiLexer;
 use UnicornFail\Emoji\Node\Emoji;
-use UnicornFail\Emoji\Parser\Lexer;
 
 /**
  * Processes all parsed Emoji nodes and set the various configurations.
@@ -34,13 +34,7 @@ final class EmojiCoreProcessor implements ConfigurationAwareInterface
         $presentation = $this->config->get('presentation');
 
         // Ensure emojis are set to the correct stringable type.
-        $walker = $e->getDocument()->walker();
-        while ($event = $walker->next()) {
-            if (! $event->isEntering()) {
-                continue;
-            }
-
-            $node = $event->getNode();
+        foreach ($e->getDocument()->getNodes() as $node) {
             if (! ($node instanceof Emoji)) {
                 continue;
             }
@@ -66,23 +60,23 @@ final class EmojiCoreProcessor implements ConfigurationAwareInterface
             }
 
             switch ($conversionType) {
-                case Lexer::T_EMOTICON:
+                case EmojiLexer::T_EMOTICON:
                     $literal = $node->emoticon;
                     break;
 
-                case Lexer::T_HTML_ENTITY:
+                case EmojiLexer::T_HTML_ENTITY:
                     $literal = $node->htmlEntity;
                     break;
 
-                case Lexer::T_SHORTCODE:
+                case EmojiLexer::T_SHORTCODE:
                     if ($shortcode = $node->getShortcode($excludedShortcodes, true)) {
                         $literal = $shortcode;
                     }
 
                     break;
 
-                case Lexer::T_TEXT:
-                case Lexer::T_UNICODE:
+                case EmojiLexer::T_TEXT:
+                case EmojiLexer::T_UNICODE:
                     if (($presentation ?? $node->type) === EmojibaseDatasetInterface::TEXT && $node->text) {
                         $literal = $node->text;
                     } else {
@@ -93,7 +87,7 @@ final class EmojiCoreProcessor implements ConfigurationAwareInterface
             }
 
             if ($literal !== null) {
-                $node->setLiteral($literal);
+                $node->setContent($literal);
             }
         }
     }

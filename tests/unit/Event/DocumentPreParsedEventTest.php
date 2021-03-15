@@ -16,7 +16,6 @@ namespace UnicornFail\Emoji\Tests\Unit\Event;
 use PHPUnit\Framework\TestCase;
 use UnicornFail\Emoji\Environment\Environment;
 use UnicornFail\Emoji\Event\DocumentPreParsedEvent;
-use UnicornFail\Emoji\Input\Input;
 use UnicornFail\Emoji\Node\Document;
 use UnicornFail\Emoji\Parser\EmojiParser;
 
@@ -25,7 +24,7 @@ final class DocumentPreParsedEventTest extends TestCase
     public function testGetDocument(): void
     {
         $document = new Document();
-        $input    = new Input('');
+        $input    = '';
 
         $event = new DocumentPreParsedEvent($document, $input);
 
@@ -35,13 +34,13 @@ final class DocumentPreParsedEventTest extends TestCase
 
     public function testReplaceInput(): void
     {
-        $input = new Input('');
+        $input = 'foo';
 
         $event = new DocumentPreParsedEvent(new Document(), $input);
 
         $this->assertSame($input, $event->getInput());
 
-        $newInput = new Input('');
+        $newInput = 'bar';
         $event->replaceInput($newInput);
 
         $this->assertSame($newInput, $event->getInput());

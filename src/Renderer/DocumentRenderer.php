@@ -17,13 +17,11 @@ declare(strict_types=1);
 namespace UnicornFail\Emoji\Renderer;
 
 use League\Configuration\ConfigurationAwareInterface;
-use UnicornFail\Emoji\Environment\EnvironmentAwareInterface;
 use UnicornFail\Emoji\Environment\EnvironmentInterface;
 use UnicornFail\Emoji\Event\DocumentRenderedEvent;
+use UnicornFail\Emoji\Exception\RenderNodeException;
 use UnicornFail\Emoji\Node\Document;
 use UnicornFail\Emoji\Node\Node;
-use UnicornFail\Emoji\Output\RenderedContent;
-use UnicornFail\Emoji\Output\RenderedContentInterface;
 
 final class DocumentRenderer implements DocumentRendererInterface
 {
@@ -35,34 +33,25 @@ final class DocumentRenderer implements DocumentRendererInterface
         $this->environment = $environment;
     }
 
-    public function renderDocument(Document $document): RenderedContentInterface
+    public function renderDocument(Document $document): string
     {
-        $output = new RenderedContent($document, (string) $this->renderNodes($document->children()));
+        $output = '';
+
+        foreach ($document->getNodes() as $node) {
+            $output .= $this->renderNode($node);
+        }
 
         $event = new DocumentRenderedEvent($output);
+
         $this->environment->dispatch($event);
 
         return $event->getContent();
     }
 
     /**
-     * @param Node[] $nodes
-     */
-    protected function renderNodes(iterable $nodes): string
-    {
-        $output = '';
-
-        foreach ($nodes as $node) {
-            $output .= $this->renderNode($node);
-        }
-
-        return $output;
-    }
-
-    /**
      * @return \Stringable|string
      *
-     * @throws \RuntimeException
+     * @throws RenderNodeException
      */
     private function renderNode(Node $node)
     {
@@ -74,15 +63,11 @@ final class DocumentRenderer implements DocumentRendererInterface
                 $renderer->setConfiguration($this->environment->getConfiguration());
             }
 
-            if ($renderer instanceof EnvironmentAwareInterface) {
-                $renderer->setEnvironment($this->environment);
-            }
-
             if (($result = $renderer->render($node)) !== null) {
                 return $result;
             }
         }
 
-        throw new \RuntimeException('Unable to find corresponding renderer for node type ' . \get_class($node));
+        throw new RenderNodeException(\sprintf('Unable to find corresponding renderer for node type %s', \get_class($node)));
     }
 }

@@ -28,6 +28,8 @@ use UnicornFail\Emoji\Tests\Unit\Event\FakeEvent;
 use UnicornFail\Emoji\Tests\Unit\Event\FakeEventListener;
 use UnicornFail\Emoji\Tests\Unit\Event\FakeEventListenerInvokable;
 use UnicornFail\Emoji\Tests\Unit\Event\FakeEventParent;
+use UnicornFail\Emoji\Tests\Unit\Node\Node1;
+use UnicornFail\Emoji\Tests\Unit\Node\Node3;
 use UnicornFail\Emoji\Util\ArrayCollection;
 
 class EnvironmentTest extends TestCase
@@ -107,21 +109,21 @@ class EnvironmentTest extends TestCase
     {
         $environment  = new Environment();
         $mockRenderer = $this->createMock(NodeRendererInterface::class);
-        $environment->addRenderer(FakeNode3::class, $mockRenderer);
+        $environment->addRenderer(Node3::class, $mockRenderer);
 
-        $this->assertEmpty($environment->getRenderersForClass(FakeNode1::class));
+        $this->assertEmpty($environment->getRenderersForClass(Node1::class));
     }
 
     public function testGetRendererForSubClass(): void
     {
         $environment  = new Environment();
         $mockRenderer = $this->createMock(NodeRendererInterface::class);
-        $environment->addRenderer(FakeNode1::class, $mockRenderer);
+        $environment->addRenderer(Node1::class, $mockRenderer);
 
         // Ensure the parent renderer is returned
-        $this->assertFirstResult($mockRenderer, $environment->getRenderersForClass(FakeNode3::class));
+        $this->assertFirstResult($mockRenderer, $environment->getRenderersForClass(Node3::class));
         // Check again to ensure any cached result is also the same
-        $this->assertFirstResult($mockRenderer, $environment->getRenderersForClass(FakeNode3::class));
+        $this->assertFirstResult($mockRenderer, $environment->getRenderersForClass(Node3::class));
     }
 
     public function testAddExtensionAndGetter(): void

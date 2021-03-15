@@ -13,14 +13,12 @@ declare(strict_types=1);
 
 namespace UnicornFail\Emoji\Event;
 
-use UnicornFail\Emoji\Output\RenderedContentInterface;
-
 final class DocumentRenderedEvent extends AbstractEvent
 {
-    /** @var RenderedContentInterface */
+    /** @var string */
     private $content;
 
-    public function __construct(RenderedContentInterface $content)
+    public function __construct(string $content)
     {
         $this->content = $content;
     }
@@ -28,7 +26,7 @@ final class DocumentRenderedEvent extends AbstractEvent
     /**
      * @psalm-mutation-free
      */
-    public function getContent(): RenderedContentInterface
+    public function getContent(): string
     {
         return $this->content;
     }
@@ -36,7 +34,7 @@ final class DocumentRenderedEvent extends AbstractEvent
     /**
      * @psalm-external-mutation-free
      */
-    public function replaceContent(RenderedContentInterface $content): void
+    public function replaceContent(string $content): void
     {
         $this->content = $content;
     }

@@ -48,12 +48,12 @@ final class ImageRenderer implements NodeRendererInterface, ConfigurationAwareIn
             throw new \InvalidArgumentException('Incompatible node type: ' . \get_class($node));
         }
 
-        $forbidUnsafeLinks = ! $this->config->get('allow_unsafe_links');
-        if ($forbidUnsafeLinks && self::isLinkPotentiallyUnsafe($node->getUrl())) {
-            $node->attributes->set('src', '');
+        $allowUnsafeLinks = (bool) $this->config->get('allow_unsafe_links');
+        if (! $allowUnsafeLinks && self::isLinkPotentiallyUnsafe($node->getUrl())) {
+            $node->setAttribute('src', '');
         }
 
-        return new HtmlElement('img', $node->attributes->export(), '', true);
+        return new HtmlElement('img', $node->getAttributes()->export(), '', true);
     }
 
     public function setConfiguration(ConfigurationInterface $configuration): void

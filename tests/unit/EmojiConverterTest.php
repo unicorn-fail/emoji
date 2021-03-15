@@ -14,23 +14,21 @@ use UnicornFail\Emoji\Emojibase\EmojibaseDatasetInterface;
 use UnicornFail\Emoji\Emojibase\EmojibaseShortcodeInterface;
 use UnicornFail\Emoji\Environment\Environment;
 use UnicornFail\Emoji\Exception\LocalePresetException;
+use UnicornFail\Emoji\Lexer\EmojiLexer;
 use UnicornFail\Emoji\Node\Document;
-use UnicornFail\Emoji\Output\RenderedContent;
-use UnicornFail\Emoji\Output\RenderedContentInterface;
 use UnicornFail\Emoji\Parser\EmojiParserInterface;
-use UnicornFail\Emoji\Parser\Lexer;
 use UnicornFail\Emoji\Renderer\DocumentRendererInterface;
 
 class EmojiConverterTest extends TestCase
 {
     public const ENCODINGS = [
         'en' => [
-            'raw'       => '🙍🏿‍♂️ is leaving on a &#x2708;️. Going to 🇦🇺. Might see some :kangaroo:! <3 Remember to 📱 :D',
-            'html'      => '&#x1F64D;&#x1F3FF;&#x200D;&#x2642;&#xFE0F; is leaving on a &#x2708;️. Going to ' .
-                           '&#x1F1E6;&#x1F1FA;. Might see some &#x1F998;! &#x2764; Remember to &#x1F4F1; &#x1F600;',
-            'shortcode' => ':man-frowning-tone5: is leaving on a :airplane:️. Going to :flag-au:. ' .
-                           'Might see some :kangaroo:! :red-heart: Remember to :mobile-phone: :grinning-face:',
-            'unicode'   => '🙍🏿‍♂️ is leaving on a ✈️️. Going to 🇦🇺. Might see some 🦘! ❤️ Remember to 📱 😀',
+            'raw'       => '🙍🏿‍♂️ is leaving on an &#x2708;️. Going to 🇦🇺. Might see some :kangaroo:! <3 Remember to 📱 :D',
+            'html'      => '&#x1F64D;&#x1F3FF;&#x200D;&#x2642;&#xFE0F; is leaving on an &#x2708;️. Going to ' .
+                '&#x1F1E6;&#x1F1FA;. Might see some &#x1F998;! &#x2764; Remember to &#x1F4F1; &#x1F600;',
+            'shortcode' => ':man-frowning-tone5: is leaving on an :airplane:️. Going to :australia:. ' .
+                'Might see some :kangaroo:! :heart: Remember to :android: :grinning:',
+            'unicode'   => '🙍🏿‍♂️ is leaving on an ✈️️. Going to 🇦🇺. Might see some 🦘! ❤️ Remember to 📱 😀',
         ],
     ];
 
@@ -43,10 +41,10 @@ class EmojiConverterTest extends TestCase
     public function providerEncodings(): array
     {
         $data                  = [];
-        $data['T_EMOTICON']    = [Lexer::T_EMOTICON, self::ENCODINGS['en']['raw']];
-        $data['T_HTML_ENTITY'] = [Lexer::T_HTML_ENTITY, self::ENCODINGS['en']['html']];
-        $data['T_SHORTCODE']   = [Lexer::T_SHORTCODE, self::ENCODINGS['en']['shortcode']];
-        $data['T_UNICODE']     = [Lexer::T_UNICODE, self::ENCODINGS['en']['unicode']];
+        $data['T_EMOTICON']    = [EmojiLexer::T_EMOTICON, self::ENCODINGS['en']['raw']];
+        $data['T_HTML_ENTITY'] = [EmojiLexer::T_HTML_ENTITY, self::ENCODINGS['en']['html']];
+        $data['T_SHORTCODE']   = [EmojiLexer::T_SHORTCODE, self::ENCODINGS['en']['shortcode']];
+        $data['T_UNICODE']     = [EmojiLexer::T_UNICODE, self::ENCODINGS['en']['unicode']];
 
         return $data;
     }
@@ -68,12 +66,17 @@ class EmojiConverterTest extends TestCase
                     $locale = 'en';
                 }
 
+                $native = false;
+                if ($preset === EmojibaseShortcodeInterface::PRESET_CLDR_NATIVE) {
+                    $native = null;
+                }
+
                 $exception = null;
                 if (! \file_exists(\sprintf('%s/%s/%s.gz', Dataset::DIRECTORY, $locale, $preset))) {
                     $exception = LocalePresetException::class;
                 }
 
-                $data[$label] = [$locale, $preset, $exception, $originalLocale];
+                $data[$label] = [$locale, $preset, $exception, $originalLocale, $native];
             }
         }
 
@@ -126,12 +129,19 @@ class EmojiConverterTest extends TestCase
         $this->assertEquals($expected, $actual);
     }
 
+    public function testInvoke(): void
+    {
+        /** @var EmojiConverter $converter */
+        $converter = EmojiConverter::create();
+        $this->assertEquals(self::ENCODINGS['en']['unicode'], $converter(self::ENCODINGS['en']['raw']));
+    }
+
     /**
      * @dataProvider providerLocalPresets
      *
      * @psalm-param ?class-string<\Throwable> $exception
      */
-    public function testCreate(string $locale, string $preset, ?string $exception = null, ?string $originalLocal = null): void
+    public function testLocalePresets(string $locale, string $preset, ?string $exception = null, ?string $originalLocal = null, ?bool $native = null): void
     {
         if ($exception !== null) {
             $this->expectException($exception);
@@ -149,7 +159,7 @@ class EmojiConverterTest extends TestCase
 
         $configuration = [
             'locale' => $originalLocal ?? $locale,
-            'native' => false,
+            'native' => $native,
             'preset' => $preset,
         ];
         $environment   = Environment::create($configuration);
@@ -157,6 +167,9 @@ class EmojiConverterTest extends TestCase
 
         $this->assertSame($environment, $converter->getEnvironment());
         $this->assertTrue($environment->getRuntimeDataset() instanceof RuntimeDataset);
+
+        // Convert so the parser actually runs the various parser/lexer code related to the local preset.
+        $converter->convert('Test');
 
         // The variable must be manually emptied after each assertion in order to avoid memory leaks between tests.
         $converter = null;
@@ -195,19 +208,18 @@ class EmojiConverterTest extends TestCase
             }
         };
 
-        $renderedContent = new RenderedContent($document, $input);
-        $renderer        = new class ($renderedContent) implements DocumentRendererInterface {
-            /** @var RenderedContentInterface */
-            private $renderedContent;
+        $renderer = new class ($input) implements DocumentRendererInterface {
+            /** @var string */
+            private $content;
 
-            public function __construct(RenderedContentInterface $renderedContent)
+            public function __construct(string $content)
             {
-                $this->renderedContent = $renderedContent;
+                $this->content = $content;
             }
 
-            public function renderDocument(Document $document): RenderedContentInterface
+            public function renderDocument(Document $document): string
             {
-                return $this->renderedContent;
+                return $this->content;
             }
         };
 
@@ -219,7 +231,7 @@ class EmojiConverterTest extends TestCase
         $this->assertSame($renderer, $converter->getRenderer());
 
         $this->assertSame($document, $parser->parse($input));
-        $this->assertSame($renderedContent, $renderer->renderDocument($document));
+        $this->assertSame($input, $renderer->renderDocument($document));
         $this->assertSame($input, (string) $converter->convert($input));
     }
 
@@ -246,7 +258,7 @@ class EmojiConverterTest extends TestCase
     {
         $this->assertEquals(':iphone:', $this->convertTo(EmojiConverter::SHORTCODE, '📱', [
             'exclude' => [
-                'shortcodes' => ['mobile-phone'],
+                'shortcodes' => ['mobile-phone', 'android'],
             ],
         ]));
     }
@@ -271,7 +283,7 @@ class EmojiConverterTest extends TestCase
         $this->assertSame('We &#x2764; &#x1F984; &#x1F600;!', $html);
 
         $shortcode = $this->convertTo(EmojiConverter::SHORTCODE, 'We <3 :unicorn: :D!');
-        $this->assertSame('We :red-heart: :unicorn-face: :grinning-face:!', $shortcode);
+        $this->assertSame('We :heart: :unicorn: :grinning:!', $shortcode);
     }
 
     /**

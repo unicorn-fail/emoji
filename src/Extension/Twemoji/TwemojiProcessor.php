@@ -40,9 +40,7 @@ final class TwemojiProcessor implements ConfigurationAwareInterface
 
         $type = (string) $this->config->get('twemoji.type');
 
-        $walker = $e->getDocument()->walker();
-        while ($event = $walker->next()) {
-            $node = $event->getNode();
+        foreach ($e->getDocument()->getNodes() as $node) {
             if (! ($node instanceof Emoji) || $node->hexcode === null) {
                 continue;
             }
@@ -82,16 +80,16 @@ final class TwemojiProcessor implements ConfigurationAwareInterface
 
             // Ensure image isn't massive and relative to its surroundings by inlining it.
             if ($inline && $size === null) {
-                $image->attributes->set('style', 'width: 1em; height: 1em; vertical-align: middle;');
+                $image->setAttribute('style', 'width: 1em; height: 1em; vertical-align: middle;');
             } elseif ($inline && $size !== null) {
                 if (! \is_string($size)) {
                     $size .= 'em';
                 }
 
-                $image->attributes->set('style', \sprintf('width: %s; height: %s; vertical-align: middle;', $size, $size));
+                $image->setAttribute('style', \sprintf('width: %s; height: %s; vertical-align: middle;', $size, $size));
             } elseif ($size !== null) {
-                $image->attributes->set('height', (string) $size);
-                $image->attributes->set('width', (string) $size);
+                $image->setAttribute('height', (string) $size);
+                $image->setAttribute('width', (string) $size);
             }
 
             $node->replaceWith($image);

@@ -17,22 +17,20 @@ use PHPUnit\Framework\TestCase;
 use UnicornFail\Emoji\Environment\Environment;
 use UnicornFail\Emoji\Event\DocumentRenderedEvent;
 use UnicornFail\Emoji\Node\Document;
-use UnicornFail\Emoji\Output\RenderedContent;
-use UnicornFail\Emoji\Output\RenderedContentInterface;
 use UnicornFail\Emoji\Renderer\DocumentRenderer;
 
 final class DocumentRenderedEventTest extends TestCase
 {
     public function testGettersAndReplacers(): void
     {
-        $content = $this->createMock(RenderedContentInterface::class);
+        $content = 'foo';
 
         $event = new DocumentRenderedEvent($content);
 
         $this->assertSame($content, $event->getContent());
 
         // Replace the output with something else - the getter should return something different now
-        $event->replaceContent($this->createMock(RenderedContentInterface::class));
+        $event->replaceContent('bar');
 
         $this->assertNotSame($content, $event->getContent());
     }
@@ -44,7 +42,7 @@ final class DocumentRenderedEventTest extends TestCase
         $environment = Environment::create();
         $environment->addEventListener(DocumentRenderedEvent::class, static function (DocumentRenderedEvent $event) use (&$wasCalled): void {
             $wasCalled = true;
-            $event->replaceContent(new RenderedContent(new Document(), 'foo'));
+            $event->replaceContent('foo');
         });
 
         $renderer = new DocumentRenderer($environment);

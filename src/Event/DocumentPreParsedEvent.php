@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace UnicornFail\Emoji\Event;
 
-use UnicornFail\Emoji\Input\InputInterface;
 use UnicornFail\Emoji\Node\Document;
 
 /**
@@ -28,10 +27,10 @@ final class DocumentPreParsedEvent extends AbstractEvent
      */
     private $document;
 
-    /** @var InputInterface */
+    /** @var string */
     private $input;
 
-    public function __construct(Document $document, InputInterface $input)
+    public function __construct(Document $document, string $input)
     {
         $this->document = $document;
         $this->input    = $input;
@@ -42,12 +41,12 @@ final class DocumentPreParsedEvent extends AbstractEvent
         return $this->document;
     }
 
-    public function getInput(): InputInterface
+    public function getInput(): string
     {
         return $this->input;
     }
 
-    public function replaceInput(InputInterface $input): void
+    public function replaceInput(string $input): void
     {
         $this->input = $input;
     }

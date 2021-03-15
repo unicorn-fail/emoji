@@ -69,7 +69,9 @@ final class RuntimeDataset implements \ArrayAccess, \Countable, \SeekableIterato
 
         try {
             /** @var ?Dataset $dataset */
-            $dataset = \unserialize((string) $decoded);
+            $dataset = \unserialize((string) $decoded, [
+                'allowed_classes' => [Dataset::class, Emoji::class],
+            ]);
         } catch (\Throwable $throwable) {
             throw new MalformedArchiveException($filename, $throwable);
         }

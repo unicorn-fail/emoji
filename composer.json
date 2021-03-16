@@ -98,13 +98,13 @@
         ]
     },
     "scripts": {
-        "emojibase": "npm install && npm run build && php ./scripts/build.php",
-        "fix": "phpcbf",
-        "phpcs": "phpcs",
-        "phpstan": "phpstan analyse",
+        "build": "npm install && npm run build && php ./scripts/build.php",
+        "fix": "vendor/bin/phpcbf",
+        "phpcs": "vendor/bin/phpcs",
+        "phpstan": "vendor/bin/phpstan analyse",
         "phpunit": "./scripts/phpunit --no-coverage --colors=always",
         "phpunit-coverage": "./scripts/phpunit --colors=always",
-        "psalm": "psalm --config=psalm.xml --output-format=phpstorm --show-info=true --stats --threads=4",
+        "psalm": "vendor/bin/psalm --config=psalm.xml --output-format=phpstorm --show-info=true --stats --threads=4",
         "test": [
             "@phpcs",
             "@phpstan",

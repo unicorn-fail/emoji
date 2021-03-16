@@ -6,22 +6,23 @@ declare(strict_types=1);
 const BASE_DIRECTORY = __DIR__ . '/../';
 require_once BASE_DIRECTORY . '/vendor/autoload.php';
 
-use UnicornFail\Emoji\Dataset;
-use UnicornFail\Emoji\Emojibase\DatasetInterface;
-use UnicornFail\Emoji\Emojibase\ShortcodeInterface;
+use UnicornFail\Emoji\Dataset\Dataset;
+use UnicornFail\Emoji\Dataset\RuntimeDataset;
+use UnicornFail\Emoji\Emojibase\EmojibaseDatasetInterface;
+use UnicornFail\Emoji\Emojibase\EmojibaseShortcodeInterface;
 use UnicornFail\Emoji\Util\Normalize;
 
 const BUILD_DIRECTORY          = BASE_DIRECTORY . '/build';
 const EMOJIBASE_DATA_DIRECTORY = BASE_DIRECTORY . '/node_modules/emojibase-data';
 
-if (! is_dir(EMOJIBASE_DATA_DIRECTORY) || ! interface_exists(DatasetInterface::class)) {
+if (! is_dir(EMOJIBASE_DATA_DIRECTORY) || ! interface_exists(EmojibaseDatasetInterface::class)) {
     throw new \RuntimeException('You must first run `npm install && npm run build` to build the datasets.');
 }
 
 /**
  * @param mixed[] $shortcodes
  */
-function create_dataset(string $locale, array $shortcodes): Dataset
+function create_dataset(string $locale, string $preset, array $shortcodes): Dataset
 {
     $data = null;
 
@@ -86,8 +87,8 @@ if (is_dir(Dataset::DIRECTORY)) {
 $baseDirectory = realpath(BASE_DIRECTORY);
 
 // Archive datasets.
-foreach (DatasetInterface::SUPPORTED_LOCALES as $locale) {
-    foreach (ShortcodeInterface::PRESETS as $preset) {
+foreach (EmojibaseDatasetInterface::SUPPORTED_LOCALES as $locale) {
+    foreach (EmojibaseShortcodeInterface::PRESETS as $preset) {
         // Skip presets that don't exist.
         $file = sprintf('%s/%s/shortcodes/%s.json', EMOJIBASE_DATA_DIRECTORY, $locale, $preset);
         if (! file_exists($file) || ! ($c = file_get_contents($file)) || ! ($shortcodes = json_decode($c, true))) {
@@ -95,13 +96,13 @@ foreach (DatasetInterface::SUPPORTED_LOCALES as $locale) {
         }
 
         $destination = sprintf('%s/%s/%s.gz', Dataset::DIRECTORY, $locale, $preset);
-        $relative    = str_replace($baseDirectory . '/src/..', '.', $destination);
+        $relative    = str_replace($baseDirectory . '/src/Dataset/../..', '.', $destination);
         $directory   = dirname($destination);
         /** @scrutinizer ignore-unhandled */ @mkdir($directory, 0775, true);
 
         echo sprintf("Archiving %s\n", $relative);
-        $dataset = create_dataset($locale, $shortcodes);
-        file_put_contents($destination, $dataset->archive());
+        $dataset = create_dataset($locale, $preset, $shortcodes);
+        file_put_contents($destination, RuntimeDataset::archive($dataset));
     }
 }
 

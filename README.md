@@ -22,41 +22,56 @@ To install it via [Composer] simply run:
 $ composer require unicorn-fail/emoji
 ```
 
-The `UnicornFail\Emoji\Converter` class provides a simple wrapper for converting emoticons, HTML entities and
+The `UnicornFail\Emoji\Emoji` class provides a simple wrapper for converting emoticons, HTML entities and
 shortcodes to proper unicode characters (emojis):
 
 ```php
-use UnicornFail\Emoji\Converter;
-use UnicornFail\Emoji\Emojibase\DatasetInterface;
-use UnicornFail\Emoji\Emojibase\ShortcodeInterface;
+use UnicornFail\Emoji\EmojiConverter;
+use UnicornFail\Emoji\Emojibase\EmojibaseDatasetInterface;
+use UnicornFail\Emoji\Emojibase\EmojibaseShortcodeInterface;
 
-// Default configuration.
-$configuration = [
-    'convertEmoticons'  => true,
-    'exclude'           => [
+$defaultConfiguration = [
+    /** @var array<string, string> (see EmojiConverter::TYPES) */
+    'convert' => [
+        EmojiConverter::EMOTICON    => EmojiConverter::UNICODE,
+        EmojiConverter::HTML_ENTITY => EmojiConverter::UNICODE,
+        EmojiConverter::SHORTCODE   => EmojiConverter::UNICODE,
+        EmojiConverter::UNICODE     => EmojiConverter::UNICODE,
+    ],
+
+    /** @var array<string, mixed> */
+    'exclude' => [
+        /** @var string[] */
         'shortcodes' => [],
     ],
-    'locale'            => 'en',
-    'native'            => null, // auto, true or false depending on locale set.
-    'presentation'      => DatasetInterface::EMOJI,
-    'preset'            => ShortcodeInterface::DEFAULT_PRESETS,
+
+    /** @var string */
+    'locale' => 'en',
+
+    /** @var ?bool */
+    'native' => null, // Auto (null), becomes true or false depending on locale set.
+
+    /** @var int */
+    'presentation' => EmojibaseDatasetInterface::EMOJI,
+
+    /** @var string[] */
+    'preset' => EmojibaseShortcodeInterface::DEFAULT_PRESETS,
 ];
 
-$converter = new Converter($configuration);
-
-// Convert applicable values to unicodes (emojis).
+// Convert all applicable values to unicode emojis (default configuration).
+$converter = EmojiConverter::create();
 echo $converter->convert('We <3 :unicorn: :D!');
-// or
-echo $converter->convertToUnicode('We <3 :unicorn: :D!');
 // We ❤️ 🦄 😀!
 
-// Convert applicable values to HTML entities.
-echo  $converter->convertToHtml('We <3 :unicorn: :D!');
+// Convert all applicable values to HTML entities.
+$converter = EmojiConverter::create(['convert' => EmojiConverter::HTML_ENTITY]);
+echo  $converter->convert('We <3 :unicorn: :D!');
 // We \&#x2764; \&#x1F984; \&#x1F600;!
 
-// Convert applicable values to shortcodes.
-echo  $converter->convertToShortcode('We <3 :unicorn: :D!');
-// We :red-heart: :unicorn-face: :grinning-face:!
+// Convert all applicable values to shortcodes.
+$converter = EmojiConverter::create(['convert' => EmojiConverter::SHORTCODE]);
+echo  $converter->convert('We <3 :unicorn: :D!');
+// We :heart: :unicorn: :grinning:!
 ```
 
 Please note that only UTF-8 and ASCII encodings are supported.  If your content uses a different encoding please

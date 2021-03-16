@@ -16,7 +16,7 @@ class ImmutableArrayIteratorTest extends TestCase
     {
         $methods = [['__set'], ['__unset'], ['append'], ['offsetSet'], ['offsetUnset'], ['setFlags']];
 
-        return \array_combine(\array_map('current', $methods), $methods);
+        return (array) \array_combine(\array_map('current', $methods), $methods);
     }
 
     public function testGet(): void

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace UnicornFail\Emoji\Emojibase;
+namespace League\Emoji\Emojibase;
 
 /*!
  * IMPORTANT NOTE!

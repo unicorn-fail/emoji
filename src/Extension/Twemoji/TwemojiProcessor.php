@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace UnicornFail\Emoji\Extension\Twemoji;
+namespace League\Emoji\Extension\Twemoji;
 
 use League\Configuration\ConfigurationAwareInterface;
 use League\Configuration\ConfigurationInterface;
-use UnicornFail\Emoji\EmojiConverterInterface;
-use UnicornFail\Emoji\Event\DocumentParsedEvent;
-use UnicornFail\Emoji\Node\Emoji;
-use UnicornFail\Emoji\Node\Image;
-use UnicornFail\Emoji\Util\HtmlElement;
+use League\Emoji\EmojiConverterInterface;
+use League\Emoji\Event\DocumentParsedEvent;
+use League\Emoji\Node\Emoji;
+use League\Emoji\Node\Image;
+use League\Emoji\Util\HtmlElement;
 
 /**
  * Replaces emojis with Twemoji images.

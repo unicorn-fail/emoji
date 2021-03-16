@@ -11,9 +11,9 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace UnicornFail\Emoji;
+namespace League\Emoji;
 
-use UnicornFail\Emoji\Lexer\EmojiLexer;
+use League\Emoji\Lexer\EmojiLexer;
 
 /**
  * Interface for a service which converts emojis.

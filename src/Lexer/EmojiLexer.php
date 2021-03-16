@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace UnicornFail\Emoji\Lexer;
+namespace League\Emoji\Lexer;
 
 use Doctrine\Common\Lexer\AbstractLexer;
-use UnicornFail\Emoji\Emojibase\EmojibaseRegexInterface;
-use UnicornFail\Emoji\Environment\EnvironmentInterface;
-use UnicornFail\Emoji\Exception\UnexpectedEncodingException;
+use League\Emoji\Emojibase\EmojibaseRegexInterface;
+use League\Emoji\Environment\EnvironmentInterface;
+use League\Emoji\Exception\UnexpectedEncodingException;
 
 class EmojiLexer extends AbstractLexer implements EmojibaseRegexInterface
 {

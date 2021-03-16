@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace UnicornFail\Emoji\Extension;
+namespace League\Emoji\Extension;
 
 use League\Configuration\ConfigurationAwareInterface;
 use League\Configuration\ConfigurationInterface;
-use UnicornFail\Emoji\EmojiConverterInterface;
-use UnicornFail\Emoji\Emojibase\EmojibaseDatasetInterface;
-use UnicornFail\Emoji\Event\DocumentParsedEvent;
-use UnicornFail\Emoji\Lexer\EmojiLexer;
-use UnicornFail\Emoji\Node\Emoji;
+use League\Emoji\EmojiConverterInterface;
+use League\Emoji\Emojibase\EmojibaseDatasetInterface;
+use League\Emoji\Event\DocumentParsedEvent;
+use League\Emoji\Lexer\EmojiLexer;
+use League\Emoji\Node\Emoji;
 
 /**
  * Processes all parsed Emoji nodes and set the various configurations.

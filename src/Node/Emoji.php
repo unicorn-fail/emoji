@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace UnicornFail\Emoji\Node;
+namespace League\Emoji\Node;
 
-use UnicornFail\Emoji\Dataset\Dataset;
-use UnicornFail\Emoji\Dataset\Emoji as DatasetEmoji;
-use UnicornFail\Emoji\EmojiConverter;
-use UnicornFail\Emoji\Emojibase\EmojibaseSkinsInterface;
+use League\Emoji\Dataset\Dataset;
+use League\Emoji\Dataset\Emoji as DatasetEmoji;
+use League\Emoji\EmojiConverter;
+use League\Emoji\Emojibase\EmojibaseSkinsInterface;
 
 /**
  * @property ?string $annotation

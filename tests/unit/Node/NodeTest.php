@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace UnicornFail\Emoji\Tests\Unit\Node;
+namespace League\Emoji\Tests\Unit\Node;
 
 use PHPUnit\Framework\TestCase;
-use UnicornFail\Emoji\Node\Document;
+use League\Emoji\Node\Document;
 
 class NodeTest extends TestCase
 {

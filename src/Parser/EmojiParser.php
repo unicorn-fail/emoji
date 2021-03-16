@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace UnicornFail\Emoji\Parser;
+namespace League\Emoji\Parser;
 
-use UnicornFail\Emoji\Dataset\Emoji as DatasetEmoji;
-use UnicornFail\Emoji\Environment\EnvironmentInterface;
-use UnicornFail\Emoji\Event\DocumentParsedEvent;
-use UnicornFail\Emoji\Event\DocumentPreParsedEvent;
-use UnicornFail\Emoji\Lexer\EmojiLexer;
-use UnicornFail\Emoji\Node\Document;
-use UnicornFail\Emoji\Node\Emoji;
-use UnicornFail\Emoji\Node\Text;
+use League\Emoji\Dataset\Emoji as DatasetEmoji;
+use League\Emoji\Environment\EnvironmentInterface;
+use League\Emoji\Event\DocumentParsedEvent;
+use League\Emoji\Event\DocumentPreParsedEvent;
+use League\Emoji\Lexer\EmojiLexer;
+use League\Emoji\Node\Document;
+use League\Emoji\Node\Emoji;
+use League\Emoji\Node\Text;
 
 final class EmojiParser implements EmojiParserInterface
 {

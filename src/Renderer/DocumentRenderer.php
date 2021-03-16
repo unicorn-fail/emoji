@@ -14,14 +14,14 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace UnicornFail\Emoji\Renderer;
+namespace League\Emoji\Renderer;
 
 use League\Configuration\ConfigurationAwareInterface;
-use UnicornFail\Emoji\Environment\EnvironmentInterface;
-use UnicornFail\Emoji\Event\DocumentRenderedEvent;
-use UnicornFail\Emoji\Exception\RenderNodeException;
-use UnicornFail\Emoji\Node\Document;
-use UnicornFail\Emoji\Node\Node;
+use League\Emoji\Environment\EnvironmentInterface;
+use League\Emoji\Event\DocumentRenderedEvent;
+use League\Emoji\Exception\RenderNodeException;
+use League\Emoji\Node\Document;
+use League\Emoji\Node\Node;
 
 final class DocumentRenderer implements DocumentRendererInterface
 {

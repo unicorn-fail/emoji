@@ -1,16 +1,16 @@
-# unicorn-fail/emoji
+# league/emoji
 
 > [![Latest Version](https://img.shields.io/packagist/v/unicorn-fail/emoji.svg?style=flat-square)](https://packagist.org/packages/unicorn-fail/emoji)
 [![Total Downloads](https://img.shields.io/packagist/dt/unicorn-fail/emoji.svg?style=flat-square)](https://packagist.org/packages/unicorn-fail/emoji)
 [![Packagist PHP Version Support](https://img.shields.io/packagist/php-v/unicorn-fail/emoji?style=flat-square)](https://packagist.org/packages/unicorn-fail/emoji)
 [![Software License](https://img.shields.io/badge/License-BSD--3-blue.svg?style=flat-square)](LICENSE)<br>
-[![Build Status](https://img.shields.io/github/workflow/status/unicorn-fail/emoji/Tests/latest.svg?style=flat-square)](https://github.com/unicorn-fail/emoji/actions?query=branch%3Alatest)
-[![Scrutinizer coverage (GitHub/BitBucket)](https://img.shields.io/scrutinizer/coverage/g/unicorn-fail/emoji/latest?style=flat-square)](https://scrutinizer-ci.com/g/unicorn-fail/emoji/?branch=latest)
-[![Scrutinizer code quality (GitHub/Bitbucket)](https://img.shields.io/scrutinizer/quality/g/unicorn-fail/emoji/latest?style=flat-square)](https://scrutinizer-ci.com/g/unicorn-fail/emoji/?branch=latest)
+[![Build Status](https://img.shields.io/github/workflow/status/unicorn-fail/emoji/Tests/main.svg?style=flat-square)](https://github.com/unicorn-fail/emoji/actions?query=branch%3Amain)
+[![Scrutinizer coverage (GitHub/BitBucket)](https://img.shields.io/scrutinizer/coverage/g/unicorn-fail/emoji/main?style=flat-square)](https://scrutinizer-ci.com/g/unicorn-fail/emoji/?branch=main)
+[![Scrutinizer code quality (GitHub/Bitbucket)](https://img.shields.io/scrutinizer/quality/g/unicorn-fail/emoji/main?style=flat-square)](https://scrutinizer-ci.com/g/unicorn-fail/emoji/?branch=main)
 [![CII Best Practices Summary](https://img.shields.io/cii/summary/4286?style=flat-square)](https://bestpractices.coreinfrastructure.org/en/projects/4286)
 [![Psalm coverage](https://shepherd.dev/github/unicorn-fail/emoji/coverage.svg)](https://shepherd.dev/github/unicorn-fail/emoji)
 >
-> **unicorn-fail/emoji** is a comprehensive PHP parser and converter of emoticons, HTML entities, shortcodes and
+> **league/emoji** is a comprehensive PHP parser and converter of emoticons, HTML entities, shortcodes and
 unicodes (emojis); utilizing [milesj/emojibase] as its data source.
 
 ## 📦 Installation & Basic Usage
@@ -19,16 +19,31 @@ This project requires PHP 7.2.5 or higher with the `mbstring` and `zlib` PHP ext
 To install it via [Composer] simply run:
 
 ``` bash
-$ composer require unicorn-fail/emoji
+$ composer require league/emoji
 ```
 
-The `UnicornFail\Emoji\Emoji` class provides a simple wrapper for converting emoticons, HTML entities and
+> **NOTE:** Until this is actually published in the `league` namespace on packagist.com, you will need to add the
+> following to your `composer.json` file:
+>
+> ```json
+>     "repositories": [
+>         {
+>             "type": "vcs",
+>             "url": "https://github.com/unicorn-fail/emoji.git"
+>         }
+>     ],
+>     "require": {
+>         "league/emoji": "dev-main"
+>     }
+> ```
+
+The `League\Emoji\Emoji` class provides a simple wrapper for converting emoticons, HTML entities and
 shortcodes to proper unicode characters (emojis):
 
 ```php
-use UnicornFail\Emoji\EmojiConverter;
-use UnicornFail\Emoji\Emojibase\EmojibaseDatasetInterface;
-use UnicornFail\Emoji\Emojibase\EmojibaseShortcodeInterface;
+use League\Emoji\EmojiConverter;
+use League\Emoji\Emojibase\EmojibaseDatasetInterface;
+use League\Emoji\Emojibase\EmojibaseShortcodeInterface;
 
 $defaultConfiguration = [
     /** @var array<string, string> (see EmojiConverter::TYPES) */
@@ -117,6 +132,7 @@ $ composer test-coverage
 ## 👥 Credits & Acknowledgements
 
 - [Mark Halliwell][@markehalliwell]
+- [Colin O'Dell][@colinodell]
 - [Ben Sinclair] ([elvanto/litemoji])
 - [Miles Johnson] ([milesj/emojibase])
 - [All Contributors]
@@ -127,7 +143,7 @@ wouldn't exist without either of their works!
 
 ## 📄 License
 
-**unicorn-fail/emoji** is licensed under the BSD-3 license.  See the [`LICENSE`](LICENSE) file for more details.
+**league/emoji** is licensed under the BSD-3 license.  See the [`LICENSE`](LICENSE) file for more details.
 
 ## 🏛️ Governance
 
@@ -135,6 +151,7 @@ This project is primarily maintained by [Mark Halliwell][@markehalliwell].
 
 [Composer]: https://getcomposer.org/
 [@markehalliwell]: https://www.twitter.com/markehalliwell
+[@colinodell]: https://www.twitter.com/colinodell
 [All Contributors]: https://github.com/thephpleague/commonmark/contributors
 [Ben Sinclair]: https://github.com/bensinclair
 [elvanto/litemoji]: https://github.com/elvanto/litemoji

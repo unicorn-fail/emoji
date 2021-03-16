@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace UnicornFail\Emoji\Extension;
+namespace League\Emoji\Extension;
 
-use UnicornFail\Emoji\Environment\EnvironmentBuilderInterface;
-use UnicornFail\Emoji\Event\DocumentParsedEvent;
-use UnicornFail\Emoji\Node\Emoji;
-use UnicornFail\Emoji\Node\Image;
-use UnicornFail\Emoji\Node\Text;
-use UnicornFail\Emoji\Renderer\EmojiRenderer;
-use UnicornFail\Emoji\Renderer\ImageRenderer;
-use UnicornFail\Emoji\Renderer\TextRenderer;
+use League\Emoji\Environment\EnvironmentBuilderInterface;
+use League\Emoji\Event\DocumentParsedEvent;
+use League\Emoji\Node\Emoji;
+use League\Emoji\Node\Image;
+use League\Emoji\Node\Text;
+use League\Emoji\Renderer\EmojiRenderer;
+use League\Emoji\Renderer\ImageRenderer;
+use League\Emoji\Renderer\TextRenderer;
 
 final class EmojiCoreExtension implements ExtensionInterface
 {

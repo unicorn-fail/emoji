@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace UnicornFail\Emoji;
+namespace League\Emoji;
 
-use UnicornFail\Emoji\Environment\Environment;
-use UnicornFail\Emoji\Extension\Twemoji\TwemojiExtension;
+use League\Emoji\Environment\Environment;
+use League\Emoji\Extension\Twemoji\TwemojiExtension;
 
 final class TwemojiConverter extends EmojiConverter
 {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace UnicornFail\Emoji\Exception;
+namespace League\Emoji\Exception;
 
 class LocalePresetException extends \RuntimeException implements EmojiException
 {

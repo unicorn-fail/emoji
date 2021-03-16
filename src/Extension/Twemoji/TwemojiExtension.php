@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace UnicornFail\Emoji\Extension\Twemoji;
+namespace League\Emoji\Extension\Twemoji;
 
 use Dflydev\DotAccessData\Data;
 use League\Configuration\ConfigurationBuilderInterface;
 use Nette\Schema\Expect;
-use UnicornFail\Emoji\Environment\EnvironmentBuilderInterface;
-use UnicornFail\Emoji\Event\DocumentParsedEvent;
-use UnicornFail\Emoji\Extension\ConfigurableExtensionInterface;
-use UnicornFail\Emoji\Extension\ConfigureConversionTypesInterface;
+use League\Emoji\Environment\EnvironmentBuilderInterface;
+use League\Emoji\Event\DocumentParsedEvent;
+use League\Emoji\Extension\ConfigurableExtensionInterface;
+use League\Emoji\Extension\ConfigureConversionTypesInterface;
 
 final class TwemojiExtension implements ConfigurableExtensionInterface, ConfigureConversionTypesInterface
 {

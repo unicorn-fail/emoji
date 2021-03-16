@@ -11,7 +11,7 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace UnicornFail\Emoji\Exception;
+namespace League\Emoji\Exception;
 
 final class UnexpectedEncodingException extends \RuntimeException implements EmojiException
 {

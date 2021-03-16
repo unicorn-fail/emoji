@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace UnicornFail\Emoji\Event;
+namespace League\Emoji\Event;
 
 final class DocumentRenderedEvent extends AbstractEvent
 {

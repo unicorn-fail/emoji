@@ -11,10 +11,10 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace UnicornFail\Emoji\Environment;
+namespace League\Emoji\Environment;
 
-use UnicornFail\Emoji\Extension\ExtensionInterface;
-use UnicornFail\Emoji\Renderer\NodeRendererInterface;
+use League\Emoji\Extension\ExtensionInterface;
+use League\Emoji\Renderer\NodeRendererInterface;
 
 /**
  * Interface for building the Environment with any extensions, parsers, listeners, etc. that it may need

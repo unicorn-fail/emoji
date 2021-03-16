@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace UnicornFail\Emoji\Tests\Unit\Dataset;
+namespace League\Emoji\Tests\Unit\Dataset;
 
 use PHPUnit\Framework\TestCase;
-use UnicornFail\Emoji\Dataset\Dataset;
-use UnicornFail\Emoji\Dataset\Emoji;
+use League\Emoji\Dataset\Dataset;
+use League\Emoji\Dataset\Emoji;
 
 class DatasetTest extends TestCase
 {
@@ -31,7 +31,7 @@ class DatasetTest extends TestCase
         $dataset = new Dataset([$emoji, $emoji]);
         $this->assertSame(1, $dataset->count());
 
-        $this->assertEquals('UnicornFail\Emoji\Dataset\Dataset', \get_class($dataset));
+        $this->assertEquals('League\Emoji\Dataset\Dataset', \get_class($dataset));
         $this->assertTrue(new Dataset($emoji) instanceof Dataset);
         $this->assertTrue(new Dataset($dataset) instanceof Dataset);
 

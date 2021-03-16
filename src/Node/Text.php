@@ -14,7 +14,7 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace UnicornFail\Emoji\Node;
+namespace League\Emoji\Node;
 
 class Text extends Node
 {

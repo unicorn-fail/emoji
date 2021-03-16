@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace UnicornFail\Emoji;
+namespace League\Emoji;
 
-use UnicornFail\Emoji\Environment\Environment;
-use UnicornFail\Emoji\Environment\EnvironmentInterface;
-use UnicornFail\Emoji\Parser\EmojiParser;
-use UnicornFail\Emoji\Parser\EmojiParserInterface;
-use UnicornFail\Emoji\Renderer\DocumentRenderer;
-use UnicornFail\Emoji\Renderer\DocumentRendererInterface;
+use League\Emoji\Environment\Environment;
+use League\Emoji\Environment\EnvironmentInterface;
+use League\Emoji\Parser\EmojiParser;
+use League\Emoji\Parser\EmojiParserInterface;
+use League\Emoji\Renderer\DocumentRenderer;
+use League\Emoji\Renderer\DocumentRendererInterface;
 
 class EmojiConverter implements EmojiConverterInterface
 {

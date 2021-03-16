@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace UnicornFail\Emoji\Tests\Unit\Extension;
+namespace League\Emoji\Tests\Unit\Extension;
 
 use PHPUnit\Framework\TestCase;
-use UnicornFail\Emoji\Tests\Unit\EmojiConverterTest;
-use UnicornFail\Emoji\TwemojiConverter;
+use League\Emoji\Tests\Unit\EmojiConverterTest;
+use League\Emoji\TwemojiConverter;
 
 class TwemojiExtensionTest extends TestCase
 {

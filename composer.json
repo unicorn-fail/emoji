@@ -1,5 +1,5 @@
 {
-    "name": "unicorn-fail/emoji",
+    "name": "league/emoji",
     "description": "Comprehensive PHP parser of emoticons, HTML entities, shortcodes and unicodes (emojis).",
     "type": "library",
     "license": "BSD-3-Clause",
@@ -9,10 +9,16 @@
             "email": "mark@unicorn.fail",
             "homepage": "https://github.com/markhalliwell",
             "role": "Lead Developer"
+        },
+        {
+            "name": "Colin O'Dell",
+            "email": "colinodell@gmail.com",
+            "homepage": "https://www.colinodell.com",
+            "role": "Contributor"
         }
     ],
     "support": {
-        "docs": "https://github.com/unicorn-fail/emoji/blob/latest/README.md",
+        "docs": "https://github.com/unicorn-fail/emoji/blob/HEAD/README.md",
         "issues": "https://github.com/unicorn-fail/emoji/issues",
         "rss": "https://github.com/unicorn-fail/emoji/releases.atom",
         "source": "https://github.com/unicorn-fail/emoji"
@@ -53,7 +59,7 @@
         "ext-mbstring": "*",
         "ext-zlib": "*",
         "doctrine/lexer": "^1.2",
-        "league/configuration": "dev-latest",
+        "league/configuration": "dev-main",
         "psr/event-dispatcher": "^1.0",
         "symfony/polyfill-php80": "^1.15"
     },
@@ -73,12 +79,12 @@
     },
     "autoload": {
         "psr-4": {
-            "UnicornFail\\Emoji\\": "src/"
+            "League\\Emoji\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "UnicornFail\\Emoji\\Tests\\Unit\\": "tests/unit"
+            "League\\Emoji\\Tests\\Unit\\": "tests/unit"
         }
     },
     "archive": {
@@ -125,6 +131,9 @@
         }
     },
     "config": {
+        "platform": {
+            "php": "7.2.5"
+        },
         "sort-packages": true
     }
 }

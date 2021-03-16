@@ -14,23 +14,23 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace UnicornFail\Emoji\Tests\Unit\Environment;
+namespace League\Emoji\Tests\Unit\Environment;
 
 use League\Configuration\ConfigurationInterface;
 use League\Configuration\MutableConfigurationInterface;
 use PHPUnit\Framework\TestCase;
 use Psr\EventDispatcher\EventDispatcherInterface;
-use UnicornFail\Emoji\Environment\Environment;
-use UnicornFail\Emoji\Event\AbstractEvent;
-use UnicornFail\Emoji\Extension\ExtensionInterface;
-use UnicornFail\Emoji\Renderer\NodeRendererInterface;
-use UnicornFail\Emoji\Tests\Unit\Event\FakeEvent;
-use UnicornFail\Emoji\Tests\Unit\Event\FakeEventListener;
-use UnicornFail\Emoji\Tests\Unit\Event\FakeEventListenerInvokable;
-use UnicornFail\Emoji\Tests\Unit\Event\FakeEventParent;
-use UnicornFail\Emoji\Tests\Unit\Node\Node1;
-use UnicornFail\Emoji\Tests\Unit\Node\Node3;
-use UnicornFail\Emoji\Util\ArrayCollection;
+use League\Emoji\Environment\Environment;
+use League\Emoji\Event\AbstractEvent;
+use League\Emoji\Extension\ExtensionInterface;
+use League\Emoji\Renderer\NodeRendererInterface;
+use League\Emoji\Tests\Unit\Event\FakeEvent;
+use League\Emoji\Tests\Unit\Event\FakeEventListener;
+use League\Emoji\Tests\Unit\Event\FakeEventListenerInvokable;
+use League\Emoji\Tests\Unit\Event\FakeEventParent;
+use League\Emoji\Tests\Unit\Node\Node1;
+use League\Emoji\Tests\Unit\Node\Node3;
+use League\Emoji\Util\ArrayCollection;
 
 class EnvironmentTest extends TestCase
 {

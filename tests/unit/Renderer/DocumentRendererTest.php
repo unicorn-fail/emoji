@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace UnicornFail\Emoji\Tests\Unit\Renderer;
+namespace League\Emoji\Tests\Unit\Renderer;
 
 use PHPUnit\Framework\TestCase;
-use UnicornFail\Emoji\Environment\Environment;
-use UnicornFail\Emoji\Exception\RenderNodeException;
-use UnicornFail\Emoji\Node\Document;
-use UnicornFail\Emoji\Node\Node;
-use UnicornFail\Emoji\Renderer\DocumentRenderer;
+use League\Emoji\Environment\Environment;
+use League\Emoji\Exception\RenderNodeException;
+use League\Emoji\Node\Document;
+use League\Emoji\Node\Node;
+use League\Emoji\Renderer\DocumentRenderer;
 
 class DocumentRendererTest extends TestCase
 {

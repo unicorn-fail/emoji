@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace UnicornFail\Emoji\Tests\Unit;
+namespace League\Emoji\Tests\Unit;
 
 use League\Configuration\Exception\InvalidConfigurationException;
 use PHPUnit\Framework\TestCase;
-use UnicornFail\Emoji\Dataset\Dataset;
-use UnicornFail\Emoji\Dataset\RuntimeDataset;
-use UnicornFail\Emoji\EmojiConverter;
-use UnicornFail\Emoji\EmojiConverterInterface;
-use UnicornFail\Emoji\Emojibase\EmojibaseDatasetInterface;
-use UnicornFail\Emoji\Emojibase\EmojibaseShortcodeInterface;
-use UnicornFail\Emoji\Environment\Environment;
-use UnicornFail\Emoji\Exception\LocalePresetException;
-use UnicornFail\Emoji\Lexer\EmojiLexer;
-use UnicornFail\Emoji\Node\Document;
-use UnicornFail\Emoji\Parser\EmojiParserInterface;
-use UnicornFail\Emoji\Renderer\DocumentRendererInterface;
+use League\Emoji\Dataset\Dataset;
+use League\Emoji\Dataset\RuntimeDataset;
+use League\Emoji\EmojiConverter;
+use League\Emoji\EmojiConverterInterface;
+use League\Emoji\Emojibase\EmojibaseDatasetInterface;
+use League\Emoji\Emojibase\EmojibaseShortcodeInterface;
+use League\Emoji\Environment\Environment;
+use League\Emoji\Exception\LocalePresetException;
+use League\Emoji\Lexer\EmojiLexer;
+use League\Emoji\Node\Document;
+use League\Emoji\Parser\EmojiParserInterface;
+use League\Emoji\Renderer\DocumentRendererInterface;
 
 class EmojiConverterTest extends TestCase
 {

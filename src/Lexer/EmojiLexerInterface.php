@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace UnicornFail\Emoji\Lexer;
+namespace League\Emoji\Lexer;
 
-use UnicornFail\Emoji\Emojibase\EmojibaseRegexInterface;
+use League\Emoji\Emojibase\EmojibaseRegexInterface;
 
 interface EmojiLexerInterface extends EmojibaseRegexInterface
 {

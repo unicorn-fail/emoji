@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b3c14fbc56465d1729f3eecb7780257b",
+    "content-hash": "dfe3f31eb0eb0a14e4f66ff8e1a49ceb",
     "packages": [
         {
             "name": "dflydev/dot-access-data",
@@ -163,16 +163,16 @@
         },
         {
             "name": "league/configuration",
-            "version": "dev-latest",
+            "version": "dev-main",
             "source": {
                 "type": "git",
                 "url": "https://github.com/unicorn-fail/configuration.git",
-                "reference": "18bf7a671869fa4a89c5814e7d5769ba9445a2fd"
+                "reference": "4c7579b93543e4346287f4a46b93aab46209722f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/unicorn-fail/configuration/zipball/18bf7a671869fa4a89c5814e7d5769ba9445a2fd",
-                "reference": "18bf7a671869fa4a89c5814e7d5769ba9445a2fd",
+                "url": "https://api.github.com/repos/unicorn-fail/configuration/zipball/4c7579b93543e4346287f4a46b93aab46209722f",
+                "reference": "4c7579b93543e4346287f4a46b93aab46209722f",
                 "shasum": ""
             },
             "archive": {
@@ -212,7 +212,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-latest": "1.0-dev"
+                    "dev-main": "1.0-dev"
                 }
             },
             "autoload": {
@@ -227,13 +227,13 @@
             },
             "scripts": {
                 "fix": [
-                    "phpcbf"
+                    "vendor/bin/phpcbf"
                 ],
                 "phpcs": [
-                    "phpcs"
+                    "vendor/bin/phpcs"
                 ],
                 "phpstan": [
-                    "phpstan analyse"
+                    "vendor/bin/phpstan analyse"
                 ],
                 "phpunit": [
                     "./scripts/phpunit --no-coverage --colors=always"
@@ -242,7 +242,7 @@
                     "./scripts/phpunit --colors=always"
                 ],
                 "psalm": [
-                    "psalm --config=psalm.xml --output-format=phpstorm --show-info=true --stats --threads=4"
+                    "vendor/bin/psalm --config=psalm.xml --output-format=phpstorm --show-info=true --stats --threads=4"
                 ],
                 "test": [
                     "@phpcs",
@@ -276,12 +276,12 @@
             ],
             "description": "A simplified and structured way to provide configuration in your PHP project.",
             "support": {
-                "docs": "https://github.com/league/configuration/blob/latest/README.md",
+                "docs": "https://github.com/league/configuration/blob/HEAD/README.md",
                 "issues": "https://github.com/league/configuration/issues",
                 "rss": "https://github.com/league/configuration/releases.atom",
                 "source": "https://github.com/league/configuration"
             },
-            "time": "2021-03-10T22:36:33+00:00"
+            "time": "2021-03-16T21:29:30+00:00"
         },
         {
             "name": "nette/schema",
@@ -5956,5 +5956,8 @@
         "ext-zlib": "*"
     },
     "platform-dev": [],
+    "platform-overrides": {
+        "php": "7.2.5"
+    },
     "plugin-api-version": "2.0.0"
 }

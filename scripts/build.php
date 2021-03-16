@@ -6,11 +6,11 @@ declare(strict_types=1);
 const BASE_DIRECTORY = __DIR__ . '/../';
 require_once BASE_DIRECTORY . '/vendor/autoload.php';
 
-use UnicornFail\Emoji\Dataset\Dataset;
-use UnicornFail\Emoji\Dataset\RuntimeDataset;
-use UnicornFail\Emoji\Emojibase\EmojibaseDatasetInterface;
-use UnicornFail\Emoji\Emojibase\EmojibaseShortcodeInterface;
-use UnicornFail\Emoji\Util\Normalize;
+use League\Emoji\Dataset\Dataset;
+use League\Emoji\Dataset\RuntimeDataset;
+use League\Emoji\Emojibase\EmojibaseDatasetInterface;
+use League\Emoji\Emojibase\EmojibaseShortcodeInterface;
+use League\Emoji\Util\Normalize;
 
 const BUILD_DIRECTORY          = BASE_DIRECTORY . '/build';
 const EMOJIBASE_DATA_DIRECTORY = BASE_DIRECTORY . '/node_modules/emojibase-data';

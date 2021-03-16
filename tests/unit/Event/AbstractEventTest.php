@@ -11,7 +11,7 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace UnicornFail\Emoji\Tests\Unit\Event;
+namespace League\Emoji\Tests\Unit\Event;
 
 use PHPUnit\Framework\TestCase;
 

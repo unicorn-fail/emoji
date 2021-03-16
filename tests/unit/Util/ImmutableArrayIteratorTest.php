@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace UnicornFail\Emoji\Tests\Unit\Util;
+namespace League\Emoji\Tests\Unit\Util;
 
 use PHPUnit\Framework\TestCase;
-use UnicornFail\Emoji\Util\ImmutableArrayIterator;
+use League\Emoji\Util\ImmutableArrayIterator;
 
 class ImmutableArrayIteratorTest extends TestCase
 {

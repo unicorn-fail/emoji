@@ -11,10 +11,10 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace UnicornFail\Emoji\Tests\Unit\Util;
+namespace League\Emoji\Tests\Unit\Util;
 
 use PHPUnit\Framework\TestCase;
-use UnicornFail\Emoji\Util\ArrayCollection;
+use League\Emoji\Util\ArrayCollection;
 
 class ArrayCollectionTest extends TestCase
 {

@@ -14,7 +14,7 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace UnicornFail\Emoji\Util;
+namespace League\Emoji\Util;
 
 class HtmlElement implements \Stringable
 {
@@ -143,7 +143,7 @@ class HtmlElement implements \Stringable
         $classes = \array_filter(\array_unique($classes));
 
         // Normalize the classes.
-        $classes = \array_map('\UnicornFail\Emoji\Util\HtmlElement::cleanCssIdentifier', \array_map('trim', $classes));
+        $classes = \array_map('\League\Emoji\Util\HtmlElement::cleanCssIdentifier', \array_map('trim', $classes));
 
         // Convert the array of classes back into a string.
         $classes = \trim(\implode(' ', $classes));

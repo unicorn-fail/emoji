@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace UnicornFail\Emoji\Tests\Unit\Node;
+namespace League\Emoji\Tests\Unit\Node;
 
 use PHPUnit\Framework\TestCase;
-use UnicornFail\Emoji\Dataset\Emoji as DatasetEmoji;
-use UnicornFail\Emoji\Lexer\EmojiLexer;
-use UnicornFail\Emoji\Node\Emoji;
+use League\Emoji\Dataset\Emoji as DatasetEmoji;
+use League\Emoji\Lexer\EmojiLexer;
+use League\Emoji\Node\Emoji;
 
 class EmojiTest extends TestCase
 {
     /**
-     * @dataProvider \UnicornFail\Emoji\Tests\Unit\Dataset\EmojiTest::providerEmojis
+     * @dataProvider \League\Emoji\Tests\Unit\Dataset\EmojiTest::providerEmojis
      *
      * @param mixed[] $data
      * @param mixed[] $expectedData

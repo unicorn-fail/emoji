@@ -11,13 +11,13 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace UnicornFail\Emoji\Tests\Unit\Event;
+namespace League\Emoji\Tests\Unit\Event;
 
 use League\Configuration\ConfigurationAwareInterface;
 use League\Configuration\ConfigurationInterface;
-use UnicornFail\Emoji\Environment\EnvironmentAwareInterface;
-use UnicornFail\Emoji\Environment\EnvironmentInterface;
-use UnicornFail\Emoji\Event\AbstractEvent;
+use League\Emoji\Environment\EnvironmentAwareInterface;
+use League\Emoji\Environment\EnvironmentInterface;
+use League\Emoji\Event\AbstractEvent;
 
 class FakeEventListener implements ConfigurationAwareInterface, EnvironmentAwareInterface
 {

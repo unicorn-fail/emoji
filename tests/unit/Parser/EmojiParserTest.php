@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace UnicornFail\Emoji\Tests\Unit\Parser;
+namespace League\Emoji\Tests\Unit\Parser;
 
 use PHPUnit\Framework\TestCase;
-use UnicornFail\Emoji\Environment\Environment;
-use UnicornFail\Emoji\Exception\UnexpectedEncodingException;
-use UnicornFail\Emoji\Lexer\EmojiLexer;
-use UnicornFail\Emoji\Parser\EmojiParser;
+use League\Emoji\Environment\Environment;
+use League\Emoji\Exception\UnexpectedEncodingException;
+use League\Emoji\Lexer\EmojiLexer;
+use League\Emoji\Parser\EmojiParser;
 
 class EmojiParserTest extends TestCase
 {

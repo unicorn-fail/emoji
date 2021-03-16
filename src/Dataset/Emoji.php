@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace UnicornFail\Emoji\Dataset;
+namespace League\Emoji\Dataset;
 
-use UnicornFail\Emoji\Emojibase\EmojibaseDatasetInterface;
-use UnicornFail\Emoji\Emojibase\EmojibaseSkinsInterface;
-use UnicornFail\Emoji\Util\ImmutableArrayIterator;
-use UnicornFail\Emoji\Util\Normalize;
+use League\Emoji\Emojibase\EmojibaseDatasetInterface;
+use League\Emoji\Emojibase\EmojibaseSkinsInterface;
+use League\Emoji\Util\ImmutableArrayIterator;
+use League\Emoji\Util\Normalize;
 
 /**
  * @property ?string $annotation
@@ -39,8 +39,8 @@ final class Emoji extends ImmutableArrayIterator implements \JsonSerializable, \
         'group'      => '?int',
         'hexcode'    => '!?string',
         'order'      => '?int',
-        'shortcodes' => 'string[]<\UnicornFail\Emoji\Util\Normalize::shortcodes>',
-        'skins'      => '\UnicornFail\Emoji\Dataset\Dataset',
+        'shortcodes' => 'string[]<\League\Emoji\Util\Normalize::shortcodes>',
+        'skins'      => '\League\Emoji\Dataset\Dataset',
         'subgroup'   => '?int',
         'tags'       => 'string[]',
         'text'       => '!?string',
@@ -54,7 +54,7 @@ final class Emoji extends ImmutableArrayIterator implements \JsonSerializable, \
      *
      * @psalm-readonly-allow-private-mutation
      */
-    private $renderer = '\UnicornFail\Emoji\Dataset\Emoji::renderProperty';
+    private $renderer = '\League\Emoji\Dataset\Emoji::renderProperty';
 
     /**
      * @param mixed[] $data

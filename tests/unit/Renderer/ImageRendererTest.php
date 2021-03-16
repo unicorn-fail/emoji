@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace UnicornFail\Emoji\Tests\Unit\Renderer;
+namespace League\Emoji\Tests\Unit\Renderer;
 
 use PHPUnit\Framework\TestCase;
-use UnicornFail\Emoji\Dataset\Emoji as DatasetEmoji;
-use UnicornFail\Emoji\Environment\Environment;
-use UnicornFail\Emoji\Node\Emoji;
-use UnicornFail\Emoji\Node\Image;
-use UnicornFail\Emoji\Node\Node;
-use UnicornFail\Emoji\Renderer\ImageRenderer;
-use UnicornFail\Emoji\Util\HtmlElement;
+use League\Emoji\Dataset\Emoji as DatasetEmoji;
+use League\Emoji\Environment\Environment;
+use League\Emoji\Node\Emoji;
+use League\Emoji\Node\Image;
+use League\Emoji\Node\Node;
+use League\Emoji\Renderer\ImageRenderer;
+use League\Emoji\Util\HtmlElement;
 
 class ImageRendererTest extends TestCase
 {

@@ -14,7 +14,7 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace UnicornFail\Emoji\Environment;
+namespace League\Emoji\Environment;
 
 use League\Configuration\Configuration;
 use League\Configuration\ConfigurationAwareInterface;
@@ -23,17 +23,17 @@ use Nette\Schema\Expect;
 use Nette\Schema\Schema;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\EventDispatcher\StoppableEventInterface;
-use UnicornFail\Emoji\Dataset\RuntimeDataset;
-use UnicornFail\Emoji\EmojiConverterInterface;
-use UnicornFail\Emoji\Emojibase\EmojibaseDatasetInterface;
-use UnicornFail\Emoji\Emojibase\EmojibaseShortcodeInterface;
-use UnicornFail\Emoji\Event\ListenerData;
-use UnicornFail\Emoji\Extension\ConfigurableExtensionInterface;
-use UnicornFail\Emoji\Extension\ConfigureConversionTypesInterface;
-use UnicornFail\Emoji\Extension\EmojiCoreExtension;
-use UnicornFail\Emoji\Extension\ExtensionInterface;
-use UnicornFail\Emoji\Renderer\NodeRendererInterface;
-use UnicornFail\Emoji\Util\PrioritizedList;
+use League\Emoji\Dataset\RuntimeDataset;
+use League\Emoji\EmojiConverterInterface;
+use League\Emoji\Emojibase\EmojibaseDatasetInterface;
+use League\Emoji\Emojibase\EmojibaseShortcodeInterface;
+use League\Emoji\Event\ListenerData;
+use League\Emoji\Extension\ConfigurableExtensionInterface;
+use League\Emoji\Extension\ConfigureConversionTypesInterface;
+use League\Emoji\Extension\EmojiCoreExtension;
+use League\Emoji\Extension\ExtensionInterface;
+use League\Emoji\Renderer\NodeRendererInterface;
+use League\Emoji\Util\PrioritizedList;
 
 final class Environment implements EnvironmentBuilderInterface
 {
@@ -385,17 +385,17 @@ final class Environment implements EnvironmentBuilderInterface
 
         $this->config->addSchema('convert', Expect::anyOf($structuredConversionTypes, ...$conversionTypes)
             ->default(\array_fill_keys(EmojiConverterInterface::TYPES, $default))
-            ->before('\UnicornFail\Emoji\Environment\Environment::normalizeConvert'));
+            ->before('\League\Emoji\Environment\Environment::normalizeConvert'));
 
         $this->config->addSchema('exclude', Expect::structure([
             'shortcodes' => Expect::arrayOf('string')
                 ->default([])
-                ->before('\UnicornFail\Emoji\Util\Normalize::shortcodes'),
+                ->before('\League\Emoji\Util\Normalize::shortcodes'),
         ])->castTo('array'));
 
         $this->config->addSchema('locale', Expect::anyOf(...EmojibaseDatasetInterface::SUPPORTED_LOCALES)
             ->default('en')
-            ->before('\UnicornFail\Emoji\Environment\Environment::normalizeLocale'));
+            ->before('\League\Emoji\Environment\Environment::normalizeLocale'));
 
         $this->config->addSchema('native', Expect::bool()->nullable());
 
@@ -404,7 +404,7 @@ final class Environment implements EnvironmentBuilderInterface
 
         $this->config->addSchema('preset', Expect::anyOf(Expect::listOf(Expect::anyOf(...EmojibaseShortcodeInterface::SUPPORTED_PRESETS)), ...EmojibaseShortcodeInterface::SUPPORTED_PRESETS)
             ->default(EmojibaseShortcodeInterface::DEFAULT_PRESETS)
-            ->before('\UnicornFail\Emoji\Environment\Environment::normalizePresets'));
+            ->before('\League\Emoji\Environment\Environment::normalizePresets'));
     }
 
     protected function initializeExtensions(): void

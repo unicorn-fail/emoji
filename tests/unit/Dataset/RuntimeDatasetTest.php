@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace UnicornFail\Emoji\Tests\Unit\Dataset;
+namespace League\Emoji\Tests\Unit\Dataset;
 
 use League\Configuration\Configuration;
 use PHPUnit\Framework\TestCase;
-use UnicornFail\Emoji\Dataset\Dataset;
-use UnicornFail\Emoji\Dataset\Emoji;
-use UnicornFail\Emoji\Dataset\RuntimeDataset;
-use UnicornFail\Emoji\Emojibase\EmojibaseShortcodeInterface;
-use UnicornFail\Emoji\Environment\Environment;
-use UnicornFail\Emoji\Exception\FileNotFoundException;
-use UnicornFail\Emoji\Exception\MalformedArchiveException;
-use UnicornFail\Emoji\Exception\UnarchiveException;
+use League\Emoji\Dataset\Dataset;
+use League\Emoji\Dataset\Emoji;
+use League\Emoji\Dataset\RuntimeDataset;
+use League\Emoji\Emojibase\EmojibaseShortcodeInterface;
+use League\Emoji\Environment\Environment;
+use League\Emoji\Exception\FileNotFoundException;
+use League\Emoji\Exception\MalformedArchiveException;
+use League\Emoji\Exception\UnarchiveException;
 
 class RuntimeDatasetTest extends TestCase
 {
@@ -51,7 +51,7 @@ class RuntimeDatasetTest extends TestCase
         $this->assertNotEmpty(\filesize($temp));
 
         $archived = RuntimeDataset::unarchive($temp);
-        $this->assertEquals('UnicornFail\Emoji\Dataset\Dataset', \get_class($archived));
+        $this->assertEquals('League\Emoji\Dataset\Dataset', \get_class($archived));
         $this->assertEquals($dataset->getArrayCopy(), $archived->getArrayCopy());
     }
 

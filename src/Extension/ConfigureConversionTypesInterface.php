@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace UnicornFail\Emoji\Extension;
+namespace League\Emoji\Extension;
 
 use Dflydev\DotAccessData\Data;
 

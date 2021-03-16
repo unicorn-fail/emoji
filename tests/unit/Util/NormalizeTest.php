@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace UnicornFail\Emoji\Tests\Unit\Util;
+namespace League\Emoji\Tests\Unit\Util;
 
 use PHPUnit\Framework\TestCase;
-use UnicornFail\Emoji\Util\Normalize;
-use UnicornFail\Emoji\Util\Property;
+use League\Emoji\Util\Normalize;
+use League\Emoji\Util\Property;
 
 class NormalizeTest extends TestCase
 {
@@ -55,20 +55,20 @@ class NormalizeTest extends TestCase
         $data['?float']  = ['?float', null, null];
         $data['float[]'] = ['float[]', '2.75', [2.75]];
 
-        $data['string[]<\UnicornFail\Emoji\Util\Normalize::shortcodes>'] = [
-            'string[]<\UnicornFail\Emoji\Util\Normalize::shortcodes>',
+        $data['string[]<\League\Emoji\Util\Normalize::shortcodes>'] = [
+            'string[]<\League\Emoji\Util\Normalize::shortcodes>',
             'foo bar',
             ['foo-bar'],
         ];
 
-        $data['?string[]<\UnicornFail\Emoji\Util\Normalize::shortcodes>'] = [
-            '?string[]<\UnicornFail\Emoji\Util\Normalize::shortcodes>',
+        $data['?string[]<\League\Emoji\Util\Normalize::shortcodes>'] = [
+            '?string[]<\League\Emoji\Util\Normalize::shortcodes>',
             [null],
             [],
         ];
 
-        $data['\UnicornFail\Emoji\Tests\Unit\Util\TestNormalizeIterable[]'] = [
-            '\UnicornFail\Emoji\Tests\Unit\Util\TestNormalizeIterable',
+        $data['\League\Emoji\Tests\Unit\Util\TestNormalizeIterable[]'] = [
+            '\League\Emoji\Tests\Unit\Util\TestNormalizeIterable',
             'test',
             new TestNormalizeIterable('test'),
         ];

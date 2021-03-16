@@ -11,14 +11,14 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace UnicornFail\Emoji\Environment;
+namespace League\Emoji\Environment;
 
 use League\Configuration\ConfigurationProviderInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\EventDispatcher\ListenerProviderInterface;
-use UnicornFail\Emoji\Dataset\RuntimeDataset;
-use UnicornFail\Emoji\Extension\ExtensionInterface;
-use UnicornFail\Emoji\Renderer\NodeRendererInterface;
+use League\Emoji\Dataset\RuntimeDataset;
+use League\Emoji\Extension\ExtensionInterface;
+use League\Emoji\Renderer\NodeRendererInterface;
 
 interface EnvironmentInterface extends ConfigurationProviderInterface, EventDispatcherInterface, ListenerProviderInterface
 {

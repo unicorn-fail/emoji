@@ -11,9 +11,9 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace UnicornFail\Emoji\Event;
+namespace League\Emoji\Event;
 
-use UnicornFail\Emoji\Node\Document;
+use League\Emoji\Node\Document;
 
 /**
  * Event dispatched when the document has been fully parsed

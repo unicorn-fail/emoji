@@ -14,13 +14,13 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace UnicornFail\Emoji\Renderer;
+namespace League\Emoji\Renderer;
 
 use League\Configuration\ConfigurationAwareInterface;
 use League\Configuration\ConfigurationInterface;
-use UnicornFail\Emoji\Node\Image;
-use UnicornFail\Emoji\Node\Node;
-use UnicornFail\Emoji\Util\HtmlElement;
+use League\Emoji\Node\Image;
+use League\Emoji\Node\Node;
+use League\Emoji\Util\HtmlElement;
 
 final class ImageRenderer implements NodeRendererInterface, ConfigurationAwareInterface
 {

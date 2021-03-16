@@ -11,9 +11,9 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace UnicornFail\Emoji\Renderer;
+namespace League\Emoji\Renderer;
 
-use UnicornFail\Emoji\Node\Node;
+use League\Emoji\Node\Node;
 
 interface NodeRendererInterface
 {

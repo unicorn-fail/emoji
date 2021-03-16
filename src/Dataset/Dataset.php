@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace UnicornFail\Emoji\Dataset;
+namespace League\Emoji\Dataset;
 
-use UnicornFail\Emoji\Util\ImmutableArrayIterator;
-use UnicornFail\Emoji\Util\Normalize;
+use League\Emoji\Util\ImmutableArrayIterator;
+use League\Emoji\Util\Normalize;
 
 /**
  * @method Emoji|null current()

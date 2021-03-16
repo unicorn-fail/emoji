@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace UnicornFail\Emoji\Parser;
+namespace League\Emoji\Parser;
 
-use UnicornFail\Emoji\Emojibase\EmojibaseRegexInterface;
-use UnicornFail\Emoji\Node\Document;
+use League\Emoji\Emojibase\EmojibaseRegexInterface;
+use League\Emoji\Node\Document;
 
 interface EmojiParserInterface extends EmojibaseRegexInterface
 {

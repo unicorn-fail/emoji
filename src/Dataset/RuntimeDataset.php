@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace UnicornFail\Emoji\Dataset;
+namespace League\Emoji\Dataset;
 
 use League\Configuration\ConfigurationInterface;
-use UnicornFail\Emoji\Emojibase\EmojibaseDatasetInterface;
-use UnicornFail\Emoji\Emojibase\EmojibaseShortcodeInterface;
-use UnicornFail\Emoji\Exception\FileNotFoundException;
-use UnicornFail\Emoji\Exception\LocalePresetException;
-use UnicornFail\Emoji\Exception\MalformedArchiveException;
-use UnicornFail\Emoji\Exception\UnarchiveException;
-use UnicornFail\Emoji\Parser\EmojiParser;
+use League\Emoji\Emojibase\EmojibaseDatasetInterface;
+use League\Emoji\Emojibase\EmojibaseShortcodeInterface;
+use League\Emoji\Exception\FileNotFoundException;
+use League\Emoji\Exception\LocalePresetException;
+use League\Emoji\Exception\MalformedArchiveException;
+use League\Emoji\Exception\UnarchiveException;
+use League\Emoji\Parser\EmojiParser;
 
 final class RuntimeDataset implements \ArrayAccess, \Countable, \SeekableIterator
 {

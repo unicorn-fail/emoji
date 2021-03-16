@@ -11,13 +11,13 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace UnicornFail\Emoji\Tests\Unit\Event;
+namespace League\Emoji\Tests\Unit\Event;
 
 use PHPUnit\Framework\TestCase;
-use UnicornFail\Emoji\Environment\Environment;
-use UnicornFail\Emoji\Event\DocumentRenderedEvent;
-use UnicornFail\Emoji\Node\Document;
-use UnicornFail\Emoji\Renderer\DocumentRenderer;
+use League\Emoji\Environment\Environment;
+use League\Emoji\Event\DocumentRenderedEvent;
+use League\Emoji\Node\Document;
+use League\Emoji\Renderer\DocumentRenderer;
 
 final class DocumentRenderedEventTest extends TestCase
 {

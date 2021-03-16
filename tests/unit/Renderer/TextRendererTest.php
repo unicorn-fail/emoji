@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace UnicornFail\Emoji\Tests\Unit\Renderer;
+namespace League\Emoji\Tests\Unit\Renderer;
 
 use PHPUnit\Framework\TestCase;
-use UnicornFail\Emoji\Node\Node;
-use UnicornFail\Emoji\Renderer\TextRenderer;
+use League\Emoji\Node\Node;
+use League\Emoji\Renderer\TextRenderer;
 
 class TextRendererTest extends TestCase
 {

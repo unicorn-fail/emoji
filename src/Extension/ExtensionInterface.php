@@ -14,9 +14,9 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace UnicornFail\Emoji\Extension;
+namespace League\Emoji\Extension;
 
-use UnicornFail\Emoji\Environment\EnvironmentBuilderInterface;
+use League\Emoji\Environment\EnvironmentBuilderInterface;
 
 interface ExtensionInterface
 {

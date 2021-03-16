@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace UnicornFail\Emoji\Util;
+namespace League\Emoji\Util;
 
-use UnicornFail\Emoji\Dataset\Emoji;
+use League\Emoji\Dataset\Emoji;
 
 /**
  * {@internal}

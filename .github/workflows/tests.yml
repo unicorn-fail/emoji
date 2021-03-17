@@ -55,6 +55,8 @@ jobs:
 
         steps:
             -   uses: actions/checkout@v2
+                with:
+                    fetch-depth: 2
 
             -   uses: shivammathur/setup-php@v2
                 with:
@@ -62,6 +64,15 @@ jobs:
                     extensions: curl, mbstring, zlib
                     coverage: pcov
                     tools: composer:v2
+
+            -   uses: actions/setup-node@v2
+                with:
+                    node-version: '15'
+
+            -   uses: actions/cache@v2
+                with:
+                    path: node_modules
+                    key: node-modules-${{ hashFiles('package-lock.json') }}
 
             -   name: Get Composer Cache Directory
                 id: composer-cache
@@ -73,6 +84,9 @@ jobs:
                     path: ${{ steps.composer-cache.outputs.dir }}
                     key: ${{ runner.os }}-php${{ matrix.php }}-composer-${{ hashFiles('**/composer.lock') }}
 
+            -   if: steps.cache-node.outputs.cache-hit != 'true'
+                run: npm install
+
             -   run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
 
             -   name: "Use PHPUnit 9.3+ on PHP 8"
@@ -80,6 +94,12 @@ jobs:
                 if: "matrix.php == '8.0'"
 
             -   run: composer update -o --no-progress ${{ matrix.composer-flags }}
+
+            -   run: composer require scrutinizer/ocular:^1.8.1
+                if: ${{ matrix.coverage }}
+
+            -   name: Build Datasets
+                run: composer build
 
             -   run: vendor/bin/phpunit --colors=always --no-coverage ${{ matrix.phpunit-flags }}
                 if: ${{ !matrix.coverage }}
@@ -142,4 +162,4 @@ jobs:
 
             -   run: composer update -o --no-progress
 
-            -   run: vendor/bin/psalm --no-progress --output-format=github --shepherd || true
+            -   run: vendor/bin/psalm --config=psalm.xml --no-cache --no-progress --output-format=github --shepherd

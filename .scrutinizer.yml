@@ -24,7 +24,7 @@ checks:
         fix_linefeed: true
         fix_line_ending: true
         fix_identation_4spaces: true
-        fix_doc_comments: true
+        fix_doc_comments: false
 tools:
     external_code_coverage:
         timeout: 1800

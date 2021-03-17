@@ -10,6 +10,7 @@ use League\Emoji\EmojiConverterInterface;
 use League\Emoji\Event\DocumentParsedEvent;
 use League\Emoji\Node\Emoji;
 use League\Emoji\Node\Image;
+use League\Emoji\Node\Node;
 use League\Emoji\Util\HtmlElement;
 
 /**
@@ -29,71 +30,114 @@ final class TwemojiProcessor implements ConfigurationAwareInterface
 
     public function __invoke(DocumentParsedEvent $e): void
     {
-        $urlBase = (string) $this->config->get('twemoji.urlBase');
+        foreach ($e->getDocument()->getNodes() as $node) {
+            // Only convert types that are set to "twemoji".
+            if (! ($node instanceof Emoji) || $node->hexcode === null || $this->getConversionType($node) !== self::CONVERSION_TYPE) {
+                continue;
+            }
 
-        $classPrefix = (string) $this->config->get('twemoji.classPrefix');
+            $twemoji = $this->getTwemojiImage($node);
 
+            $node->replaceWith($twemoji);
+        }
+    }
+
+    protected function addClassesToNode(Node $node, ?string ...$classes): void
+    {
+        $prefix = $this->getClassPrefix();
+
+        $classes = \array_map(static function (string $class) use ($prefix) {
+            return HtmlElement::cleanCssIdentifier($prefix . $class);
+        }, \array_filter($classes));
+
+        $classes = \array_unique(\array_filter(\array_merge($this->getClasses(), $classes)));
+
+        $node->addClass(...$classes);
+    }
+
+    /** @return string[] */
+    protected function getClasses(): array
+    {
+        /** @var string[] $classes */
+        $classes = (array) $this->config->get('twemoji.classes');
+
+        return $classes;
+    }
+
+    protected function getClassPrefix(): string
+    {
+        return (string) $this->config->get('twemoji.classPrefix');
+    }
+
+    protected function getConversionType(Emoji $emoji): ?string
+    {
+        $parsedType     = $emoji->getParsedType();
+        $configPath     = 'convert.' . (EmojiConverterInterface::TYPES[$parsedType] ?? '');
+        $conversionType = null;
+        if ($this->config->exists($configPath)) {
+            $conversionType = (string) ($this->config->get($configPath) ?? '');
+        }
+
+        return $conversionType;
+    }
+
+    protected function getImageType(): string
+    {
+        return (string) $this->config->get('twemoji.type');
+    }
+
+    /** @return int|float|string|null */
+    protected function getSize()
+    {
         /** @var int|float|string|null $size */
         $size = $this->config->get('twemoji.size');
 
-        $inline = (bool) $this->config->get('twemoji.inline');
+        return $size;
+    }
 
-        $type = (string) $this->config->get('twemoji.type');
+    protected function getTwemojiImage(Emoji $emoji): Image
+    {
+        $image = new Image($emoji->getParsedValue(), $emoji, $this->getUrl((string) $emoji->hexcode), $emoji->annotation, $emoji->annotation);
 
-        foreach ($e->getDocument()->getNodes() as $node) {
-            if (! ($node instanceof Emoji) || $node->hexcode === null) {
-                continue;
+        $this->addClassesToNode($image, $emoji->annotation);
+
+        // Ensure image isn't massive and relative to its surroundings by inlining it.
+        $size = $this->getSize();
+        if ($this->isInline()) {
+            if ($size === null) {
+                $size = '1em';
+            } elseif (! \is_string($size)) {
+                $size .= 'em';
             }
 
-            $parsedType     = $node->getParsedType();
-            $configPath     = 'convert.' . (EmojiConverterInterface::TYPES[$parsedType] ?? '');
-            $conversionType = null;
-
-            if ($this->config->exists($configPath)) {
-                $conversionType = (string) ($this->config->get($configPath) ?? '');
-            }
-
-            // Only convert types that are set to "twemoji".
-            if ($conversionType !== self::CONVERSION_TYPE) {
-                continue;
-            }
-
-            $url = \sprintf(
-                '%s/%s/%s.%s',
-                $urlBase,
-                $type === 'png' ? '72x72' : 'svg',
-                \strtolower($node->hexcode),
-                $type
-            );
-
-            $image = new Image($node->getParsedValue(), $node, $url, $node->annotation, $node->annotation);
-
-            /** @var string[] $classes */
-            $classes = (array) $this->config->get('twemoji.classes');
-            $image->addClass(...$classes);
-
-            if ($node->annotation !== null) {
-                $image->addClass(HtmlElement::cleanCssIdentifier($classPrefix
-                    ? $classPrefix . $node->annotation
-                    : $node->annotation));
-            }
-
-            // Ensure image isn't massive and relative to its surroundings by inlining it.
-            if ($inline && $size === null) {
-                $image->setAttribute('style', 'width: 1em; height: 1em; vertical-align: middle;');
-            } elseif ($inline && $size !== null) {
-                if (! \is_string($size)) {
-                    $size .= 'em';
-                }
-
-                $image->setAttribute('style', \sprintf('width: %s; height: %s; vertical-align: middle;', $size, $size));
-            } elseif ($size !== null) {
-                $image->setAttribute('height', (string) $size);
-                $image->setAttribute('width', (string) $size);
-            }
-
-            $node->replaceWith($image);
+            $image->setAttribute('style', \sprintf('width: %s; height: %s; vertical-align: middle;', $size, $size));
+        } elseif ($size !== null) {
+            $image->setAttribute('height', (string) $size);
+            $image->setAttribute('width', (string) $size);
         }
+
+        return $image;
+    }
+
+    protected function getUrl(string $hexcode): string
+    {
+        return \sprintf(
+            '%s/%s/%s.%s',
+            $this->getUrlBase(),
+            ($imageType = $this->getImageType()) === 'png' ? '72x72' : 'svg',
+            \strtolower($hexcode),
+            $imageType
+        );
+    }
+
+    protected function getUrlBase(): string
+    {
+        return (string) $this->config->get('twemoji.urlBase');
+    }
+
+    protected function isInline(): bool
+    {
+        return (bool) $this->config->get('twemoji.inline');
     }
 
     public function setConfiguration(ConfigurationInterface $configuration): void

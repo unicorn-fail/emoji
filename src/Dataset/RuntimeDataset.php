@@ -69,7 +69,7 @@ final class RuntimeDataset implements \ArrayAccess, \Countable, \SeekableIterato
 
         try {
             /** @var ?Dataset $dataset */
-            $dataset = \unserialize((string) $decoded, [
+            $dataset = \unserialize($decoded, [
                 'allowed_classes' => [Dataset::class, Emoji::class],
             ]);
         } catch (\Throwable $throwable) {

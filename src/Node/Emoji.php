@@ -90,7 +90,7 @@ final class Emoji extends Node
             return null;
         }
 
-        $property = (string) (EmojiConverter::TYPES[$this->parsedType] ?? EmojiConverter::UNICODE);
+        $property = EmojiConverter::TYPES[$this->parsedType] ?? EmojiConverter::UNICODE;
         $value    = (string) ($skin->$property ?? $this->parsedValue);
 
         return new self($this->parsedType, $value, $skin);

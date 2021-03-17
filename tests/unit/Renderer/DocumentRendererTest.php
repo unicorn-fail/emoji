@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace League\Emoji\Tests\Unit\Renderer;
 
-use PHPUnit\Framework\TestCase;
 use League\Emoji\Environment\Environment;
 use League\Emoji\Exception\RenderNodeException;
 use League\Emoji\Node\Document;
 use League\Emoji\Node\Node;
 use League\Emoji\Renderer\DocumentRenderer;
+use PHPUnit\Framework\TestCase;
 
 class DocumentRendererTest extends TestCase
 {

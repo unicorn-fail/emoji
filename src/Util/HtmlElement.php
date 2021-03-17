@@ -29,7 +29,7 @@ class HtmlElement implements \Stringable
     /** @var string */
     protected $tagName;
 
-    /** @var array<string, string|bool> */
+    /** @var array<string, bool|string> */
     protected $attributes = [];
 
     /** @var HtmlElement|HtmlElement[]|string */
@@ -40,7 +40,7 @@ class HtmlElement implements \Stringable
 
     /**
      * @param string                                $tagName     Name of the HTML tag
-     * @param array<string, mixed>                  $attributes  Array of attributes (values should be unescaped)
+     * @param array<string, bool|string>            $attributes  Array of attributes (values should be unescaped)
      * @param HtmlElement|HtmlElement[]|string|null $contents    Inner contents, pre-escaped if needed
      * @param bool                                  $selfClosing Whether the tag is self-closing
      */
@@ -50,8 +50,7 @@ class HtmlElement implements \Stringable
         $this->selfClosing = $selfClosing;
 
         /**
-         * @var string $name
-         * @var string|bool $value
+         * @var bool|string $value
          */
         foreach ($attributes as $name => $value) {
             $this->setAttribute($name, $value);
@@ -124,7 +123,6 @@ class HtmlElement implements \Stringable
         }, $classes);
 
         // Flatten classes back into a single level array.
-        /** @var string[] $classes */
         $classes = \array_reduce(
             $classes,
             /**
@@ -142,13 +140,13 @@ class HtmlElement implements \Stringable
         // Filter out empty items and ensure classes are unique.
         $classes = \array_filter(\array_unique($classes));
 
-        // Normalize the classes.
-        $classes = \array_map('\League\Emoji\Util\HtmlElement::cleanCssIdentifier', \array_map('trim', $classes));
+        // Remove trailing spaces and normalize the class.
+        $classes = \array_map(static function (string $class): string {
+            return self::cleanCssIdentifier(\trim($class));
+        }, $classes);
 
         // Convert the array of classes back into a string.
-        $classes = \trim(\implode(' ', $classes));
-
-        $this->attributes['class'] = $classes;
+        $this->attributes['class'] = \trim(\implode(' ', $classes));
 
         return $this;
     }
@@ -159,15 +157,31 @@ class HtmlElement implements \Stringable
     }
 
     /**
-     * @return array<string, string|bool>
+     * @return array<string, bool|string>
      */
-    public function getAllAttributes(): array
+    public function getAttributes(): array
     {
         return $this->attributes;
     }
 
+    public function getAttributesAsString(): string
+    {
+        $attributes = '';
+        foreach ($this->attributes as $key => $value) {
+            if ($value === true) {
+                $attributes .= ' ' . $key;
+            } elseif ($value === false) {
+                continue;
+            } else {
+                $attributes .= ' ' . $key . '="' . Xml::escape($value) . '"';
+            }
+        }
+
+        return $attributes;
+    }
+
     /**
-     * @return string|bool|null
+     * @return bool|string|null
      */
     public function getAttribute(string $key)
     {
@@ -218,8 +232,6 @@ class HtmlElement implements \Stringable
      * Sets the inner contents of the tag (must be pre-escaped if needed)
      *
      * @param HtmlElement|HtmlElement[]|string|null $contents
-     *
-     * @return $this
      */
     public function setContents($contents): self
     {
@@ -230,17 +242,7 @@ class HtmlElement implements \Stringable
 
     public function __toString(): string
     {
-        $result = '<' . $this->tagName;
-
-        foreach ($this->attributes as $key => $value) {
-            if ($value === true) {
-                $result .= ' ' . $key;
-            } elseif ($value === false) {
-                continue;
-            } else {
-                $result .= ' ' . $key . '="' . Xml::escape($value) . '"';
-            }
-        }
+        $result = '<' . $this->tagName . $this->getAttributesAsString();
 
         if ($this->contents !== '') {
             $result .= '>' . $this->getContentsAsString() . '</' . $this->tagName . '>';

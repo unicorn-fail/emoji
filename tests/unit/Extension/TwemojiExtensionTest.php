@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace League\Emoji\Tests\Unit\Extension;
 
-use PHPUnit\Framework\TestCase;
 use League\Emoji\Tests\Unit\EmojiConverterTest;
 use League\Emoji\TwemojiConverter;
+use PHPUnit\Framework\TestCase;
 
 class TwemojiExtensionTest extends TestCase
 {

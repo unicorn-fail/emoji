@@ -14,11 +14,11 @@ declare(strict_types=1);
 namespace League\Emoji\Environment;
 
 use League\Configuration\ConfigurationProviderInterface;
-use Psr\EventDispatcher\EventDispatcherInterface;
-use Psr\EventDispatcher\ListenerProviderInterface;
 use League\Emoji\Dataset\RuntimeDataset;
 use League\Emoji\Extension\ExtensionInterface;
 use League\Emoji\Renderer\NodeRendererInterface;
+use Psr\EventDispatcher\EventDispatcherInterface;
+use Psr\EventDispatcher\ListenerProviderInterface;
 
 interface EnvironmentInterface extends ConfigurationProviderInterface, EventDispatcherInterface, ListenerProviderInterface
 {

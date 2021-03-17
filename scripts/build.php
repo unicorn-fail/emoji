@@ -3,7 +3,8 @@
 
 declare(strict_types=1);
 
-const BASE_DIRECTORY = __DIR__ . '/../';
+const BASE_DIRECTORY = __DIR__ . '/..';
+
 require_once BASE_DIRECTORY . '/vendor/autoload.php';
 
 use League\Emoji\Dataset\Dataset;

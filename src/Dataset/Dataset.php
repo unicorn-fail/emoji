@@ -27,7 +27,7 @@ final class Dataset extends ImmutableArrayIterator implements \ArrayAccess, \Cou
     public function __construct($emojis = [], string $index = 'hexcode')
     {
         $this->index = $index;
-        $normalized  = Normalize::emojis($emojis, $index);
+        $normalized  = Normalize::dataset($emojis, $index);
         parent::__construct($normalized, \ArrayIterator::ARRAY_AS_PROPS | \ArrayIterator::STD_PROP_LIST);
     }
 

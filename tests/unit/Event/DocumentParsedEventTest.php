@@ -13,11 +13,11 @@ declare(strict_types=1);
 
 namespace League\Emoji\Tests\Unit\Event;
 
-use PHPUnit\Framework\TestCase;
 use League\Emoji\Environment\Environment;
 use League\Emoji\Event\DocumentParsedEvent;
 use League\Emoji\Node\Document;
 use League\Emoji\Parser\EmojiParser;
+use PHPUnit\Framework\TestCase;
 
 final class DocumentParsedEventTest extends TestCase
 {

@@ -18,12 +18,6 @@ namespace League\Emoji\Environment;
 
 use League\Configuration\Configuration;
 use League\Configuration\ConfigurationAwareInterface;
-use League\Configuration\ConfigurationInterface;
-use Nette\Schema\Expect;
-use Nette\Schema\Schema;
-use Psr\EventDispatcher\EventDispatcherInterface;
-use Psr\EventDispatcher\StoppableEventInterface;
-use League\Emoji\Dataset\RuntimeDataset;
 use League\Emoji\EmojiConverterInterface;
 use League\Emoji\Emojibase\EmojibaseDatasetInterface;
 use League\Emoji\Emojibase\EmojibaseShortcodeInterface;
@@ -34,60 +28,18 @@ use League\Emoji\Extension\EmojiCoreExtension;
 use League\Emoji\Extension\ExtensionInterface;
 use League\Emoji\Renderer\NodeRendererInterface;
 use League\Emoji\Util\PrioritizedList;
+use Nette\Schema\Expect;
+use Nette\Schema\Schema;
 
-final class Environment implements EnvironmentBuilderInterface
+class Environment extends AbstractEnvironment implements EnvironmentInterface, EnvironmentBuilderInterface
 {
-    /** @var Configuration */
-    private $config;
-
-    /** @var ?RuntimeDataset */
-    private $dataset;
-
-    /** @var ?EventDispatcherInterface */
-    private $eventDispatcher;
-
     /**
-     * @var ExtensionInterface[]
-     *
-     * @psalm-readonly-allow-private-mutation
+     * @param array<string, mixed> $configuration
      */
-    private $extensions = [];
-
-    /**
-     * @var bool
-     *
-     * @psalm-readonly-allow-private-mutation
-     */
-    private $initialized = false;
-
-    /**
-     * @var ?PrioritizedList<ListenerData>
-     *
-     * @psalm-readonly-allow-private-mutation
-     */
-    private $listenerData;
-
-    /**
-     * @var array<string, PrioritizedList<NodeRendererInterface>>
-     *
-     * @psalm-readonly-allow-private-mutation
-     */
-    private $renderersByClass = [];
-
-    /**
-     * @var ExtensionInterface[]
-     *
-     * @psalm-readonly-allow-private-mutation
-     */
-    private $uninitializedExtensions = [];
-
-    /**
-     * @param array<string, mixed> $config
-     */
-    public function __construct(array $config = [])
+    public function __construct(array $configuration = [])
     {
         $this->config = new Configuration();
-        $this->config->merge($config);
+        $this->config->merge($configuration);
     }
 
     /**
@@ -105,6 +57,14 @@ final class Environment implements EnvironmentBuilderInterface
     }
 
     /**
+     * @return ExtensionInterface[]
+     */
+    protected static function defaultExtensions(): iterable
+    {
+        return [new EmojiCoreExtension()];
+    }
+
+    /**
      * @param string|string[] $value
      *
      * @return string[]
@@ -116,14 +76,6 @@ final class Environment implements EnvironmentBuilderInterface
         }
 
         return \array_fill_keys(EmojiConverterInterface::TYPES, $value);
-    }
-
-    /**
-     * @return ExtensionInterface[]
-     */
-    protected static function defaultExtensions(): iterable
-    {
-        return [new EmojiCoreExtension()];
     }
 
     public static function normalizeLocale(string $locale): string
@@ -235,130 +187,6 @@ final class Environment implements EnvironmentBuilderInterface
         return $this;
     }
 
-    /**
-     * @throws \RuntimeException
-     */
-    protected function assertUninitialized(string $message): void
-    {
-        if ($this->initialized) {
-            throw new \RuntimeException(\sprintf('%s The Environment has already been initialized.', $message));
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function dispatch(object $event)
-    {
-        $this->initialize();
-
-        if ($this->eventDispatcher !== null) {
-            return $this->eventDispatcher->dispatch($event);
-        }
-
-        foreach ($this->getListenersForEvent($event) as $listener) {
-            if ($event instanceof StoppableEventInterface && $event->isPropagationStopped()) {
-                return $event;
-            }
-
-            $listener($event);
-        }
-
-        return $event;
-    }
-
-    public function getConfiguration(): ConfigurationInterface
-    {
-        $this->initializeConfiguration();
-
-        return $this->config->reader();
-    }
-
-    public function getRuntimeDataset(string $index = 'hexcode'): RuntimeDataset
-    {
-        $this->initialize();
-
-        if ($this->dataset === null) {
-            $this->dataset = new RuntimeDataset($this->getConfiguration());
-        }
-
-        return $this->dataset->indexBy($index);
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @return ExtensionInterface[]
-     */
-    public function getExtensions(): iterable
-    {
-        return $this->extensions;
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @return iterable<callable>
-     */
-    public function getListenersForEvent(object $event): iterable
-    {
-        if ($this->listenerData === null) {
-            /** @var PrioritizedList<ListenerData> $listenerData */
-            $listenerData       = new PrioritizedList();
-            $this->listenerData = $listenerData;
-        }
-
-        /** @var ListenerData $listenerData */
-        foreach ($this->listenerData as $listenerData) {
-            if (! \is_a($event, $listenerData->getEvent())) {
-                continue;
-            }
-
-            yield function (object $event) use ($listenerData): void {
-                $this->initialize();
-
-                \call_user_func($listenerData->getListener(), $event);
-            };
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getRenderersForClass(string $nodeClass): iterable
-    {
-        $this->initialize();
-
-        // If renderers are defined for this specific class, return them immediately
-        if (isset($this->renderersByClass[$nodeClass])) {
-            return $this->renderersByClass[$nodeClass];
-        }
-
-        while (\class_exists($parent = (string) ($parent ?? $nodeClass)) && ($parent = \get_parent_class($parent))) {
-            if (! isset($this->renderersByClass[$parent])) {
-                continue;
-            }
-
-            // "Cache" this result to avoid future loops
-            return $this->renderersByClass[$nodeClass] = $this->renderersByClass[$parent];
-        }
-
-        return [];
-    }
-
-    protected function initialize(): void
-    {
-        if ($this->initialized) {
-            return;
-        }
-
-        $this->initializeConfiguration();
-
-        $this->initializeExtensions();
-
-        $this->initialized = true;
-    }
-
     protected function initializeConfiguration(): void
     {
         $this->config->addSchema('allow_unsafe_links', Expect::bool(true));
@@ -366,7 +194,7 @@ final class Environment implements EnvironmentBuilderInterface
         $default = EmojiConverterInterface::UNICODE;
 
         /** @var string[] $conversionTypes */
-        $conversionTypes = (array) EmojiConverterInterface::TYPES;
+        $conversionTypes = EmojiConverterInterface::TYPES;
 
         foreach ($this->extensions as $extension) {
             if ($extension instanceof ConfigureConversionTypesInterface) {
@@ -378,7 +206,7 @@ final class Environment implements EnvironmentBuilderInterface
 
         $structuredConversionTypes = Expect::structure(\array_combine(
             EmojiConverterInterface::TYPES,
-            \array_map(static function (string $conversionType) use ($conversionTypes, $default): Schema {
+            \array_map(static function (/** @scrutinizer ignore-unused */ string $conversionType) use ($conversionTypes, $default): Schema {
                 return Expect::anyOf(false, ...$conversionTypes)->default($default)->nullable();
             }, EmojiConverterInterface::TYPES)
         ))->castTo('array');
@@ -416,10 +244,5 @@ final class Environment implements EnvironmentBuilderInterface
                 unset($this->uninitializedExtensions[$i]);
             }
         }
-    }
-
-    public function setEventDispatcher(EventDispatcherInterface $dispatcher): void
-    {
-        $this->eventDispatcher = $dispatcher;
     }
 }

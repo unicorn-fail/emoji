@@ -16,12 +16,12 @@ declare(strict_types=1);
 
 namespace League\Emoji\Tests\Unit\Node;
 
-use PHPUnit\Framework\TestCase;
 use League\Emoji\Dataset\Emoji as DatasetEmoji;
 use League\Emoji\Lexer\EmojiLexer;
 use League\Emoji\Node\Emoji;
 use League\Emoji\Node\Image;
 use League\Emoji\Tests\Unit\Dataset\EmojiTest;
+use PHPUnit\Framework\TestCase;
 
 class ImageTest extends TestCase
 {

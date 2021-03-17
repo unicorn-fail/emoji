@@ -98,6 +98,8 @@ class EmojiLexer extends AbstractLexer implements EmojibaseRegexInterface
     /**
      * {@inheritDoc}
      *
+     * @param string $value
+     *
      * @return int
      *
      * @noinspection PhpParameterByRefIsNotUsedAsReferenceInspection

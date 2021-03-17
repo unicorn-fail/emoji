@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace League\Emoji\Tests\Unit\Util;
 
-use PHPUnit\Framework\TestCase;
 use League\Emoji\Util\ArrayCollection;
+use PHPUnit\Framework\TestCase;
 
 class ArrayCollectionTest extends TestCase
 {

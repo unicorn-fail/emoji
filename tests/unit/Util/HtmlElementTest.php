@@ -16,8 +16,8 @@ declare(strict_types=1);
 
 namespace League\Emoji\Tests\Unit\Util;
 
-use PHPUnit\Framework\TestCase;
 use League\Emoji\Util\HtmlElement;
+use PHPUnit\Framework\TestCase;
 
 class HtmlElementTest extends TestCase
 {
@@ -25,7 +25,7 @@ class HtmlElementTest extends TestCase
     {
         $p = new HtmlElement('p');
         $this->assertEquals('p', $p->getTagName());
-        $this->assertEmpty($p->getAllAttributes());
+        $this->assertEmpty($p->getAttributes());
         $this->assertEmpty($p->getContents());
     }
 
@@ -33,7 +33,7 @@ class HtmlElementTest extends TestCase
     {
         $img = new HtmlElement('img', ['src' => 'foo.jpg']);
         $this->assertEquals('img', $img->getTagName());
-        $this->assertCount(1, $img->getAllAttributes());
+        $this->assertCount(1, $img->getAttributes());
         $this->assertEquals('foo.jpg', $img->getAttribute('src'));
         $this->assertEmpty($img->getContents());
     }
@@ -42,7 +42,7 @@ class HtmlElementTest extends TestCase
     {
         $li = new HtmlElement('li', ['class' => 'odd'], 'Foo');
         $this->assertEquals('li', $li->getTagName());
-        $this->assertCount(1, $li->getAllAttributes());
+        $this->assertCount(1, $li->getAttributes());
         $this->assertEquals('odd', $li->getAttribute('class'));
         $this->assertEquals('Foo', $li->getContents());
     }
@@ -64,22 +64,22 @@ class HtmlElementTest extends TestCase
     public function testGetSetExistingAttribute(): void
     {
         $p = new HtmlElement('p', ['class' => 'foo']);
-        $this->assertCount(1, $p->getAllAttributes());
+        $this->assertCount(1, $p->getAttributes());
         $this->assertEquals('foo', $p->getAttribute('class'));
 
         $p->setAttribute('class', 'bar');
-        $this->assertCount(1, $p->getAllAttributes());
+        $this->assertCount(1, $p->getAttributes());
         $this->assertEquals('bar', $p->getAttribute('class'));
     }
 
     public function testGetSetNonExistingAttribute(): void
     {
         $p = new HtmlElement('p', ['class' => 'foo']);
-        $this->assertCount(1, $p->getAllAttributes());
+        $this->assertCount(1, $p->getAttributes());
         $this->assertNull($p->getAttribute('id'));
 
         $p->setAttribute('id', 'bar');
-        $this->assertCount(2, $p->getAllAttributes());
+        $this->assertCount(2, $p->getAttributes());
         $this->assertEquals('bar', $p->getAttribute('id'));
         $this->assertEquals('foo', $p->getAttribute('class'));
     }
@@ -87,7 +87,7 @@ class HtmlElementTest extends TestCase
     public function testGetSetAttributeWithStringAndArrayValues(): void
     {
         $p = new HtmlElement('p', ['class' => ['foo', 'bar']]);
-        $this->assertCount(1, $p->getAllAttributes());
+        $this->assertCount(1, $p->getAttributes());
         $this->assertSame('foo bar', $p->getAttribute('class'));
 
         $p->addClass('baz');
@@ -107,33 +107,33 @@ class HtmlElementTest extends TestCase
     {
         // Classes have duplicate values removed (array or string).
         $p = new HtmlElement('p', ['class' => ['a', 'b', 'a']]);
-        $this->assertCount(1, $p->getAllAttributes());
+        $this->assertCount(1, $p->getAttributes());
         $this->assertSame('a b', $p->getAttribute('class'));
         $this->assertSame('<p class="a b"></p>', $p->__toString());
 
         $p->setAttribute('class', ['foo', 'bar__baz', 'foo']);
-        $this->assertCount(1, $p->getAllAttributes());
+        $this->assertCount(1, $p->getAttributes());
         $this->assertSame('foo bar__baz', $p->getAttribute('class'));
         $this->assertSame('<p class="foo bar__baz"></p>', $p->__toString());
 
         $p->setAttribute('class', 'x y z x a');
-        $this->assertCount(1, $p->getAllAttributes());
+        $this->assertCount(1, $p->getAttributes());
         $this->assertSame('x y z a', $p->getAttribute('class'));
         $this->assertSame('<p class="x y z a"></p>', $p->__toString());
 
         // Normal attribute values only have duplicates removed if an array is passed.
         $p = new HtmlElement('p', ['data-attribute' => ['a', 'b', 'a']]);
-        $this->assertCount(1, $p->getAllAttributes());
+        $this->assertCount(1, $p->getAttributes());
         $this->assertSame('a b', $p->getAttribute('data-attribute'));
         $this->assertSame('<p data-attribute="a b"></p>', $p->__toString());
 
         $p->setAttribute('data-attribute', ['foo', 'bar', 'foo']);
-        $this->assertCount(1, $p->getAllAttributes());
+        $this->assertCount(1, $p->getAttributes());
         $this->assertSame('foo bar', $p->getAttribute('data-attribute'));
         $this->assertSame('<p data-attribute="foo bar"></p>', $p->__toString());
 
         $p->setAttribute('data-attribute', 'x y z x a');
-        $this->assertCount(1, $p->getAllAttributes());
+        $this->assertCount(1, $p->getAttributes());
         $this->assertSame('x y z x a', $p->getAttribute('data-attribute'));
         $this->assertSame('<p data-attribute="x y z x a"></p>', $p->__toString());
     }

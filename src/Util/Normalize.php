@@ -31,7 +31,31 @@ final class Normalize
      *
      * @return Emoji[]
      */
-    public static function emojis($emojis = [], string $index = 'hexcode', array &$dataset = []): array
+    public static function dataset($emojis = [], string $index = 'hexcode', array &$dataset = []): array
+    {
+        foreach (self::emojis($emojis) as $emoji) {
+            /** @var string[] $keys */
+            $keys = \array_filter((array) $emoji->$index);
+            foreach ($keys as $k) {
+                if (isset($dataset[$k])) {
+                    continue;
+                }
+
+                $dataset[$k] = $emoji;
+
+                self::dataset($emoji->skins, $index, $dataset);
+            }
+        }
+
+        return $dataset;
+    }
+
+    /**
+     * @param mixed $emojis
+     *
+     * @return Emoji[]
+     */
+    public static function emojis($emojis = []): array
     {
         if ($emojis instanceof Emoji) {
             $emojis = [$emojis];
@@ -57,21 +81,7 @@ final class Normalize
             $normalized[] = $emoji;
         }
 
-        foreach ($normalized as $emoji) {
-            /** @var string[] $keys */
-            $keys = \array_filter((array) $emoji->$index);
-            foreach ($keys as $k) {
-                if (isset($dataset[$k])) {
-                    continue;
-                }
-
-                $dataset[$k] = $emoji;
-
-                self::emojis($emoji->skins, $index, $dataset);
-            }
-        }
-
-        return $dataset;
+        return $normalized;
     }
 
     /**
@@ -115,7 +125,7 @@ final class Normalize
     }
 
     /**
-     * @param string|array<array-key, string> $shortcode
+     * @param string|array<array-key, string|null>|null $shortcode
      *
      * @return string[]
      */
@@ -123,10 +133,10 @@ final class Normalize
     {
         $normalized = [];
 
-        /** @var string|string[] $shortcodes */
+        /** @var string|array<array-key, string|null>|null $shortcodes */
         foreach (\func_get_args() as $shortcodes) {
             $normalized = \array_merge($normalized, \array_map(static function ($shortcode) {
-                return \preg_replace('/[^a-z0-9-]/', '-', \strtolower(\trim((string) $shortcode, ':(){}[]')));
+                return \preg_replace('/[^a-z0-9-]/', '-', \strtolower(\trim($shortcode ?? '', ':(){}[]')));
             }, (array) $shortcodes));
         }
 

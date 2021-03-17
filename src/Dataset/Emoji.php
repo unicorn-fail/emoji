@@ -129,7 +129,7 @@ final class Emoji extends ImmutableArrayIterator implements \JsonSerializable, \
     {
         /** @var ?static $skin */
         $skin = \current($this->skins->filter(static function (Emoji $emoji) use ($tone) {
-            return \in_array($tone, (array) $emoji->tone, true);
+            return \in_array($tone, $emoji->tone, true);
         })->getArrayCopy()) ?: null;
 
         return $skin;
@@ -151,7 +151,7 @@ final class Emoji extends ImmutableArrayIterator implements \JsonSerializable, \
             return $rendered;
         }
 
-        return (string) ($rendered ?? '');
+        return $rendered ?? '';
     }
 
     public function setRenderer(callable $renderer): void

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace League\Emoji\Tests\Unit\Dataset;
 
-use PHPUnit\Framework\TestCase;
 use League\Emoji\Dataset\Emoji;
+use PHPUnit\Framework\TestCase;
 
 class EmojiTest extends TestCase
 {
@@ -423,9 +423,9 @@ class EmojiTest extends TestCase
 
         // Apparently serialization spits out something a bit different in PHP 7.4+.
         if (\version_compare(PHP_VERSION, '7.4.0', '>=')) {
-            $expected = '2a93a7f9ab965d28dbe4ed76edeb0561007509451f67425b5bc9afcde2e90ade';
+            $expected = '3b1c59c978afdb1c035431def8792a5a463bb5e4a02d8e5a66c67f59b2a29252';
         } else {
-            $expected = '54f089d423c2116479b0ee3df084ce4628af4686afc58a8d2cae5bbe6d62b161';
+            $expected = 'f4f4e4e3d7bb23b81faffa98598f85e7f020c3268e52792a5d938db53edfd2f4';
         }
 
         $this->assertSame($expected, $actual);

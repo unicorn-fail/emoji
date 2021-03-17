@@ -6,11 +6,11 @@ namespace League\Emoji\Extension\Twemoji;
 
 use Dflydev\DotAccessData\Data;
 use League\Configuration\ConfigurationBuilderInterface;
-use Nette\Schema\Expect;
 use League\Emoji\Environment\EnvironmentBuilderInterface;
 use League\Emoji\Event\DocumentParsedEvent;
 use League\Emoji\Extension\ConfigurableExtensionInterface;
 use League\Emoji\Extension\ConfigureConversionTypesInterface;
+use Nette\Schema\Expect;
 
 final class TwemojiExtension implements ConfigurableExtensionInterface, ConfigureConversionTypesInterface
 {

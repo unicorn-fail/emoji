@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace League\Emoji\Tests\Unit\Renderer;
 
-use PHPUnit\Framework\TestCase;
 use League\Emoji\Node\Node;
 use League\Emoji\Renderer\TextRenderer;
+use PHPUnit\Framework\TestCase;
 
 class TextRendererTest extends TestCase
 {

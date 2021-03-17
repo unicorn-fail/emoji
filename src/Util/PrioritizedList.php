@@ -19,8 +19,8 @@ namespace League\Emoji\Util;
 /**
  * @internal
  *
- * @phpstan-template T
- * @phpstan-implements \IteratorAggregate<T>
+ * @template T
+ * @implements \IteratorAggregate<T>
  */
 final class PrioritizedList implements \IteratorAggregate
 {

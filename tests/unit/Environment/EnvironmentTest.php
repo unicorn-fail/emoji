@@ -18,8 +18,6 @@ namespace League\Emoji\Tests\Unit\Environment;
 
 use League\Configuration\ConfigurationInterface;
 use League\Configuration\MutableConfigurationInterface;
-use PHPUnit\Framework\TestCase;
-use Psr\EventDispatcher\EventDispatcherInterface;
 use League\Emoji\Environment\Environment;
 use League\Emoji\Event\AbstractEvent;
 use League\Emoji\Extension\ExtensionInterface;
@@ -31,6 +29,8 @@ use League\Emoji\Tests\Unit\Event\FakeEventParent;
 use League\Emoji\Tests\Unit\Node\Node1;
 use League\Emoji\Tests\Unit\Node\Node3;
 use League\Emoji\Util\ArrayCollection;
+use PHPUnit\Framework\TestCase;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 class EnvironmentTest extends TestCase
 {

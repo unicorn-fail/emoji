@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace League\Emoji\Tests\Unit\Dataset;
 
 use League\Configuration\Configuration;
-use PHPUnit\Framework\TestCase;
 use League\Emoji\Dataset\Dataset;
 use League\Emoji\Dataset\Emoji;
 use League\Emoji\Dataset\RuntimeDataset;
@@ -14,6 +13,7 @@ use League\Emoji\Environment\Environment;
 use League\Emoji\Exception\FileNotFoundException;
 use League\Emoji\Exception\MalformedArchiveException;
 use League\Emoji\Exception\UnarchiveException;
+use PHPUnit\Framework\TestCase;
 
 class RuntimeDatasetTest extends TestCase
 {

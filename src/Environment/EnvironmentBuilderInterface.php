@@ -19,7 +19,7 @@ use League\Emoji\Renderer\NodeRendererInterface;
 /**
  * Interface for building the Environment with any extensions, parsers, listeners, etc. that it may need
  */
-interface EnvironmentBuilderInterface extends EnvironmentInterface
+interface EnvironmentBuilderInterface
 {
     /**
      * Registers the given event listener

@@ -27,69 +27,69 @@ final class EmojiCoreProcessor implements ConfigurationAwareInterface
 
     public function __invoke(DocumentParsedEvent $e): void
     {
-        /** @var string[] $excludedShortcodes */
-        $excludedShortcodes = $this->config->get('exclude/shortcodes');
-
-        /** @var ?int $presentation */
-        $presentation = $this->config->get('presentation');
-
-        // Ensure emojis are set to the correct stringable type.
+        // Ensure emoji content is set to the correct conversion type.
         foreach ($e->getDocument()->getNodes() as $node) {
             if (! ($node instanceof Emoji)) {
                 continue;
             }
 
-            $literal    = null;
-            $type       = $node->getParsedType();
-            $configPath = 'convert.' . (EmojiConverterInterface::TYPES[$type] ?? '');
-
-            /** @var ?int $conversionType */
-            $conversionType = null;
-
-            if ($this->config->exists($configPath) && ($configType = (string) ($this->config->get($configPath) ?? ''))) {
-                $index = \array_search($configType, EmojiConverterInterface::TYPES, true);
-                if (\is_int($index)) {
-                    $conversionType = $index;
-                }
-            }
-
-            // If the conversion type isn't one of the core Lexer:TYPES, then do nothing.
-            // It should be handled by a different extension/processor.
-            if ($conversionType === null) {
-                continue;
-            }
-
-            switch ($conversionType) {
-                case EmojiLexer::T_EMOTICON:
-                    $literal = $node->emoticon;
-                    break;
-
-                case EmojiLexer::T_HTML_ENTITY:
-                    $literal = $node->htmlEntity;
-                    break;
-
-                case EmojiLexer::T_SHORTCODE:
-                    if ($shortcode = $node->getShortcode($excludedShortcodes, true)) {
-                        $literal = $shortcode;
-                    }
-
-                    break;
-
-                case EmojiLexer::T_TEXT:
-                case EmojiLexer::T_UNICODE:
-                    if (($presentation ?? $node->type) === EmojibaseDatasetInterface::TEXT && $node->text) {
-                        $literal = $node->text;
-                    } else {
-                        $literal = $node->emoji ?? $node->unicode;
-                    }
-
-                    break;
-            }
-
-            if ($literal !== null) {
-                $node->setContent($literal);
+            $content = $this->getEmojiContent($node);
+            if ($content !== null) {
+                $node->setContent($content);
             }
         }
+    }
+
+    protected function getConversionType(Emoji $emoji): ?int
+    {
+        $type       = $emoji->getParsedType();
+        $configPath = 'convert.' . (EmojiConverterInterface::TYPES[$type] ?? '');
+
+        if ($this->config->exists($configPath) && ($configType = (string) ($this->config->get($configPath) ?? ''))) {
+            $index = \array_search($configType, EmojiConverterInterface::TYPES, true);
+            if (\is_int($index)) {
+                return $index;
+            }
+        }
+
+        return null;
+    }
+
+    protected function getEmojiContent(Emoji $emoji): ?string
+    {
+        $content = null;
+
+        // If the conversion type isn't one of the core Lexer:TYPES, then do nothing.
+        // It should be handled by a different extension/processor.
+        switch ($this->getConversionType($emoji)) {
+            case EmojiLexer::T_EMOTICON:
+                $content = $emoji->emoticon;
+                break;
+
+            case EmojiLexer::T_HTML_ENTITY:
+                $content = $emoji->htmlEntity;
+                break;
+
+            case EmojiLexer::T_SHORTCODE:
+                $content = $emoji->getShortcode((array) $this->config->get('exclude/shortcodes'), true);
+                break;
+
+            case EmojiLexer::T_TEXT:
+            case EmojiLexer::T_UNICODE:
+                $content = $this->getEmojiUnicode($emoji);
+                break;
+        }
+
+        return $content;
+    }
+
+    protected function getEmojiUnicode(Emoji $emoji): ?string
+    {
+        if (($this->config->get('presentation') ?? $emoji->type) === EmojibaseDatasetInterface::TEXT && $emoji->text) {
+            return $emoji->text;
+        }
+
+        return $emoji->emoji ?? $emoji->unicode;
     }
 
     public function setConfiguration(ConfigurationInterface $configuration): void

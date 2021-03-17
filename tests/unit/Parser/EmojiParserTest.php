@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace League\Emoji\Tests\Unit\Parser;
 
-use PHPUnit\Framework\TestCase;
 use League\Emoji\Environment\Environment;
 use League\Emoji\Exception\UnexpectedEncodingException;
 use League\Emoji\Lexer\EmojiLexer;
 use League\Emoji\Parser\EmojiParser;
+use PHPUnit\Framework\TestCase;
 
 class EmojiParserTest extends TestCase
 {

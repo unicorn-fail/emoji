@@ -18,7 +18,7 @@ namespace League\Emoji\Node;
 
 class Document
 {
-    /** @var array<array-key, Node> */
+    /** @var array<int, Node> */
     protected $nodes = [];
 
     public function appendNode(Node $node): void
@@ -61,7 +61,7 @@ class Document
             $replacement[] = $newNode;
         }
 
-        \array_splice($this->nodes, (int) $index, 1, $replacement);
+        \array_splice($this->nodes, /** @scrutinizer ignore-type */ $index, 1, $replacement);
 
         $this->nodes = \array_values($this->nodes);
     }

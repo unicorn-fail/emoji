@@ -39,8 +39,6 @@ final class ImageRenderer implements NodeRendererInterface, ConfigurationAwareIn
      * @param Node $node
      *
      * {@inheritDoc}
-     *
-     * @psalm-suppress MoreSpecificImplementedParamType
      */
     public function render(Node $node)
     {
@@ -53,7 +51,10 @@ final class ImageRenderer implements NodeRendererInterface, ConfigurationAwareIn
             $node->setAttribute('src', '');
         }
 
-        return new HtmlElement('img', $node->getAttributes()->export(), '', true);
+        /** @var array<string, string|bool> $attributes */
+        $attributes = $node->getAttributes()->export();
+
+        return new HtmlElement('img', $attributes, '', true);
     }
 
     public function setConfiguration(ConfigurationInterface $configuration): void

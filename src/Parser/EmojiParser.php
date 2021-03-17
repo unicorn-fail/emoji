@@ -11,6 +11,7 @@ use League\Emoji\Event\DocumentPreParsedEvent;
 use League\Emoji\Lexer\EmojiLexer;
 use League\Emoji\Node\Document;
 use League\Emoji\Node\Emoji;
+use League\Emoji\Node\Node;
 use League\Emoji\Node\Text;
 
 final class EmojiParser implements EmojiParserInterface
@@ -57,24 +58,7 @@ final class EmojiParser implements EmojiParserInterface
 
             $this->lexer->moveNext();
 
-            /** @var array<string, mixed> $token */
-            $token = $this->lexer->token;
-
-            $value = '';
-            if (((string) $token['value']) !== '') {
-                $value = (string) ($token['value'] ?? '');
-            }
-
-            $type = (int) $token['type'];
-
-            $node = null;
-            if ($type !== EmojiLexer::T_TEXT && \in_array($type, EmojiLexer::TYPES, true)) {
-                $node = $this->parseEmoji($type, $value);
-            }
-
-            if ($node === null) {
-                $node = $this->parseText($value);
-            }
+            $node = $this->parseToken();
 
             $document->appendNode($node);
         }
@@ -82,6 +66,30 @@ final class EmojiParser implements EmojiParserInterface
         $this->environment->dispatch(new DocumentParsedEvent($document));
 
         return $document;
+    }
+
+    protected function parseToken(): Node
+    {
+        /** @var array<string, mixed> $token */
+        $token = $this->lexer->token;
+
+        $value = '';
+        if (((string) $token['value']) !== '') {
+            $value = (string) ($token['value'] ?? '');
+        }
+
+        $type = (int) $token['type'];
+
+        $node = null;
+        if ($type !== EmojiLexer::T_TEXT && \in_array($type, EmojiLexer::TYPES, true)) {
+            $node = $this->parseEmoji($type, $value);
+        }
+
+        if ($node === null) {
+            $node = $this->parseText($value);
+        }
+
+        return $node;
     }
 
     protected function parseEmoji(int $type, string $value): ?Emoji

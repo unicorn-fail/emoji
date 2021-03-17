@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace League\Emoji\Tests\Unit\Node;
 
-use PHPUnit\Framework\TestCase;
 use League\Emoji\Node\Document;
+use PHPUnit\Framework\TestCase;
 
 class NodeTest extends TestCase
 {

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace League\Emoji\Tests\Unit\Renderer;
 
-use PHPUnit\Framework\TestCase;
 use League\Emoji\Dataset\Emoji as DatasetEmoji;
 use League\Emoji\Environment\Environment;
 use League\Emoji\Node\Emoji;
@@ -12,6 +11,7 @@ use League\Emoji\Node\Image;
 use League\Emoji\Node\Node;
 use League\Emoji\Renderer\ImageRenderer;
 use League\Emoji\Util\HtmlElement;
+use PHPUnit\Framework\TestCase;
 
 class ImageRendererTest extends TestCase
 {

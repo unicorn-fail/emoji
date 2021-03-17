@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace League\Emoji\Tests\Unit;
 
 use League\Configuration\Exception\InvalidConfigurationException;
-use PHPUnit\Framework\TestCase;
 use League\Emoji\Dataset\Dataset;
 use League\Emoji\Dataset\RuntimeDataset;
 use League\Emoji\EmojiConverter;
@@ -18,6 +17,7 @@ use League\Emoji\Lexer\EmojiLexer;
 use League\Emoji\Node\Document;
 use League\Emoji\Parser\EmojiParserInterface;
 use League\Emoji\Renderer\DocumentRendererInterface;
+use PHPUnit\Framework\TestCase;
 
 class EmojiConverterTest extends TestCase
 {
@@ -232,7 +232,7 @@ class EmojiConverterTest extends TestCase
 
         $this->assertSame($document, $parser->parse($input));
         $this->assertSame($input, $renderer->renderDocument($document));
-        $this->assertSame($input, (string) $converter->convert($input));
+        $this->assertSame($input, $converter->convert($input));
     }
 
     /** @param array<string, mixed> $config */
@@ -240,7 +240,7 @@ class EmojiConverterTest extends TestCase
     {
         $converter = EmojiConverter::create($config);
 
-        return (string) $converter->convert($input);
+        return $converter->convert($input);
     }
 
     /**

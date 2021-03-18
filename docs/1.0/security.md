@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Security
-description: How to configure league/commonmark against possible security issues when handling untrusted user input
+description: How to configure league/emoji against possible security issues when handling untrusted user input
 ---
 
 Security
@@ -17,7 +17,7 @@ Further information about each option can be found below.
 
 ## HTML Input
 
-**All HTML input is unescaped by default.**  This behavior ensures that league/commonmark is 100% compliant with the CommonMark spec.
+**All HTML input is unescaped by default.**  This behavior ensures that league/emoji is 100% compliant with the CommonMark spec.
 
 If you're developing an application which renders user-provided Markdown from potentially untrusted users, you are **strongly** encouraged to set the `html_input` option in your configuration to either `escape` or `strip`:
 
@@ -59,7 +59,7 @@ To prevent these from being parsed and rendered, you should set the `allow_unsaf
 
 ## Nesting Level
 
-**No maximum nesting level is enforced by default.**  Markdown content which is too deeply-nested (like 10,000 nested blockquotes: '> > > > > ...') [could result in long render times or segfaults](https://github.com/thephpleague/commonmark/issues/243#issuecomment-217580285).
+**No maximum nesting level is enforced by default.**  Markdown content which is too deeply-nested (like 10,000 nested blockquotes: '> > > > > ...') [could result in long render times or segfaults](https://github.com/unicorn-fail/emoji/issues/243#issuecomment-217580285).
 
 If you need to parse untrusted input, consider setting a reasonable `max_nesting_level` (perhaps 10-50) depending on your needs.  Once this nesting level is hit, any subsequent Markdown will be rendered as plain text.
 

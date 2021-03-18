@@ -7,13 +7,13 @@ title: Overview
 
 # Overview
 
-[![Author](https://img.shields.io/badge/author-@colinodell-blue.svg?style=flat-square)](https://twitter.com/colinodell)
-[![Latest Version](https://img.shields.io/packagist/v/league/commonmark.svg?style=flat-square)](https://packagist.org/packages/league/commonmark)
-[![Total Downloads](https://img.shields.io/packagist/dt/league/commonmark.svg?style=flat-square)](https://packagist.org/packages/league/commonmark)
+[![Author](https://img.shields.io/badge/author-@markehalliwell-blue.svg?style=flat-square)](https://twitter.com/markehalliwell)
+[![Latest Version](https://img.shields.io/packagist/v/unicorn-fail/emoji.svg?style=flat-square)](https://packagist.org/packages/unicorn-fail/emoji)
+[![Total Downloads](https://img.shields.io/packagist/dt/unicorn-fail/emoji.svg?style=flat-square)](https://packagist.org/packages/unicorn-fail/emoji)
 [![Software License](https://img.shields.io/badge/License-BSD--3-brightgreen.svg?style=flat-square)](LICENSE)
-[![Build Status](https://img.shields.io/github/workflow/status/thephpleague/commonmark/Tests/latest.svg?style=flat-square)](https://github.com/thephpleague/commonmark/actions?query=workflow%3ATests+branch%3Alatest)
-[![Coverage Status](https://img.shields.io/scrutinizer/coverage/g/thephpleague/commonmark.svg?style=flat-square)](https://scrutinizer-ci.com/g/thephpleague/commonmark/code-structure)
-[![Quality Score](https://img.shields.io/scrutinizer/g/thephpleague/commonmark.svg?style=flat-square)](https://scrutinizer-ci.com/g/thephpleague/commonmark)
+[![Build Status](https://img.shields.io/github/workflow/status/unicorn-fail/emoji/Tests/latest.svg?style=flat-square)](https://github.com/unicorn-fail/emoji/actions?query=workflow%3ATests+branch%3Alatest)
+[![Coverage Status](https://img.shields.io/scrutinizer/coverage/g/unicorn-fail/emoji.svg?style=flat-square)](https://scrutinizer-ci.com/g/unicorn-fail/emoji/code-structure)
+[![Quality Score](https://img.shields.io/scrutinizer/g/unicorn-fail/emoji.svg?style=flat-square)](https://scrutinizer-ci.com/g/unicorn-fail/emoji)
 
 {{ site.data.project.highlights.description }}
 
@@ -22,7 +22,7 @@ title: Overview
 This library can be installed via Composer:
 
 ~~~bash
-composer require league/commonmark
+composer require league/emoji
 ~~~
 
 See the [installation](/2.0/installation/) section for more details.

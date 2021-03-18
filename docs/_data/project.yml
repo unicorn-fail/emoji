@@ -16,9 +16,9 @@ releases:
 #    '1.0':
 #      documentation_link: '/1.0/'
 author:
-    name: Mark Carver
-    twitter_account: _markcarver
-    website: https://github.com/markcarver
+    name: Mark Halliwell
+    twitter_account: markehalliwell
+    website: https://github.com/markhalliwell
 highlights:
     description: "The PHP <code>Emoji</code> parser is a robust, based on the specification compliant <a href=\"https://emojibase.dev/\">Emojibase</a> project."
     features:

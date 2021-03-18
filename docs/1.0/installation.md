@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Installation
-description: Instructions on how to install the league/commonmark library
+description: Instructions on how to install the league/emoji library
 ---
 
 # Installation
@@ -11,7 +11,7 @@ The recommended installation method is via Composer.
 In your project root just run:
 
 ~~~bash
-composer require league/commonmark:^2.0
+composer require league/emoji:^1.0
 ~~~
 
 Ensure that you’ve set up your project to [autoload Composer-installed packages](https://getcomposer.org/doc/00-intro.md#autoloading).

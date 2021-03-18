@@ -27,8 +27,8 @@
     <link rel="apple-touch-icon-precomposed" href="//theme.thephpleague.com/img/apple-touch-icon-precomposed.png">
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@thephpleague" />
-    <meta name="twitter:creator" content="@_markcarver" />
-    <meta property="og:url" content="https://commonmark.thephpleague.com{{ page.url }}" />
+    <meta name="twitter:creator" content="@markehalliwell" />
+    <meta property="og:url" content="https://emoji.thephpleague.com{{ page.url }}" />
     {% if page.url == '/' %}
         <meta property="og:title" content="{{ site.data.project.site_title }} - {{ site.data.project.tagline }}" />
     {% else %}
@@ -39,7 +39,7 @@
     {% else %}
         <meta property="og:description" content="{{ site.data.project.description }}" />
     {% endif %}
-    <meta property="og:image" content="https://commonmark.thephpleague.com/images/commonmark-social.png" />
+    <meta property="og:image" content="/images/commonmark-social.png" />
     <link rel="stylesheet" href="//theme.thephpleague.com/css/all.css?{{ site.github.build_revision }}">
     <link rel="stylesheet" href="/custom.css?{{ site.github.build_revision }}">
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
@@ -60,7 +60,7 @@
         <h1 class="title">
             <a class="logo" href="/">
             <span class="name">
-                <em>League\</em>CommonMark
+                <em>League\</em>Emoji
             </span>
             </a>
         </h1>
@@ -142,7 +142,7 @@
     <aside class="support-banner-wrapper" x-data="{ show: false }" x-show.transition="show" x-init="h = localStorage.getItem('hideBanner'); (h === null || h < (new Date().getTime())) ? (setTimeout(() => show = true, 500)) : (show = false)">
         <div class="support-banner">
             <p class="support-banner-left">
-                <strong>Love PHP Commonmark?</strong>
+                <strong>Love PHP Emoji?</strong>
                 <span class="hidden sm:inline-block lg:hidden">
                     Show your support!
                 </span>
@@ -153,11 +153,11 @@
             </p>
 
             <div class="support-banner-right">
-                <a href="https://github.com/sponsors/markcarver" class="support-button support-button-sponsor">
+                <a href="https://github.com/sponsors/markhalliwell" class="support-button support-button-sponsor">
                     <i class="fas fa-heart fa-fw" aria-hidden="true"></i> Sponsor
                 </a>
 
-                <a href="https://www.paypal.me/colinpodell/10.00" class="support-button support-button-donate">
+                <a href="https://www.paypal.me/marcuscarver/10.00" class="support-button support-button-donate">
                     <i class="fas fa-donate fa-fw" aria-hidden="true"></i> Donate
                 </a>
             </div>
@@ -177,8 +177,8 @@
 <script src="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
 <script> docsearch({
-    apiKey: '8f6d6eb939fe0df83616a0bb240332c8',
-    indexName: 'commonmark-thephpleague',
+    apiKey: '',//'8f6d6eb939fe0df83616a0bb240332c8',
+    indexName: 'emoji-thephpleague',
     inputSelector: '#doc-search',
     algoliaOptions: { 'facetFilters': ["version:{{ version }}"] },
     debug: false // Set debug to true if you want to inspect the dropdown
